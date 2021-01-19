@@ -1,0 +1,15 @@
+{
+  "name": "hicity-h5",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://115.233.227.46:8066/passer/hicity-h5.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
