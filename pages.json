@@ -3,8 +3,32 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "超级app",
+				"titleNView": false
 			}
+		}, {
+			"path": "pages/advisoryDetails/advisoryDetails",
+			"style": {
+				"titleNView": false,
+				"navigationBarTitleText": "新鲜事",
+				"backgroundColor": "#FFFFFF"
+			}
+		}, {
+			"path": "pages/officialDetails/officialDetails",
+			"style": {
+				"titleNView": false,
+				"navigationBarTitleText": "官方发布",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/404/404",
+			"style": {
+				"titleNView": false,
+				"navigationBarTitleText": "404",
+				"enablePullDownRefresh": false
+			}
+
 		}
 	],
 	"globalStyle": {
