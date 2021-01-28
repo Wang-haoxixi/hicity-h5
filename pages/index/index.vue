@@ -1,5 +1,5 @@
 <template>
-	<view class="">
+	<view class="index">
 		<image src="../../static/loading-white.gif" class="gif-white response" style="height:480rpx"></image>
 	</view>
 </template>
@@ -15,21 +15,25 @@
 			};
 		},
 		methods: {
-			// 获取参数信息
+			// http://192.168.0.159:8888/?type=advisoryDetails   http://192.168.0.159:8888/?id=100&status=0 
+			// http://192.168.0.159:8888/?type=advisoryDetails&id=53
+			// variable参数传"type"
+			// 获取参数信息           
 			getQueryVariable(variable) {
-				//获取地址栏参数信息
+				//获取地址栏参数信息 - 从第一个 问号? 开始截取 URL中参数
 				var query = window.location.search.substring(1);
-				console.log('query参数', query) //id=1
-				// 已‘&’符号将query分割为数组
-				var vars = query.split('&');
-				console.log('vars', vars) // ["id=1"]
-				for (var i = 0; i < vars.length; i++) {
-					var pair = vars[i].split('=');
-					if (pair[0] == variable) {
+				console.log('query参数', query) //type=advisoryDetails&id=53
+				// 以‘&’符号将query分割为数组
+				var arr = query.split('&');
+				console.log('arr', arr) //["type=advisoryDetails", "id=53"]  
+				for (var i = 0; i < arr.length; i++) {
+					var pair = arr[i].split('=');
+					console.log('pair', pair) //["type", "advisoryDetails"]  ["id", "53"]
+					if (pair[0] == variable) { //若pair[0] == 'type',则返回页面参数
+						console.log('pair[1]', pair[1]) //advisoryDetails
 						return pair[1]; //返回数组第二个参数
 					}
 				}
-				console.log('pair', pair) //["id", "1"]
 				return false;
 			}
 		},
@@ -40,7 +44,7 @@
 				uni.redirectTo({
 					url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
 				});
-			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方发布
+			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
 					url: '../officialDetails/officialDetails?id=' + that.getQueryVariable('id')
 				});
@@ -50,6 +54,10 @@
 </script>
 
 <style>
+	.index {
+		text-align: center;
+	}
+
 	.cu-avatar {
 		background-repeat: no-repeat;
 		background-size: 100% 100%;

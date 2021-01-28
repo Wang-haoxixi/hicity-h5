@@ -9,16 +9,16 @@
 		}, {
 			"path": "pages/advisoryDetails/advisoryDetails",
 			"style": {
-				"titleNView": false,
-				"navigationBarTitleText": "新鲜事",
-				"backgroundColor": "#FFFFFF"
+				"titleNView": false
+				// "backgroundColor": "#FFFFFF"
+				// "navigationBarTitleText": "城市咨询",
 			}
 		}, {
 			"path": "pages/officialDetails/officialDetails",
 			"style": {
-				"titleNView": false,
-				"navigationBarTitleText": "官方发布",
-				"enablePullDownRefresh": false
+				"titleNView": false
+				// "navigationBarTitleText": "官方咨询",
+				// "enablePullDownRefresh": false
 			}
 
 		}, {
