@@ -15,55 +15,73 @@
 		<view class="comment-box">
 			<view class="commentBar">
 				<view class="commentBar-item">
-					<text class="commentTitle">全部评论</text><text>(21)</text>
+					<text class="commentTitle">全部评论</text><text>({{commentList.length}})</text>
 				</view>
 			</view>
 			<view class="commentBody">
-				<!-- <commentBox></commentBox> -->
-				<!-- <commonList :item='{}' :index=2></commonList> -->
 				<!-- 一级评论 -->
-				<view class="first-comment">
+				<view class="first-comment" v-for="(item,i) in commentList" :key='i'>
 					<view class="first-comment-top">
 						<view class="imgBox">
-							<image src="../../static/guangong.jpg"></image>
+							<image :src="item.createByAvatar"></image>
 						</view>
 						<view class="name-time">
 							<view class="name">
-								丽丽
+								{{item.createByName}}
 							</view>
 							<view class="time">
-								2020-11-20 15:20
+								{{item.createTime}}
 							</view>
 						</view>
-						<view class="zan">
+						<view class="zan" @tap='handlePraise(item)'>
 							<image src="../../static/zanSmall.png"></image>
-							<text>12</text>
+							<text>{{item.thumbNum}}</text>
 						</view>
 					</view>
 					<view class="first-comment-bottom">
-						当然是窝在被窝里睡大觉啦，这么冷的天～哈哈
+						{{item.content}}
 					</view>
 
-					<!-- 二级评论 -->
-					<view class="second-comment">
+					<!-- 二级评论  无回复 -->
+					<view class="second-comment" v-for="(item2,i2) in item.childCommentList" :key='i2'>
 						<view class="second-comment-avatar">
 							<image src="../../static/erha2.jpg"></image>
 						</view>
 						<view class="second-comment-content">
 							<view class="name">
-								楠楠
+								{{item2.name}}
+							</view>
+							<view class="text" v-if="!item2.byReplyName">
+								{{item2.text}}
+							</view>
+							<view class="text" v-else>
+								<text>回复</text><text space="ensp"> {{item2.byReplyName}}: </text> {{item2.text}}
+							</view>
+							<view class="time">
+								{{item2.time}}
+							</view>
+						</view>
+					</view>
+					<!-- 二级评论  有回复 -->
+					<!-- <view class="second-comment-hasAnswer">
+						<view class="second-comment-avatar">
+							<image src="../../static/erha2.jpg"></image>
+						</view>
+						<view class="second-comment-content">
+							<view class="name">
+								西西
 							</view>
 							<view class="text">
-								哈哈，想必姐妹见过大世面
+								<text>回复</text><text space="ensp"> 楠楠: </text> 哈哈，想必姐妹见过大世面
 							</view>
 							<view class="time">
 								2020-11-20 15:20
 							</view>
-							<!-- 展开更多 -->
-							<view class="more">
-								展开14条回复
-							</view>
 						</view>
+					</view> -->
+					<!-- 展开更多 -->
+					<view v-if="!item.replyVO.records" class="more" @tap='handleShowMore(i)'>
+						展开更多回复
 					</view>
 				</view>
 
@@ -72,11 +90,13 @@
 
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox">
+			<easy-entry ref="easyEntry" @send="send" theme="#ffffff"></easy-entry>
 			<view class="inpBox">
-				<input class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
+				<!-- <input @confirm='handleSend' class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" /> -->
+				<input @click="onEntry" class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
 			</view>
 			<view class="zan-pinglun">
-				<view>
+				<view @tap='bottomGood()'>
 					<image src="../../static/zan.png" class="img"></image>
 					<text>312</text>
 				</view>
@@ -90,14 +110,38 @@
 </template>
 
 <script>
+	function setupWebViewJavascriptBridge(callback) {
+		if (window.WebViewJavascriptBridge) {
+			return callback(WebViewJavascriptBridge);
+		}
+		if (window.WVJBCallbacks) {
+			return window.WVJBCallbacks.push(callback);
+		}
+		window.WVJBCallbacks = [callback];
+		var WVJBIframe = document.createElement('iframe');
+		WVJBIframe.style.display = 'none';
+		WVJBIframe.src = 'wvjbscheme://__BRIDGE_LOADED__';
+		document.documentElement.appendChild(WVJBIframe);
+		setTimeout(function() {
+			document.documentElement.removeChild(WVJBIframe)
+		}, 0)
+	}
+
+	function getBridge(funName, dataJson, callback) {
+		setupWebViewJavascriptBridge(function(bridge) {
+			bridge.callHandler(funName, dataJson, function(response) {
+				console.log('数据', response)
+				callback && callback(response);
+			});
+		});
+	}
+
 	import jyfParser from "@/components/jyf-Parser/jyf-parser";
-	// import commentBox from '@/components/uni-comment/uni-comment'
-	// import commonList from '@/components/commonList/commonList'
+	import easyEntry from "@/components/easy-entry/easy-entry";
 	export default {
 		components: {
 			jyfParser,
-			// commentBox
-			// commonList
+			easyEntry
 		},
 		data() {
 			return {
@@ -105,16 +149,31 @@
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
 				},
-				detail: {}
+				// promise: null,
+				id: null, //资讯id
+				detail: {},
+				commentList: [], //评论列表
+				comment: '',
 			};
 		},
 		onLoad(option) {
+			this.id = option.id
+			// this.getToken()
+			// this.promise = new Promise((resolve, reject) => {
+			// 	// getBridge('getToken', null, res => {
+			// 	// 	// this.init = true
+			// 	// 	// this.safeTop = JSON.parse(res).top
+			// 	// 	// this.safeBottom = JSON.parse(res).bottom
+			// 	// 	resolve(res)
+			// 	// })
+			// })
 			// 請求到文章详情
 			uni.request({
 				url: '/api/cms/open/news_details', //仅为示例，并非真实接口地址。
 				data: {
 					newsId: option.id
 				},
+
 				success: (res) => {
 					console.log('res', res)
 					if (res.data.code !== 0) {
@@ -123,8 +182,107 @@
 						});
 					}
 					this.detail = res.data.data.data
+					console.log('detail', this.detail)
 				}
 			});
+
+			// 热门资讯-评论列表-分页
+			uni.request({
+				url: '/api/cms/open/news_comment_page',
+				header: {
+					"Authorization": 'Bearer ' + 'c8e4aa8c-8e9e-4a18-9344-7b677ba00068' //自定义请求头信息
+				},
+				data: {
+					dataId: option.id, //数据ID
+					size: 5,
+					current: 1,
+				},
+				success: (res) => {
+					console.log('评论列表res', res)
+					if (res.data.code !== 0) {
+						uni.showToast({
+							title: '获取评论列表失败！',
+							duration: 2000
+						});
+					}
+					this.commentList = res.data.data.data.records
+					console.log('评论列表', this.commentList)
+				}
+			})
+		},
+		methods: {
+			// 获取token
+			getToken() {
+				getBridge('getToken', '', )
+			},
+			// 赞
+			handlePraise(item) {
+				console.log(item)
+			},
+			onEntry() {
+				this.$refs.easyEntry.onEntry()
+			},
+			send(comment) {
+				console.log(comment)
+				this.comment = comment
+				// console.log(this.comment)
+			},
+			// 发表评论
+			handleSend(e) {
+				console.log(e)
+				uni.request({
+					url: '/api/cms/common_comment/create',
+					header: {
+						"Authorization": 'Bearer ' + 'c8e4aa8c-8e9e-4a18-9344-7b677ba00068' //自定义请求头信息
+					},
+					method: "POST",
+					data: {
+						content: e.target.value, //评论内容
+						dataId: this.id, //数据ID
+						type: 2, //数据类型 1-官方发布 2-热门新闻
+					},
+					success: function(res) {
+						console.log('发表评论', res)
+					}
+				})
+
+				// let obj = {
+				// 	name: '我',
+				// 	time: '2020-11-17 15:20',
+				// 	text: e.target.value,
+				// 	zan: 12,
+				// }
+				// this.commentList.push(obj)
+				// console.log(this.commentList)
+			},
+			// 底部点赞
+			bottomGood() {
+				console.log('底部点赞')
+			},
+			// 展开更多
+			handleShowMore(i) {
+				console.log(i)
+				// this.commentList.push({
+				// 	name: '楠楠',
+				// 	time: '2020-11-19 15:20',
+				// 	text: '哈哈哈哈~',
+				// 	zan: 7,
+				// 	childCommentList: [{
+				// 			name: '李四',
+				// 			time: '2020-11-21 15:20',
+				// 			text: '什么事？？？',
+				// 			byReplyName: '张三'
+				// 		},
+				// 		{
+				// 			name: '赵武',
+				// 			time: '2020-11-22 15:20',
+				// 			text: '啊啊啊啊？？？',
+				// 			byReplyName: '张三'
+				// 		}
+				// 	]
+				// })
+				// console.log(this.commentList)
+			}
 		}
 	}
 </script>
@@ -281,50 +439,57 @@
 				.second-comment {
 					margin-top: 32rpx;
 					display: flex;
+				}
 
-					.second-comment-avatar {
+				.second-comment-hasAnswer {
+					margin-top: 32rpx;
+					display: flex;
+				}
+
+				.second-comment-avatar {
+					width: 48rpx;
+
+					image {
 						width: 48rpx;
+						height: 48rpx;
+						border-radius: 50%;
+					}
+				}
 
-						image {
-							width: 48rpx;
-							height: 48rpx;
-							border-radius: 50%;
-						}
+				.second-comment-content {
+					margin-left: 16rpx;
+					flex: 1;
+
+					.name {
+						font-size: 28rpx;
+						font-weight: 500;
+						color: #333333;
+						height: 48rpx;
+						line-height: 48rpx;
 					}
 
-					.second-comment-content {
-						margin-left: 16rpx;
-						flex: 1;
-
-						.name {
-							font-size: 28rpx;
-							font-weight: 500;
-							color: #333333;
-							height: 48rpx;
-							line-height: 48rpx;
-						}
-
-						.text {
-							font-size: 28rpx;
-							font-weight: 400;
-							line-height: 48rpx;
-							color: #333333;
-						}
-
-						.time {
-							font-size: 24rpx;
-							font-weight: 400;
-							line-height: 32rpx;
-							color: #999999;
-						}
-
-						.more {
-							font-size: 28rpx;
-							font-weight: 400;
-							margin-top: 16rpx;
-							color: #1676FF;
-						}
+					.text {
+						font-size: 28rpx;
+						font-weight: 400;
+						line-height: 48rpx;
+						color: #333333;
 					}
+
+					.time {
+						font-size: 24rpx;
+						font-weight: 400;
+						line-height: 32rpx;
+						color: #999999;
+					}
+
+				}
+
+				.more {
+					font-size: 28rpx;
+					font-weight: 400;
+					margin-top: 16rpx;
+					color: #1676FF;
+					margin-left: 66rpx;
 				}
 			}
 		}
