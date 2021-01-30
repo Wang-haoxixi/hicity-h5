@@ -9,7 +9,8 @@
 		}, {
 			"path": "pages/advisoryDetails/advisoryDetails",
 			"style": {
-				"titleNView": false
+				"titleNView": false,
+				"onReachBottomDistance": 0
 				// "backgroundColor": "#FFFFFF"
 				// "navigationBarTitleText": "城市咨询",
 			}

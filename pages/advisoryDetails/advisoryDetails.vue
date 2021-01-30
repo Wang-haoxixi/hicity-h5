@@ -19,88 +19,81 @@
 				</view>
 			</view>
 			<view class="commentBody">
-				<!-- 一级评论 -->
+				<!-- 评论当前页咨询 -->
+				<easy-entry ref="commentConsult" @sendText="sendConsultComment" theme="#ffffff"></easy-entry>
+				<!-- 一级评论输入框 -->
+				<easy-entry ref="commentFirst" @sendText="sendFirstComment" theme="#ffffff"></easy-entry>
+				<!-- 二级评论输入框 -->
+				<easy-entry ref="commentSecond" @sendText="sendSecondComment" theme="#ffffff"></easy-entry>
+
 				<view class="first-comment" v-for="(item,i) in commentList" :key='i'>
-					<view class="first-comment-top">
-						<view class="imgBox">
-							<image :src="item.createByAvatar"></image>
-						</view>
-						<view class="name-time">
-							<view class="name">
-								{{item.createByName}}
+					<!-- 一级评论 -->
+					<view @tap='toCommentFirst(item.commentId)'>
+						<view class="first-comment-top">
+							<view class="imgBox">
+								<image :src="item.createByAvatar"></image>
 							</view>
-							<view class="time">
-								{{item.createTime}}
+							<view class="name-time">
+								<view class="name">
+									{{item.createByName}}
+								</view>
+								<view class="time">
+									{{item.createTime}}
+								</view>
+							</view>
+							<view class="zan" @tap.stop='handlePraise(item)'>
+								<image :src="!isZan?'../../static/zan.png':'../../static/zanSelect.png'"></image>
+								<text>{{item.thumbNum}}</text>
 							</view>
 						</view>
-						<view class="zan" @tap='handlePraise(item)'>
-							<image src="../../static/zanSmall.png"></image>
-							<text>{{item.thumbNum}}</text>
-						</view>
-					</view>
-					<view class="first-comment-bottom">
-						{{item.content}}
+						<text space="nbsp" class="first-comment-bottom">
+							{{item.content}}
+						</text>
 					</view>
 
-					<!-- 二级评论  无回复 -->
-					<view class="second-comment" v-for="(item2,i2) in item.childCommentList" :key='i2'>
+					<!-- 二级评论 -->
+					<view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
+					 :key='i2'>
 						<view class="second-comment-avatar">
-							<image src="../../static/erha2.jpg"></image>
+							<image :src="item2.createAvatar"></image>
 						</view>
 						<view class="second-comment-content">
 							<view class="name">
-								{{item2.name}}
+								{{item2.createByName}}
 							</view>
-							<view class="text" v-if="!item2.byReplyName">
-								{{item2.text}}
+							<!-- 判断二级评论的父级id是否与自己的id相等,为true即回复的父级，false则回复的自己 -->
+							<view class="text" v-if="item2.rankingCommentId===item.commentId">
+								{{item2.content}}
 							</view>
 							<view class="text" v-else>
-								<text>回复</text><text space="ensp"> {{item2.byReplyName}}: </text> {{item2.text}}
+								<text space="nbsp"> 回复 </text><text style="color: #888888;" space="nbsp">{{item2.replyName}} :</text>
+								{{item2.content}}
 							</view>
 							<view class="time">
-								{{item2.time}}
+								{{item2.createTime}}
 							</view>
 						</view>
 					</view>
-					<!-- 二级评论  有回复 -->
-					<!-- <view class="second-comment-hasAnswer">
-						<view class="second-comment-avatar">
-							<image src="../../static/erha2.jpg"></image>
-						</view>
-						<view class="second-comment-content">
-							<view class="name">
-								西西
-							</view>
-							<view class="text">
-								<text>回复</text><text space="ensp"> 楠楠: </text> 哈哈，想必姐妹见过大世面
-							</view>
-							<view class="time">
-								2020-11-20 15:20
-							</view>
-						</view>
-					</view> -->
 					<!-- 展开更多 -->
 					<view v-if="!item.replyVO.records" class="more" @tap='handleShowMore(i)'>
 						展开更多回复
 					</view>
 				</view>
-
 			</view>
+			<uni-load-more :iconSize='18' :status="pinglunPageStatus"></uni-load-more>
 		</view>
 
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox">
-			<easy-entry ref="easyEntry" @send="send" theme="#ffffff"></easy-entry>
 			<view class="inpBox">
-				<!-- <input @confirm='handleSend' class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" /> -->
-				<input @click="onEntry" class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
+				<input @tap="onEntry()" class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
 			</view>
 			<view class="zan-pinglun">
 				<view @tap='bottomGood()'>
 					<image src="../../static/zan.png" class="img"></image>
 					<text>312</text>
 				</view>
-				<view>
+				<view @tap='onEntry()'>
 					<image src="../../static/pinglun.png" class="img"></image>
 					<text>1233</text>
 				</view>
@@ -138,10 +131,12 @@
 
 	import jyfParser from "@/components/jyf-Parser/jyf-parser";
 	import easyEntry from "@/components/easy-entry/easy-entry";
+	import uniLoadMore from "@/components/uni-load-more/uni-load-more.vue"
 	export default {
 		components: {
 			jyfParser,
-			easyEntry
+			easyEntry,
+			uniLoadMore
 		},
 		data() {
 			return {
@@ -149,24 +144,22 @@
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
 				},
+				parCurrent: 1, //父级当前页
+				pages: null, //总页数
+				childCurrent: 1, //子级当前页
 				// promise: null,
 				id: null, //资讯id
 				detail: {},
 				commentList: [], //评论列表
 				comment: '',
+				commentId: '', //被回复的评论id
+				isZan: false, //是否被赞
+				pinglunPageStatus: 'more', //加载更多评论显示效果
 			};
 		},
 		onLoad(option) {
 			this.id = option.id
-			// this.getToken()
-			// this.promise = new Promise((resolve, reject) => {
-			// 	// getBridge('getToken', null, res => {
-			// 	// 	// this.init = true
-			// 	// 	// this.safeTop = JSON.parse(res).top
-			// 	// 	// this.safeBottom = JSON.parse(res).bottom
-			// 	// 	resolve(res)
-			// 	// })
-			// })
+
 			// 請求到文章详情
 			uni.request({
 				url: '/api/cms/open/news_details', //仅为示例，并非真实接口地址。
@@ -186,75 +179,172 @@
 				}
 			});
 
-			// 热门资讯-评论列表-分页
-			uni.request({
-				url: '/api/cms/open/news_comment_page',
-				header: {
-					"Authorization": 'Bearer ' + 'c8e4aa8c-8e9e-4a18-9344-7b677ba00068' //自定义请求头信息
-				},
-				data: {
-					dataId: option.id, //数据ID
-					size: 5,
-					current: 1,
-				},
-				success: (res) => {
-					console.log('评论列表res', res)
-					if (res.data.code !== 0) {
-						uni.showToast({
-							title: '获取评论列表失败！',
-							duration: 2000
-						});
-					}
-					this.commentList = res.data.data.data.records
-					console.log('评论列表', this.commentList)
-				}
-			})
+			this.getCommentList()
+		},
+		onReachBottom() {
+			console.log('触底`~')
+			this.getCommentList()
 		},
 		methods: {
-			// 获取token
-			getToken() {
-				getBridge('getToken', '', )
+			// 获取评论列表
+			getCommentList() {
+				if (this.parCurrent <= this.pages) {
+					this.pinglunPageStatus = 'loading'
+				}else{
+					this.pinglunPageStatus = 'noMore'
+				}
+				
+				uni.request({
+					url: '/api/cms/open/news_comment_page',
+					header: {
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+					},
+					data: {
+						dataId: this.id, //数据ID
+						current: this.parCurrent, //当前页
+					},
+					success: (res) => {
+						console.log('评论列表res', res)
+						if (res.data.code !== 0) {
+							uni.showToast({
+								title: '获取评论列表失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						this.pages = res.data.data.data.pages
+						// 当前页码小于总页数
+						if (this.parCurrent <= res.data.data.data.pages) {
+							this.pinglunPageStatus = 'more'
+							this.commentList = [...this.commentList, ...res.data.data.data.records]
+							this.parCurrent += 1
+						}
+						console.log('评论列表', this.commentList)
+						// this.commentList = res.data.data.data.records
+					}
+				})
 			},
 			// 赞
 			handlePraise(item) {
 				console.log(item)
+				this.isZan = !this.isZan
+				item.thumbNum += 1
 			},
+			// 唤起评论
 			onEntry() {
-				this.$refs.easyEntry.onEntry()
+				this.$refs.commentConsult.onEntry()
 			},
-			send(comment) {
-				console.log(comment)
-				this.comment = comment
-				// console.log(this.comment)
+			// 唤起一级评论
+			toCommentFirst(id) {
+				console.log('一级评论', id)
+				// 获取评论id
+				this.commentId = id
+				this.$refs.commentFirst.onEntry()
 			},
-			// 发表评论
-			handleSend(e) {
-				console.log(e)
+			// 唤起二级评论
+			toCommentSecond(id) {
+				console.log('二级评论', id)
+				this.commentId = id
+				this.$refs.commentSecond.onEntry()
+			},
+			// 发送咨询的评论
+			sendConsultComment(content) {
+				console.log('咨询的评论', content)
 				uni.request({
 					url: '/api/cms/common_comment/create',
 					header: {
-						"Authorization": 'Bearer ' + 'c8e4aa8c-8e9e-4a18-9344-7b677ba00068' //自定义请求头信息
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
 					},
 					method: "POST",
 					data: {
-						content: e.target.value, //评论内容
+						content: content, //评论内容
 						dataId: this.id, //数据ID
 						type: 2, //数据类型 1-官方发布 2-热门新闻
 					},
-					success: function(res) {
+					success: (res) => {
 						console.log('发表评论', res)
+						if (res.data.code !== 0) {
+							uni.showToast({
+								title: '评论发布失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						uni.showToast({
+							title: '评论已发布',
+							duration: 1500,
+							icon: "none",
+						});
+						// 刷新评论
+						this.getCommentList()
 					}
 				})
-
-				// let obj = {
-				// 	name: '我',
-				// 	time: '2020-11-17 15:20',
-				// 	text: e.target.value,
-				// 	zan: 12,
-				// }
-				// this.commentList.push(obj)
-				// console.log(this.commentList)
 			},
+			// 发送一级评论
+			sendFirstComment(content) {
+				console.log('一级评论', content)
+				uni.request({
+					url: '/api/cms/common_comment/reply',
+					header: {
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+					},
+					method: "POST",
+					data: {
+						content: content, //评论内容
+						commentId: this.commentId, //评论ID
+					},
+					success: (res) => {
+						console.log('一级评论成功', res)
+						if (res.data.code !== 0) {
+							uni.showToast({
+								title: '你的回复发布失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						uni.showToast({
+							title: '你的回复已发布',
+							duration: 1500,
+							icon: "none",
+						});
+						// 刷新评论
+						this.getCommentList()
+					}
+				})
+			},
+			// 发送二级评论
+			sendSecondComment(content) {
+				console.log('二级评论', content)
+				uni.request({
+					url: '/api/cms/common_comment/reply',
+					header: {
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+					},
+					method: "POST",
+					data: {
+						content: content, //评论内容
+						commentId: this.commentId, //评论ID
+					},
+					success: (res) => {
+						console.log('二级评论成功', res)
+						if (res.data.code !== 0) {
+							uni.showToast({
+								title: '你的回复发布失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						uni.showToast({
+							title: '你的回复已发布',
+							duration: 1500,
+							icon: "none",
+						});
+						// 刷新评论
+						this.getCommentList()
+					}
+				})
+			},
+
 			// 底部点赞
 			bottomGood() {
 				console.log('底部点赞')
@@ -262,26 +352,6 @@
 			// 展开更多
 			handleShowMore(i) {
 				console.log(i)
-				// this.commentList.push({
-				// 	name: '楠楠',
-				// 	time: '2020-11-19 15:20',
-				// 	text: '哈哈哈哈~',
-				// 	zan: 7,
-				// 	childCommentList: [{
-				// 			name: '李四',
-				// 			time: '2020-11-21 15:20',
-				// 			text: '什么事？？？',
-				// 			byReplyName: '张三'
-				// 		},
-				// 		{
-				// 			name: '赵武',
-				// 			time: '2020-11-22 15:20',
-				// 			text: '啊啊啊啊？？？',
-				// 			byReplyName: '张三'
-				// 		}
-				// 	]
-				// })
-				// console.log(this.commentList)
 			}
 		}
 	}
@@ -335,7 +405,7 @@
 
 	.comment-box {
 		// height: 100%;
-		padding: 32rpx;
+		padding: 32rpx 32rpx 100rpx 32rpx;
 
 		.commentBar {
 			height: 70rpx;
@@ -365,6 +435,9 @@
 		}
 
 		.commentBody {
+			.first-comment:last-of-type {
+				margin-bottom: 0;
+			}
 
 			// height: 100%;
 			.first-comment {
@@ -419,6 +492,7 @@
 						>image {
 							width: 28rpx;
 							height: 28rpx;
+							margin-right: 6rpx;
 						}
 
 						>text {
@@ -437,11 +511,6 @@
 				}
 
 				.second-comment {
-					margin-top: 32rpx;
-					display: flex;
-				}
-
-				.second-comment-hasAnswer {
 					margin-top: 32rpx;
 					display: flex;
 				}
@@ -497,6 +566,7 @@
 	}
 
 	.publishCommentBox {
+		background: #FFFFFF;
 		height: 112rpx;
 		width: 100%;
 		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
