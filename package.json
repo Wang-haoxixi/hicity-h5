@@ -11,5 +11,8 @@
     "url": "http://115.233.227.46:8066/passer/hicity-h5.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "animate.css": "^4.1.1"
+  }
 }

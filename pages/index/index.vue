@@ -34,7 +34,7 @@
 						return pair[1]; //返回数组第二个参数
 					}
 				}
-				return false;
+				return;
 			}
 		},
 		onLoad() {
@@ -47,6 +47,10 @@
 			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
 					url: '../officialDetails/officialDetails?id=' + that.getQueryVariable('id')
+				});
+			}else if (that.getQueryVariable('type') == 'circleCard') { //官方咨询
+				uni.redirectTo({
+					url: '../circleCard/circleCard?id=' + that.getQueryVariable('id')
 				});
 			}
 		}

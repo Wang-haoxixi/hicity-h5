@@ -15,7 +15,7 @@
 		<view class="comment-box">
 			<view class="commentBar">
 				<view class="commentBar-item">
-					<text class="commentTitle">全部评论</text><text>({{commentList.length}})</text>
+					<text class="commentTitle">全部评论</text><text>({{commentData.records.length}})</text>
 				</view>
 			</view>
 			<view class="commentBody">
@@ -26,7 +26,7 @@
 				<!-- 二级评论输入框 -->
 				<easy-entry ref="commentSecond" @sendText="sendSecondComment" theme="#ffffff"></easy-entry>
 
-				<view class="first-comment" v-for="(item,i) in commentList" :key='i'>
+				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
 					<!-- 一级评论 -->
 					<view @tap='toCommentFirst(item.commentId)'>
 						<view class="first-comment-top">
@@ -52,6 +52,8 @@
 					</view>
 
 					<!-- 二级评论 -->
+					<!-- <view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
+					 :key='i2'> -->
 					<view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
 					 :key='i2'>
 						<view class="second-comment-avatar">
@@ -80,7 +82,7 @@
 					</view>
 				</view>
 			</view>
-			<uni-load-more :iconSize='18' :status="pinglunPageStatus"></uni-load-more>
+			<uni-load-more :iconSize='18' v-if="commentData.records.length>10" :status="pinglunPageStatus"></uni-load-more>
 		</view>
 
 		<!-- 底部发布评论部分 -->
@@ -103,32 +105,6 @@
 </template>
 
 <script>
-	function setupWebViewJavascriptBridge(callback) {
-		if (window.WebViewJavascriptBridge) {
-			return callback(WebViewJavascriptBridge);
-		}
-		if (window.WVJBCallbacks) {
-			return window.WVJBCallbacks.push(callback);
-		}
-		window.WVJBCallbacks = [callback];
-		var WVJBIframe = document.createElement('iframe');
-		WVJBIframe.style.display = 'none';
-		WVJBIframe.src = 'wvjbscheme://__BRIDGE_LOADED__';
-		document.documentElement.appendChild(WVJBIframe);
-		setTimeout(function() {
-			document.documentElement.removeChild(WVJBIframe)
-		}, 0)
-	}
-
-	function getBridge(funName, dataJson, callback) {
-		setupWebViewJavascriptBridge(function(bridge) {
-			bridge.callHandler(funName, dataJson, function(response) {
-				console.log('数据', response)
-				callback && callback(response);
-			});
-		});
-	}
-
 	import jyfParser from "@/components/jyf-Parser/jyf-parser";
 	import easyEntry from "@/components/easy-entry/easy-entry";
 	import uniLoadMore from "@/components/uni-load-more/uni-load-more.vue"
@@ -145,12 +121,13 @@
 					img: 'background-size: contain|cover;width:100%;height:auto;'
 				},
 				parCurrent: 1, //父级当前页
-				pages: null, //总页数
 				childCurrent: 1, //子级当前页
-				// promise: null,
 				id: null, //资讯id
 				detail: {},
-				commentList: [], //评论列表
+				//评论列表
+				commentData: {
+					records: []
+				},
 				comment: '',
 				commentId: '', //被回复的评论id
 				isZan: false, //是否被赞
@@ -178,22 +155,14 @@
 					console.log('detail', this.detail)
 				}
 			});
+			// this.getReplyList()
 
 			this.getCommentList()
 		},
 		onReachBottom() {
-			console.log('触底`~')
-			this.getCommentList()
-		},
-		methods: {
-			// 获取评论列表
-			getCommentList() {
-				if (this.parCurrent <= this.pages) {
-					this.pinglunPageStatus = 'loading'
-				}else{
-					this.pinglunPageStatus = 'noMore'
-				}
-				
+			console.log('触底 ~')
+			if (this.commentData.current < this.commentData.pages) {
+				this.pinglunPageStatus = 'loading'
 				uni.request({
 					url: '/api/cms/open/news_comment_page',
 					header: {
@@ -201,7 +170,7 @@
 					},
 					data: {
 						dataId: this.id, //数据ID
-						current: this.parCurrent, //当前页
+						current: this.commentData.current + 1, //当前页
 					},
 					success: (res) => {
 						console.log('评论列表res', res)
@@ -212,17 +181,69 @@
 								icon: "none",
 							});
 						}
-						this.pages = res.data.data.data.pages
-						// 当前页码小于总页数
-						if (this.parCurrent <= res.data.data.data.pages) {
+						this.commentData.current = res.data.data.data.current
+						if (this.commentData.current < this.commentData.pages) {
 							this.pinglunPageStatus = 'more'
-							this.commentList = [...this.commentList, ...res.data.data.data.records]
-							this.parCurrent += 1
+						} else {
+							this.pinglunPageStatus = 'noMore'
 						}
-						console.log('评论列表', this.commentList)
-						// this.commentList = res.data.data.data.records
+						this.commentData.records = this.commentData.records.concat(res.data.data.data.records.map(item => {
+							return {
+								...item,
+							}
+						}))
+						console.log('评论列表', this.commentData)
 					}
 				})
+			}
+		},
+		methods: {
+			// 获取评论列表
+			getCommentList() {
+				uni.request({
+					url: '/api/cms/open/news_comment_page',
+					header: {
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+					},
+					data: {
+						dataId: this.id, //数据ID
+						// current: this.parCurrent, //当前页
+						current: 1, //当前页
+					},
+					success: (res) => {
+						console.log('评论列表res', res)
+						if (res.data.code !== 0) {
+							return uni.showToast({
+								title: '获取评论列表失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						this.commentData = res.data.data.data
+						console.log('评论列表', this.commentData)
+
+						// 遍历父级评论数组
+						this.commentData.records.forEach((item) => {
+							console.log('item', item)
+							uni.request({
+								url: '/api/cms/common_comment/reply_page',
+								header: {
+									"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+								},
+								data: {
+									commentId: item.commentId, //评论ID
+								},
+								success: res => {
+									console.log('单回复列表', res)
+									item.replyVO.records = res.data.data.data.records
+								}
+							})
+
+						})
+					}
+				})
+
+
 			},
 			// 赞
 			handlePraise(item) {
@@ -264,7 +285,7 @@
 					success: (res) => {
 						console.log('发表评论', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '评论发布失败',
 								duration: 1500,
 								icon: "none",
@@ -296,7 +317,7 @@
 					success: (res) => {
 						console.log('一级评论成功', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '你的回复发布失败',
 								duration: 1500,
 								icon: "none",
@@ -328,7 +349,7 @@
 					success: (res) => {
 						console.log('二级评论成功', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '你的回复发布失败',
 								duration: 1500,
 								icon: "none",
@@ -373,7 +394,7 @@
 		.title {
 			line-height: 52rpx;
 			font-size: 36rpx;
-			coloe: #333333;
+			color: #333333;
 			font-weight: bold;
 		}
 
@@ -409,7 +430,6 @@
 
 		.commentBar {
 			height: 70rpx;
-			border: solid 1px;
 			display: flex;
 
 			.commentBar-item {
