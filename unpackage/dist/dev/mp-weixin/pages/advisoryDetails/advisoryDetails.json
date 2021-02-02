@@ -1,0 +1,10 @@
+{
+  "titleNView": false,
+  "onReachBottomDistance": 0,
+  "navigationBarTitleText": "资讯详情",
+  "usingComponents": {
+    "easy-entry": "/components/easy-entry/easy-entry",
+    "uni-load-more": "/components/uni-load-more/uni-load-more",
+    "jyf-parser": "/components/jyf-Parser/jyf-parser"
+  }
+}

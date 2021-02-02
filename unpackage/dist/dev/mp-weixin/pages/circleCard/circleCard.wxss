@@ -1,0 +1,236 @@
+.circleCard .bgBox {
+  height: 408rpx;
+}
+.circleCard .bgBox .bgImg {
+  width: 100%;
+  height: 100%;
+}
+.circleCard .container {
+  padding: 0 32rpx 112rpx;
+}
+.circleCard .container .avatarSection {
+  margin-top: -56rpx;
+}
+.circleCard .container .avatarSection .avatarImgBox {
+  width: 112rpx;
+  height: 112rpx;
+  position: relative;
+}
+.circleCard .container .avatarSection .avatarImgBox .avatarImg {
+  border-radius: 20rpx;
+  width: 100%;
+  height: 100%;
+}
+.circleCard .container .avatarSection .avatarImgBox .authenticationImg {
+  width: 24rpx;
+  height: 24rpx;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.circleCard .container .title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+  line-height: 70rpx;
+}
+.circleCard .container .cardInfo {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+.circleCard .container .cardInfo .cardInfo-left {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.circleCard .container .cardInfo .cardInfo-left .num {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-right: 8rpx;
+}
+.circleCard .container .cardInfo .cardInfo-left .text {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #666666;
+}
+.circleCard .container .cardInfo .cardInfo-left .cardInfo-left-line {
+  height: 20rpx;
+  border-left: 1rpx solid #EDEDED;
+  margin: 0 24rpx;
+}
+.circleCard .container .cardInfo .cardInfo-right {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+          justify-content: flex-end;
+}
+.circleCard .container .cardInfo .cardInfo-right image {
+  width: 34rpx;
+  height: 34rpx;
+}
+.circleCard .container .cardInfo .cardInfo-right text {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #999999;
+}
+.circleCard .container .boxShadow {
+  box-shadow: 0px 0px 4rpx 0px #cccccc;
+  padding: 24rpx 40rpx;
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #666666;
+  margin: 40rpx 0;
+}
+.circleCard .container .list-item {
+  padding: 32rpx 0rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+}
+.circleCard .container .list-item .list-item-left {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.circleCard .container .list-item .list-item-left image {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 16rpx;
+}
+.circleCard .container .list-item .list-item-right {
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #666666;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.circleCard .container .list-item .list-item-right image {
+  width: 16rpx;
+  height: 44rpx;
+  margin-left: 16rpx;
+}
+.circleCard .container .introduce {
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #666666;
+  line-height: 56rpx;
+}
+.circleCard .container .noContent {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+}
+.circleCard .container .noContent image {
+  width: 280rpx;
+  height: 180rpx;
+}
+.circleCard .container .noContent view {
+  font-size: 28rpx;
+  font-weight: 400;
+  color: #B3B3B3;
+  margin: 46rpx 0 32rpx 0;
+}
+.circleCard .container .member-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: auto;
+  width: auto;
+  grid-gap: 28rpx;
+  margin: auto;
+}
+.circleCard .container .member-list .member-list-item {
+  width: 92rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.circleCard .container .member-list .member-list-item image {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  margin-bottom: 10rpx;
+}
+.circleCard .container .member-list .member-list-item text {
+  width: 92rpx;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.circleCard .bottomBox {
+  background-color: #FFFFFF;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  height: 112rpx;
+  box-shadow: 0rpx 6rpx 12rpx rgba(0, 0, 0, 0.16);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.circleCard .bottomBox .share {
+  background-color: #eeeeee !important;
+}
+.circleCard .bottomBox uni-button:first-child {
+  border: 2rpx solid #1676FF;
+  background-color: #FFFFFF;
+  color: #1676FF;
+}
+.circleCard .bottomBox uni-button {
+  width: 320rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 40rpx;
+}
+

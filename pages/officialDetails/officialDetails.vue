@@ -121,8 +121,6 @@
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
 				},
-				parCurrent: 1, //父级当前页
-				childCurrent: 1, //子级当前页
 				id: null, //资讯id
 				detail: {},
 				//评论列表
@@ -140,7 +138,7 @@
 
 			// 請求到文章详情
 			uni.request({
-				url: '/api/cms/open/official_details', 
+				url: '/api/cms/open/official_details',
 				data: {
 					officialNewsId: option.id
 				},
@@ -197,11 +195,34 @@
 							}
 						}))
 						console.log('评论列表', this.commentData)
+						this.getReplyList(this.commentData.records)
 					}
 				})
 			}
 		},
 		methods: {
+			// 获取单评论回复
+			getReplyList(arr){
+				// 遍历父级评论数组
+				arr.forEach((item) => {
+					console.log('item', item)
+					uni.request({
+						url: '/api/cms/common_comment/reply_page',
+						header: {
+							"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						},
+						data: {
+							commentId: item.commentId, //评论ID
+							size: 1,
+							current:1
+						},
+						success: res => {
+							console.log('单回复列表', res)
+							item.replyVO.records = res.data.data.data.records
+						}
+					})
+				})
+			},
 			// 获取评论列表
 			getCommentList() {
 				uni.request({
@@ -211,7 +232,6 @@
 					},
 					data: {
 						dataId: this.id, //数据ID
-						// current: this.parCurrent, //当前页
 						current: 1, //当前页
 					},
 					success: (res) => {
@@ -225,6 +245,8 @@
 						}
 						this.commentData = res.data.data.data
 						console.log('评论列表', this.commentData)
+						// 获取单评论回复
+						this.getReplyList(this.commentData.records)
 					}
 				})
 

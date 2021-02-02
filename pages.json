@@ -3,22 +3,22 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "超级app",
+				"navigationBarTitleText": "加载...",
 				"titleNView": false
 			}
 		}, {
-			"path": "pages/advisoryDetails/advisoryDetails",//新闻详情
+			"path": "pages/advisoryDetails/advisoryDetails", //新闻详情
 			"style": {
 				"titleNView": false,
-				"onReachBottomDistance": 0
+				"onReachBottomDistance": 0,
 				// "backgroundColor": "#FFFFFF"
-				// "navigationBarTitleText": "城市咨询",
+				"navigationBarTitleText": "资讯详情"
 			}
 		}, {
-			"path": "pages/officialDetails/officialDetails",//广告详情
+			"path": "pages/officialDetails/officialDetails", //广告详情
 			"style": {
-				"titleNView": false
-				// "navigationBarTitleText": "官方咨询",
+				"titleNView": false,
+				"navigationBarTitleText": "资讯详情"
 				// "enablePullDownRefresh": false
 			}
 
@@ -26,14 +26,15 @@
 			"path": "pages/404/404",
 			"style": {
 				"titleNView": false,
-				"navigationBarTitleText": "404",
-				"enablePullDownRefresh": false
+				"navigationBarTitleText": "404"
+				// "enablePullDownRefresh": false,
 			}
 
 		}, {
-			"path": "pages/circleCard/circleCard",//圈子名片
+			"path": "pages/circleCard/circleCard", //圈子名片
 			"style": {
-				"titleNView": false
+				"titleNView": false,
+				"navigationBarTitleText": "圈子名片"
 			}
 
 		}

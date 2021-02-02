@@ -52,8 +52,6 @@
 					</view>
 
 					<!-- 二级评论 -->
-					<!-- <view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
-					 :key='i2'> -->
 					<view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
 					 :key='i2'>
 						<view class="second-comment-avatar">
@@ -77,7 +75,7 @@
 						</view>
 					</view>
 					<!-- 展开更多 -->
-					<view v-if="!item.replyVO.records" class="more" @tap='handleShowMore(i)'>
+					<view v-if="item.replyVO.total>1" class="more" @tap='handleShowMore(item)'>
 						展开更多回复
 					</view>
 				</view>
@@ -120,8 +118,6 @@
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
 				},
-				parCurrent: 1, //父级当前页
-				childCurrent: 1, //子级当前页
 				id: null, //资讯id
 				detail: {},
 				//评论列表
@@ -136,14 +132,12 @@
 		},
 		onLoad(option) {
 			this.id = option.id
-
 			// 請求到文章详情
 			uni.request({
-				url: '/api/cms/open/news_details', //仅为示例，并非真实接口地址。
+				url: '/api/cms/open/news_details',
 				data: {
 					newsId: option.id
 				},
-
 				success: (res) => {
 					console.log('res', res)
 					if (res.data.code !== 0) {
@@ -155,8 +149,6 @@
 					console.log('detail', this.detail)
 				}
 			});
-			// this.getReplyList()
-
 			this.getCommentList()
 		},
 		onReachBottom() {
@@ -175,7 +167,7 @@
 					success: (res) => {
 						console.log('评论列表res', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '获取评论列表失败',
 								duration: 1500,
 								icon: "none",
@@ -187,17 +179,37 @@
 						} else {
 							this.pinglunPageStatus = 'noMore'
 						}
-						this.commentData.records = this.commentData.records.concat(res.data.data.data.records.map(item => {
-							return {
-								...item,
-							}
-						}))
+
+						this.commentData.records = this.commentData.records.concat(res.data.data.data.records)
 						console.log('评论列表', this.commentData)
+						this.getReplyList(this.commentData.records)
 					}
 				})
 			}
 		},
 		methods: {
+			// 获取单评论回复
+			getReplyList(arr) {
+				// 遍历父级评论数组
+				arr.forEach((item) => {
+					console.log('item', item)
+					uni.request({
+						url: '/api/cms/common_comment/reply_page',
+						header: {
+							"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						},
+						data: {
+							commentId: item.commentId, //评论ID
+							size: 1,
+							current: 1
+						},
+						success: res => {
+							console.log('单回复列表', res)
+							item.replyVO.records = res.data.data.data.records
+						}
+					})
+				})
+			},
 			// 获取评论列表
 			getCommentList() {
 				uni.request({
@@ -207,7 +219,6 @@
 					},
 					data: {
 						dataId: this.id, //数据ID
-						// current: this.parCurrent, //当前页
 						current: 1, //当前页
 					},
 					success: (res) => {
@@ -220,30 +231,12 @@
 							});
 						}
 						this.commentData = res.data.data.data
+						// 获取单评论回复
+						this.getReplyList(this.commentData.records)
 						console.log('评论列表', this.commentData)
 
-						// 遍历父级评论数组
-						this.commentData.records.forEach((item) => {
-							console.log('item', item)
-							uni.request({
-								url: '/api/cms/common_comment/reply_page',
-								header: {
-									"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
-								},
-								data: {
-									commentId: item.commentId, //评论ID
-								},
-								success: res => {
-									console.log('单回复列表', res)
-									item.replyVO.records = res.data.data.data.records
-								}
-							})
-
-						})
 					}
 				})
-
-
 			},
 			// 赞
 			handlePraise(item) {
@@ -371,8 +364,48 @@
 				console.log('底部点赞')
 			},
 			// 展开更多
-			handleShowMore(i) {
-				console.log(i)
+			handleShowMore(queryItem) {
+				console.log('queryItem',queryItem)
+				uni.request({
+					url: '/api/cms/common_comment/reply_page',
+					header: {
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+					},
+					data: {
+						commentId: queryItem.commentId, //评论ID
+						size: 5,
+						current: queryItem.replyVO.current+1
+					},
+					success: res => {
+						if (res.data.code !== 0) {
+							return uni.showToast({
+								title: '获取更多回复失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						console.log('更多', res)
+						
+						// 点击展开更多，将回复数据存入当条评论中
+						this.commentData.records.forEach(item=>{
+							
+							if(item.commentId === queryItem.commentId){
+								// console.log(item.replyVO.records.length)
+								if(item.replyVO.records.length===1){
+									item.replyVO.records = res.data.data.data.records
+									item.replyVO.current = res.data.data.data.current
+									
+								}else{
+									item.replyVO.records = [...item.replyVO.records,...res.data.data.data.records]
+								}
+								
+								// item.replyVO.records = [...item.replyVO.records,...res.data.data.data.records] 
+								// item.replyVO.records.concat(res.data.data.data.records)
+								// console.log('item',item)
+							}
+						})
+					}
+				})
 			}
 		}
 	}
@@ -425,7 +458,6 @@
 	}
 
 	.comment-box {
-		// height: 100%;
 		padding: 32rpx 32rpx 100rpx 32rpx;
 
 		.commentBar {
@@ -468,6 +500,7 @@
 				.first-comment-top {
 					display: flex;
 					align-items: center;
+					margin-bottom: 20rpx;
 
 					.imgBox {
 						width: 76rpx;

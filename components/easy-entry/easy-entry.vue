@@ -1,9 +1,9 @@
 <template>
 	<view class="easy_content" v-show="show">
 		<view class="easy_input-box" v-show="show" :style="{bottom: bottomHeihgt, background: theme}">
-			<input fixed auto-height="true" confirm-type='send' :focus="focused" :adjust-position="adjustPosition"
-			 :show-confirm-bar="showConfirmBar" cursor-spacing="0" class="easy_text" @confirm='checkContent' @focus="onFocus"
-			 @blur="onBlur" placeholder="爱评论的人运气都不错 ~" placeholder-class="easy_input_null" v-model="commentText">
+			<input fixed auto-height="true" confirm-type='send' :focus="focused" :show-confirm-bar="showConfirmBar"
+			 cursor-spacing="0" class="easy_text" @confirm='checkContent' @focus="onFocus" @blur="onBlur" placeholder="爱评论的人运气都不错 ~"
+			 placeholder-class="easy_input_null" v-model="commentText">
 			</input>
 		</view>
 	</view>
@@ -14,7 +14,7 @@
 		props: {
 			theme: {
 				type: String,
-				default: '#111'
+				default: '#111111'
 			}
 		},
 		data() {
@@ -22,7 +22,7 @@
 				commentText: '', //评论内容
 				show: false, //控制输入框显示
 				focused: false, //获取焦点
-				adjustPosition: false, //键盘弹起时，是否自动上推页面
+				// adjustPosition: false, //键盘弹起时，是否自动上推页面
 				showConfirmBar: false, //是否显示键盘上方带有”完成“按钮那一栏
 				bottomHeihgt: 0,
 			}
@@ -47,6 +47,7 @@
 			},
 			// 输入框聚焦时触发，event.detail = { value, height }，height 为键盘高度
 			onFocus(e) {
+				console.log(e)
 				const {
 					height
 				} = e.detail
