@@ -128,11 +128,18 @@
 				commentId: '', //被回复的评论id
 				isZan: false, //是否被赞
 				pinglunPageStatus: 'more', //加载更多评论显示效果
+
+				promise: null,
 			};
+		},
+
+		created() {
+			window.androidRst = this.androidRst
+			console.log(androidRst)
 		},
 		onLoad(option) {
 			this.id = option.id
-			// 請求到文章详情
+			// 文章详情
 			uni.request({
 				url: '/api/cms/open/news_details',
 				data: {
@@ -158,7 +165,7 @@
 				uni.request({
 					url: '/api/cms/open/news_comment_page',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					data: {
 						dataId: this.id, //数据ID
@@ -188,6 +195,10 @@
 			}
 		},
 		methods: {
+			androidRst(res) {
+				alert('原生传过来的数据:' + res.token)
+			},
+
 			// 获取单评论回复
 			getReplyList(arr) {
 				// 遍历父级评论数组
@@ -196,7 +207,7 @@
 					uni.request({
 						url: '/api/cms/common_comment/reply_page',
 						header: {
-							"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+							"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 						},
 						data: {
 							commentId: item.commentId, //评论ID
@@ -215,7 +226,7 @@
 				uni.request({
 					url: '/api/cms/open/news_comment_page',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					data: {
 						dataId: this.id, //数据ID
@@ -263,44 +274,59 @@
 			},
 			// 发送咨询的评论
 			sendConsultComment(content) {
-				console.log('咨询的评论', content)
-				uni.request({
-					url: '/api/cms/common_comment/create',
-					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
-					},
-					method: "POST",
-					data: {
-						content: content, //评论内容
-						dataId: this.id, //数据ID
-						type: 2, //数据类型 1-官方发布 2-热门新闻
-					},
-					success: (res) => {
-						console.log('发表评论', res)
-						if (res.data.code !== 0) {
-							return uni.showToast({
-								title: '评论发布失败',
-								duration: 1500,
-								icon: "none",
-							});
-						}
-						uni.showToast({
-							title: '评论已发布',
-							duration: 1500,
-							icon: "none",
-						});
-						// 刷新评论
-						this.getCommentList()
-					}
-				})
+				window.android.invoke_native("getToken", '', "androidRst")
+				// console.log('咨询的评论', content)
+				// if (content == '') {
+				// 	return uni.showToast({
+				// 		title: '内容不能为空',
+				// 		duration: 1500,
+				// 		icon: "none",
+				// 	});
+				// }
+				// uni.request({
+				// 	url: '/api/cms/common_comment/create',
+				// 	header: {
+				// 		"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
+				// 	},
+				// 	method: "POST",
+				// 	data: {
+				// 		content: content, //评论内容
+				// 		dataId: this.id, //数据ID
+				// 		type: 2, //数据类型 1-官方发布 2-热门新闻
+				// 	},
+				// 	success: (res) => {
+				// 		console.log('发表评论', res)
+				// 		if (res.data.code !== 0) {
+				// 			return uni.showToast({
+				// 				title: '评论发布失败',
+				// 				duration: 1500,
+				// 				icon: "none",
+				// 			});
+				// 		}
+				// 		uni.showToast({
+				// 			title: '评论已发布',
+				// 			duration: 1500,
+				// 			icon: "none",
+				// 		});
+				// 		// 刷新评论
+				// 		this.getCommentList()
+				// 	}
+				// })
 			},
 			// 发送一级评论
 			sendFirstComment(content) {
 				console.log('一级评论', content)
+				if (content == '') {
+					return uni.showToast({
+						title: '内容不能为空',
+						duration: 1500,
+						icon: "none",
+					});
+				}
 				uni.request({
 					url: '/api/cms/common_comment/reply',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					method: "POST",
 					data: {
@@ -329,10 +355,17 @@
 			// 发送二级评论
 			sendSecondComment(content) {
 				console.log('二级评论', content)
+				if (content == '') {
+					return uni.showToast({
+						title: '内容不能为空',
+						duration: 1500,
+						icon: "none",
+					});
+				}
 				uni.request({
 					url: '/api/cms/common_comment/reply',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					method: "POST",
 					data: {
@@ -369,7 +402,7 @@
 				uni.request({
 					url: '/api/cms/common_comment/reply_page',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					data: {
 						commentId: queryItem.commentId, //评论ID

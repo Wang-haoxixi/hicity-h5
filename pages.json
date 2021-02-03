@@ -38,7 +38,25 @@
 			}
 
 		}
-	],
+	    ,{
+            "path" : "pages/partnerRecruitment/partnerRecruitment",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "合伙人招募"
+            }
+            
+        }
+        ,{
+            "path" : "pages/joinUs/joinUs",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "加入我们"
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

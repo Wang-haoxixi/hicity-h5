@@ -75,7 +75,7 @@
 						</view>
 					</view>
 					<!-- 展开更多 -->
-					<view v-if="item.replyVO.records.length >0 && item.replyVO.current<=item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
+					<view v-if="item.replyVO.records.length >=1 && item.replyVO.current<=item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
 						展开更多回复
 					</view>
 				</view>
@@ -158,7 +158,7 @@
 				uni.request({
 					url: '/api/cms/open/official_comment_page',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					data: {
 						dataId: this.id, //数据ID
@@ -196,7 +196,7 @@
 					uni.request({
 						url: '/api/cms/common_comment/reply_page',
 						header: {
-							"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+							"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 						},
 						data: {
 							commentId: item.commentId, //评论ID
@@ -215,7 +215,7 @@
 				uni.request({
 					url: '/api/cms/open/official_comment_page',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					data: {
 						dataId: this.id, //数据ID
@@ -267,13 +267,13 @@
 				uni.request({
 					url: '/api/cms/common_comment/create',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					method: "POST",
 					data: {
 						content: content, //评论内容
 						dataId: this.id, //数据ID
-						type: 2, //数据类型 1-官方发布 2-热门新闻
+						type: 1, //数据类型 1-官方发布 2-热门新闻
 					},
 					success: (res) => {
 						console.log('发表评论', res)
@@ -300,7 +300,7 @@
 				uni.request({
 					url: '/api/cms/common_comment/reply',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					method: "POST",
 					data: {
@@ -332,7 +332,7 @@
 				uni.request({
 					url: '/api/cms/common_comment/reply',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					method: "POST",
 					data: {
@@ -369,7 +369,7 @@
 				uni.request({
 					url: '/api/cms/common_comment/reply_page',
 					header: {
-						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+						"Authorization": 'Bearer ' + 'd472cd38-924b-4466-bab6-77d58dc722f7' //自定义请求头信息
 					},
 					data: {
 						commentId: queryItem.commentId, //评论ID
