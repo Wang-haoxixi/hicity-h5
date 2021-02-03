@@ -5,7 +5,7 @@
 		<view class="detail-box">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{detail.createTime}}</view>
-			<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 
@@ -52,8 +52,6 @@
 					</view>
 
 					<!-- 二级评论 -->
-					<!-- <view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
-					 :key='i2'> -->
 					<view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
 					 :key='i2'>
 						<view class="second-comment-avatar">
@@ -77,12 +75,11 @@
 						</view>
 					</view>
 					<!-- 展开更多 -->
-					<view v-if="!item.replyVO.records" class="more" @tap='handleShowMore(i)'>
+					<view v-if="item.replyVO.records.length >0 && item.replyVO.current<=item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
 						展开更多回复
 					</view>
 				</view>
 			</view>
-			<!-- 加载更多 -->
 			<uni-load-more :iconSize='18' v-if="commentData.records.length>10" :status="pinglunPageStatus"></uni-load-more>
 		</view>
 
@@ -135,14 +132,12 @@
 		},
 		onLoad(option) {
 			this.id = option.id
-
 			// 請求到文章详情
 			uni.request({
 				url: '/api/cms/open/official_details',
 				data: {
 					officialNewsId: option.id
 				},
-
 				success: (res) => {
 					console.log('res', res)
 					if (res.data.code !== 0) {
@@ -154,15 +149,10 @@
 					console.log('detail', this.detail)
 				}
 			});
-			// this.getReplyList()
-
 			this.getCommentList()
-
-
-
 		},
 		onReachBottom() {
-			console.log('触底`~')
+			console.log('触底 ~')
 			if (this.commentData.current < this.commentData.pages) {
 				this.pinglunPageStatus = 'loading'
 				uni.request({
@@ -177,7 +167,7 @@
 					success: (res) => {
 						console.log('评论列表res', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '获取评论列表失败',
 								duration: 1500,
 								icon: "none",
@@ -189,11 +179,8 @@
 						} else {
 							this.pinglunPageStatus = 'noMore'
 						}
-						this.commentData.records = this.commentData.records.concat(res.data.data.data.records.map(item => {
-							return {
-								...item,
-							}
-						}))
+
+						this.commentData.records = this.commentData.records.concat(res.data.data.data.records)
 						console.log('评论列表', this.commentData)
 						this.getReplyList(this.commentData.records)
 					}
@@ -202,7 +189,7 @@
 		},
 		methods: {
 			// 获取单评论回复
-			getReplyList(arr){
+			getReplyList(arr) {
 				// 遍历父级评论数组
 				arr.forEach((item) => {
 					console.log('item', item)
@@ -214,7 +201,7 @@
 						data: {
 							commentId: item.commentId, //评论ID
 							size: 1,
-							current:1
+							current: 1
 						},
 						success: res => {
 							console.log('单回复列表', res)
@@ -237,20 +224,19 @@
 					success: (res) => {
 						console.log('评论列表res', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '获取评论列表失败',
 								duration: 1500,
 								icon: "none",
 							});
 						}
 						this.commentData = res.data.data.data
-						console.log('评论列表', this.commentData)
 						// 获取单评论回复
 						this.getReplyList(this.commentData.records)
+						console.log('评论列表', this.commentData)
+
 					}
 				})
-
-
 			},
 			// 赞
 			handlePraise(item) {
@@ -287,12 +273,12 @@
 					data: {
 						content: content, //评论内容
 						dataId: this.id, //数据ID
-						type: 1, //数据类型 1-官方发布 2-热门新闻
+						type: 2, //数据类型 1-官方发布 2-热门新闻
 					},
 					success: (res) => {
 						console.log('发表评论', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '评论发布失败',
 								duration: 1500,
 								icon: "none",
@@ -324,7 +310,7 @@
 					success: (res) => {
 						console.log('一级评论成功', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '你的回复发布失败',
 								duration: 1500,
 								icon: "none",
@@ -356,7 +342,7 @@
 					success: (res) => {
 						console.log('二级评论成功', res)
 						if (res.data.code !== 0) {
-							uni.showToast({
+							return uni.showToast({
 								title: '你的回复发布失败',
 								duration: 1500,
 								icon: "none",
@@ -378,8 +364,40 @@
 				console.log('底部点赞')
 			},
 			// 展开更多
-			handleShowMore(i) {
-				console.log(i)
+			handleShowMore(queryItem) {
+				console.log('queryItem', queryItem)
+				uni.request({
+					url: '/api/cms/common_comment/reply_page',
+					header: {
+						"Authorization": 'Bearer ' + '89ee04cd-5223-4481-bbf8-eef667b7c713' //自定义请求头信息
+					},
+					data: {
+						commentId: queryItem.commentId, //评论ID
+						size: 10,
+						current: queryItem.replyVO.current
+					},
+					success: res => {
+						if (res.data.code !== 0) {
+							return uni.showToast({
+								title: '获取更多回复失败',
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						// 点击展开更多，将回复数据存入当前评论中
+						this.commentData.records.forEach(item => {
+							if (item.commentId === queryItem.commentId) {
+								if (item.replyVO.records.length === 1) {
+									item.replyVO.records = res.data.data.data.records
+									item.replyVO.current += 1
+								} else if (item.replyVO.records.length > 1) {
+									item.replyVO.records = item.replyVO.records.concat(res.data.data.data.records)
+									item.replyVO.current += 1
+								}
+							}
+						})
+					}
+				})
 			}
 		}
 	}
@@ -432,7 +450,6 @@
 	}
 
 	.comment-box {
-		// height: 100%;
 		padding: 32rpx 32rpx 100rpx 32rpx;
 
 		.commentBar {
@@ -475,6 +492,7 @@
 				.first-comment-top {
 					display: flex;
 					align-items: center;
+					margin-bottom: 20rpx;
 
 					.imgBox {
 						width: 76rpx;

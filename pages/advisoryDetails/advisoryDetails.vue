@@ -75,7 +75,7 @@
 						</view>
 					</view>
 					<!-- 展开更多 -->
-					<view v-if="item.replyVO.total>1" class="more" @tap='handleShowMore(item)'>
+					<view v-if="item.replyVO.records.length >0 && item.replyVO.current<=item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
 						展开更多回复
 					</view>
 				</view>
@@ -365,7 +365,7 @@
 			},
 			// 展开更多
 			handleShowMore(queryItem) {
-				console.log('queryItem',queryItem)
+				console.log('queryItem', queryItem)
 				uni.request({
 					url: '/api/cms/common_comment/reply_page',
 					header: {
@@ -373,8 +373,8 @@
 					},
 					data: {
 						commentId: queryItem.commentId, //评论ID
-						size: 5,
-						current: queryItem.replyVO.current+1
+						size: 10,
+						current: queryItem.replyVO.current
 					},
 					success: res => {
 						if (res.data.code !== 0) {
@@ -384,24 +384,16 @@
 								icon: "none",
 							});
 						}
-						console.log('更多', res)
-						
-						// 点击展开更多，将回复数据存入当条评论中
-						this.commentData.records.forEach(item=>{
-							
-							if(item.commentId === queryItem.commentId){
-								// console.log(item.replyVO.records.length)
-								if(item.replyVO.records.length===1){
+						// 点击展开更多，将回复数据存入当前评论中
+						this.commentData.records.forEach(item => {
+							if (item.commentId === queryItem.commentId) {
+								if (item.replyVO.records.length === 1) {
 									item.replyVO.records = res.data.data.data.records
-									item.replyVO.current = res.data.data.data.current
-									
-								}else{
-									item.replyVO.records = [...item.replyVO.records,...res.data.data.data.records]
+									item.replyVO.current += 1
+								} else if (item.replyVO.records.length > 1) {
+									item.replyVO.records = item.replyVO.records.concat(res.data.data.data.records)
+									item.replyVO.current += 1
 								}
-								
-								// item.replyVO.records = [...item.replyVO.records,...res.data.data.data.records] 
-								// item.replyVO.records.concat(res.data.data.data.records)
-								// console.log('item',item)
 							}
 						})
 					}

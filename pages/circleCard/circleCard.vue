@@ -136,7 +136,7 @@
 	}
 </script>
 
-<style lang="less">
+<style lang="scss">
 	.circleCard {
 		.bgBox {
 			height: 408rpx;
