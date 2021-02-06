@@ -23,8 +23,10 @@
 				uni.navigateTo({
 				    url: '/pages/joinUs/joinUs'
 				});
-			}
-		}
+			},
+			
+		},
+		
 	}
 </script>
 

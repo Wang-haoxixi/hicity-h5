@@ -15,6 +15,10 @@
 			theme: {
 				type: String,
 				default: '#111111'
+			},
+			type:{
+				type: String,
+				default: '1'
 			}
 		},
 		data() {
@@ -61,7 +65,7 @@
 			// 回车发送
 			checkContent() {
 				// if (this.isEmptyComment) return
-				this.$emit("sendText", this.commentText) //第一个参数评论内容，第二个评论id
+				this.$emit("sendText", this.commentText,this.type) 
 				this.focused = false
 				this.show = false
 			}
