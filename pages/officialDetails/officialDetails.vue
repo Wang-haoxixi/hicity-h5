@@ -1,9 +1,17 @@
 <template>
 	<!-- 热门咨询详情 -->
 	<view class="comment">
+		
+		<!-- 评论当前页咨询 -->
+		<easy-entry ref="commentConsult" @sendText="sendConsultComment" type="commentDetails" theme="#ffffff"></easy-entry>
+		<!-- 一级评论输入框 -->
+		<easy-entry ref="commentFirst" @sendText="sendFirstComment" type="commentFirst" theme="#ffffff"></easy-entry>
+		<!-- 二级评论输入框 -->
+		<easy-entry ref="commentSecond" @sendText="sendSecondComment" type="commentSecond" theme="#ffffff"></easy-entry>
+		
 		<!-- 详情内容 -->
 		<view class="detail-box" v-if="detail">
-			<view class="title">{{detail.title}}</view>
+			<view class="title">{{detail.officialNewsName}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
 			<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
@@ -22,12 +30,6 @@
 				</view>
 			</view>
 
-			<!-- 评论当前页咨询 -->
-			<easy-entry ref="commentConsult" @sendText="sendConsultComment" type="commentDetails" theme="#ffffff"></easy-entry>
-			<!-- 一级评论输入框 -->
-			<easy-entry ref="commentFirst" @sendText="sendFirstComment" type="commentFirst" theme="#ffffff"></easy-entry>
-			<!-- 二级评论输入框 -->
-			<easy-entry ref="commentSecond" @sendText="sendSecondComment" type="commentSecond" theme="#ffffff"></easy-entry>
 			<view class="commentBody" v-if="!commentData.total==0">
 
 				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
@@ -102,7 +104,7 @@
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox">
 			<view class="inpBox">
-				<input @tap="onEntry()" class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
+				<input @tap="onEntry()" disabled class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
 			</view>
 			<view class="zan-pinglun">
 				<view @tap='bottomGood()'>
@@ -194,7 +196,7 @@
 			if (this.commentData.current < this.commentData.pages) {
 				this.pinglunPageStatus = 'loading'
 				uni.request({
-					url: '/api/cms/open/news_comment_page',
+					url: '/api/cms/open/official_comment_page',
 					data: {
 						dataId: this.id, //数据ID
 						current: this.commentData.current + 1, //当前页
@@ -222,6 +224,7 @@
 		methods: {
 			// 评论详情
 			comDetail() {
+				console.log(111111)
 				if (this.contentD == '') {
 					return uni.showToast({
 						title: '内容不能为空',
@@ -232,7 +235,7 @@
 				uni.request({
 					url: '/api/cms/common_comment/create',
 					header: {
-						// "Authorization": 'Bearer ' + '7b9bb3b6-2f7c-4aff-9275-1f9ec2c83d84'
+						// "Authorization": 'Bearer ' + '8ffa911f-5f15-4c5f-9af4-33abc10fd1be'
 						"Authorization": 'Bearer ' + this.tk
 					},
 					method: "POST",
@@ -255,13 +258,13 @@
 									icon: "none",
 								});
 							}
-							// 刷新评论
-							this.getCommentList()
 							uni.showToast({
 								title: '您已发布评论',
 								duration: 1500,
 								icon: "none",
 							});
+							// 刷新评论
+							this.getCommentList()
 						} else if (res.statusCode == 401) {
 							console.log('tk过期..')
 							window.android.invoke_native("goLogin", null, "androidRst")
@@ -387,7 +390,7 @@
 			gettime,
 			// 获取更多
 			showMore() {
-				
+
 				this.replyVOCurrent += 1
 				// console.log('queryItem', queryItem)
 				let that = this;
@@ -469,7 +472,7 @@
 			// 获取评论列表
 			getCommentList() {
 				uni.request({
-					url: '/api/cms/open/news_comment_page',
+					url: '/api/cms/open/official_comment_page',
 					data: {
 						dataId: this.id, //数据ID
 						current: 1, //当前页
@@ -484,7 +487,7 @@
 							});
 						}
 						this.commentData = res.data.data.data
-						console.log('commentData', commentData)
+						// console.log('commentData', commentData)
 					}
 				})
 			},
@@ -552,6 +555,8 @@
 
 	.comment {
 		height: 100%;
+		// position: relative;
+		// z-index: 999;
 	}
 
 	.noData {

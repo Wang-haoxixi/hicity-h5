@@ -1,6 +1,14 @@
 <template>
 	<!-- 热门咨询详情 -->
 	<view class="comment">
+		
+		<!-- 评论当前页咨询 -->
+		<easy-entry ref="commentConsult" @sendText="sendConsultComment" type="commentDetails" theme="#ffffff"></easy-entry>
+		<!-- 一级评论输入框 -->
+		<easy-entry ref="commentFirst" @sendText="sendFirstComment" type="commentFirst" theme="#ffffff"></easy-entry>
+		<!-- 二级评论输入框 -->
+		<easy-entry ref="commentSecond" @sendText="sendSecondComment" type="commentSecond" theme="#ffffff"></easy-entry>
+		
 		<!-- 详情内容 -->
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
@@ -21,13 +29,7 @@
 					<text class="commentTitle">全部评论</text><text>({{commentData.total}})</text>
 				</view>
 			</view>
-
-			<!-- 评论当前页咨询 -->
-			<easy-entry ref="commentConsult" @sendText="sendConsultComment" type="commentDetails" theme="#ffffff"></easy-entry>
-			<!-- 一级评论输入框 -->
-			<easy-entry ref="commentFirst" @sendText="sendFirstComment" type="commentFirst" theme="#ffffff"></easy-entry>
-			<!-- 二级评论输入框 -->
-			<easy-entry ref="commentSecond" @sendText="sendSecondComment" type="commentSecond" theme="#ffffff"></easy-entry>
+			
 			<view class="commentBody" v-if="!commentData.total==0">
 
 				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
@@ -102,7 +104,7 @@
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox">
 			<view class="inpBox">
-				<input @tap="onEntry()" class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
+				<input @tap="onEntry()" disabled class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
 			</view>
 			<view class="zan-pinglun">
 				<view @tap='bottomGood()'>
@@ -255,13 +257,13 @@
 									icon: "none",
 								});
 							}
-							// 刷新评论
-							this.getCommentList()
 							uni.showToast({
 								title: '您已发布评论',
 								duration: 1500,
 								icon: "none",
 							});
+							// 刷新评论
+							this.getCommentList()
 						} else if (res.statusCode == 401) {
 							console.log('tk过期..')
 							window.android.invoke_native("goLogin", null, "androidRst")

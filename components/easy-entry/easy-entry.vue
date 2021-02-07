@@ -5,18 +5,23 @@
 			 cursor-spacing="0" class="easy_text" @confirm='checkContent' @focus="onFocus" @blur="onBlur" placeholder="爱评论的人运气都不错 ~"
 			 placeholder-class="easy_input_null" v-model="commentText">
 			</input>
+			<view @tap.stop="checkContent" class="easy_submit" style="background-color: #FFFFFF;" :class="isEmptyComment ? 'easy-no-valid' : ''">发送</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	const EASY_ENTRY = 'easy-entry'
+	// const EMIT_NAME = 'sendText'
+	
 	export default {
+		name: EASY_ENTRY,
 		props: {
 			theme: {
 				type: String,
 				default: '#111111'
 			},
-			type:{
+			type: {
 				type: String,
 				default: '1'
 			}
@@ -60,12 +65,17 @@
 			//输入框失去焦点时触发
 			onBlur(e) {
 				this.focused = false
-				this.show = false
+				// this.show = false
+			},
+			closeShow(){
+				// this.focused = false
+				// this.show = false
 			},
 			// 回车发送
 			checkContent() {
+				console.log("111111")
 				// if (this.isEmptyComment) return
-				this.$emit("sendText", this.commentText,this.type) 
+				this.$emit("sendText", this.commentText, this.type)
 				this.focused = false
 				this.show = false
 			}
@@ -82,6 +92,7 @@
 		bottom: 0;
 		z-index: 10000;
 		background-color: rgba(0, 0, 0, 0.2);
+
 	}
 
 	.easy_input-box {
@@ -95,9 +106,12 @@
 		width: 100%;
 		padding: 20rpx 12rpx;
 		background: #111;
+		display: flex;
+		align-items: center;
 	}
 
 	.easy_input-box .easy_text {
+		padding: 10rpx;
 		box-sizing: border-box;
 		background: #F7F7F7;
 		border-radius: 8rpx;
