@@ -1,14 +1,6 @@
 <template>
 	<!-- 热门咨询详情 -->
 	<view class="comment">
-		
-		<!-- 评论当前页咨询 -->
-		<easy-entry ref="commentConsult" @sendText="sendConsultComment" type="commentDetails" theme="#ffffff"></easy-entry>
-		<!-- 一级评论输入框 -->
-		<easy-entry ref="commentFirst" @sendText="sendFirstComment" type="commentFirst" theme="#ffffff"></easy-entry>
-		<!-- 二级评论输入框 -->
-		<easy-entry ref="commentSecond" @sendText="sendSecondComment" type="commentSecond" theme="#ffffff"></easy-entry>
-		
 		<!-- 详情内容 -->
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
@@ -29,12 +21,12 @@
 					<text class="commentTitle">全部评论</text><text>({{commentData.total}})</text>
 				</view>
 			</view>
-			
+
 			<view class="commentBody" v-if="!commentData.total==0">
 
 				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
 					<!-- 一级评论 -->
-					<view @tap='toCommentFirst(item.commentId)'>
+					<view @tap="tapCommentFirst({id:item.commentId,type:'commentFirst'})">
 						<view class="first-comment-top">
 							<view class="imgBox">
 								<image :src="item.createByAvatar"></image>
@@ -58,7 +50,7 @@
 					</view>
 
 					<!-- 二级评论 -->
-					<view @tap='toCommentSecond(item2.commentId)' class="second-comment" v-for="(item2,i2) in item.replyVO.records"
+					<view @tap="tapCommentSecond({id:item2.commentId,type:'commentSecond'})" class="second-comment" v-for="(item2,i2) in item.replyVO.records"
 					 :key='i2'>
 						<view class="second-comment-avatar">
 							<image :src="item2.createAvatar"></image>
@@ -101,22 +93,29 @@
 
 		</view>
 
+		<!-- 背景蒙层 -->
+		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox">
 			<view class="inpBox">
-				<input @tap="onEntry()" disabled class="uni-input" placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
+				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
+				 placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
 			</view>
-			<view class="zan-pinglun">
+			<view class="zan-pinglun" v-show="!isShowBg">
 				<view @tap='bottomGood()'>
 					<image src="../../static/zan.png" class="img"></image>
 					<text>312</text>
 				</view>
-				<view @tap='onEntry()'>
+				<view @tap="tapInput({type:'commentDetails'})">
 					<image src="../../static/pinglun.png" class="img"></image>
 					<text>1233</text>
 				</view>
 			</view>
+			<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg" @tap.stop="sendbtn">
+				发送
+			</view>
 		</view>
+
 	</view>
 </template>
 
@@ -126,7 +125,6 @@
 	let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
 
 	import jyfParser from "@/components/jyf-Parser/jyf-parser";
-	import easyEntry from "@/components/easy-entry/easy-entry";
 	import uniLoadMore from "@/components/uni-load-more/uni-load-more.vue"
 	import {
 		gettime
@@ -134,11 +132,14 @@
 	export default {
 		components: {
 			jyfParser,
-			easyEntry,
 			uniLoadMore
 		},
 		data() {
 			return {
+				isShowBg: false, //输入框背景
+				input1: '',
+				msgType: null, //传给移动端的type值
+
 				tagStyle: {
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
@@ -224,6 +225,7 @@
 		methods: {
 			// 评论详情
 			comDetail() {
+				let that = this
 				if (this.contentD == '') {
 					return uni.showToast({
 						title: '内容不能为空',
@@ -234,7 +236,7 @@
 				uni.request({
 					url: '/api/cms/common_comment/create',
 					header: {
-						// "Authorization": 'Bearer ' + '7b9bb3b6-2f7c-4aff-9275-1f9ec2c83d84'
+						// "Authorization": 'Bearer ' + 'dee062e6-3bfe-40df-8225-7ffd784762d7'
 						"Authorization": 'Bearer ' + this.tk
 					},
 					method: "POST",
@@ -262,14 +264,24 @@
 								duration: 1500,
 								icon: "none",
 							});
+							
 							// 刷新评论
-							this.getCommentList()
+							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							console.log('tk过期..')
-							window.android.invoke_native("goLogin", null, "androidRst")
+							uni.showToast({
+								title: '登录过期',
+								duration: 1500,
+								icon: "none",
+							});
+							this.input1 = ''
+							this.isShowBg = false
+							setTimeout(() => {
+								window.android.invoke_native("goLogin", null, "androidRst")
+							}, 1500)
+
 						} else {
 							uni.showToast({
-								title: '请检查您的网路状态',
+								title: '请检查您的网络',
 								duration: 1500,
 								icon: "none",
 							});
@@ -279,6 +291,7 @@
 			},
 			// 一级回复
 			comFirst() {
+				let that = this
 				if (this.contentD == '') {
 					return uni.showToast({
 						title: '内容不能为空',
@@ -318,7 +331,7 @@
 								icon: "none",
 							});
 							// 刷新评论
-							this.getCommentList()
+							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							window.android.invoke_native("goLogin", null, "androidRst")
 						} else {
@@ -333,6 +346,7 @@
 			},
 			// 二级回复
 			comSecond() {
+				let that = this
 				if (this.contentD == '') {
 					return uni.showToast({
 						title: '内容不能为空',
@@ -372,7 +386,7 @@
 								icon: "none",
 							});
 							// 刷新评论
-							this.getCommentList()
+							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							window.android.invoke_native("goLogin", null, "androidRst")
 						} else {
@@ -461,6 +475,8 @@
 					this.comFirst()
 				} else if (res.resultType == "commentSecond") {
 					this.comSecond()
+				} else if (res.resultType == "showMore") {
+					this.showMore()
 				}
 			},
 			// ios的回调
@@ -508,42 +524,45 @@
 				this.isZan = !this.isZan
 				item.thumbNum += 1
 			},
-			// 唤起评论
-			onEntry() {
-				this.$refs.commentConsult.onEntry()
+			// 点击评论输入框
+			tapInput(opt) {
+				this.msgType = opt.type
+				this.isShowBg = true
+				this.$refs.inputFocus.focus = true
 			},
-			// 唤起一级评论
-			toCommentFirst(id) {
-				console.log('一级评论', id)
+			// 点击一级评论
+			tapCommentFirst(opt) {
+				this.msgType = opt.type
 				// 获取评论id
-				this.commentId = id
-				this.$refs.commentFirst.onEntry()
+				this.commentId = opt.id
+				this.isShowBg = true
+				this.$refs.inputFocus.focus = true
 			},
-			// 唤起二级评论
-			toCommentSecond(id) {
-				console.log('二级评论', id)
-				this.commentId = id
-				this.$refs.commentSecond.onEntry()
+			// 点击二级评论
+			tapCommentSecond(opt) {
+				this.msgType = opt.type
+				// 获取评论id
+				this.commentId = opt.id
+				this.isShowBg = true
+				this.$refs.inputFocus.focus = true
 			},
-
-			// 发送咨询的评论
-			sendConsultComment(content, type) {
-				this.contentD = content
-				this.handleToken(type)
-				// this.comDetail()
+			// 关闭背景
+			closeBg() {
+				this.isShowBg = false
+				this.$refs.inputFocus.focus = false
 			},
-			// 发送一级评论
-			sendFirstComment(content, type) {
-				this.contentD = content
-				this.handleToken(type)
-				// this.comFirst()
+			// 失去焦点时触发
+			inpBlur() {
+				this.contentD = this.input1
+				this.input1 = ''
+				this.$refs.inputFocus.focus = false
 			},
-			// 发送二级评论
-			sendSecondComment(content, type) {
-				this.contentD = content
-				this.handleToken(type)
+			// 发送
+			sendbtn() {
+				this.handleToken(this.msgType)
+				this.isShowBg = false
+				this.input1 = ''
 			},
-
 			// 底部点赞
 			bottomGood() {
 				console.log('底部点赞')
@@ -554,7 +573,16 @@
 				this.replyVOCurrent = queryItem.replyVO.current
 				this.parId = queryItem.commentId
 			}
-		}
+		},
+		onPageScroll(e) {
+			this.input1 = ''
+			this.isShowBg = false
+			this.$refs.inputFocus.focus = false
+		},
+		onHide(){
+			this.input1 = ''
+			this.isShowBg = false
+		},
 	}
 </script>
 
@@ -685,7 +713,7 @@
 						flex: 1;
 						display: flex;
 						flex-direction: column;
-						justify-content: center;
+						// justify-content: center;
 						margin-left: 20rpx;
 
 						.name {
@@ -698,6 +726,7 @@
 							font-size: 24rpx;
 							font-weight: 400;
 							color: #999999;
+							margin-top: 6rpx;
 						}
 					}
 
@@ -783,7 +812,15 @@
 				}
 			}
 		}
+	}
 
+	.inpBg {
+		background-color: rgba(0, 0, 0, 0.10);
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		left: 0;
+		top: 0;
 	}
 
 	.publishCommentBox {
@@ -799,12 +836,11 @@
 		.inpBox {
 			flex: 2;
 			display: flex;
-			// justify-content: flex-end;
 			align-items: center;
 
 			.uni-input {
 				box-sizing: border-box;
-				margin-left: 32rpx;
+				margin-left: 28rpx;
 				width: 100%;
 				height: 80rpx;
 				background-color: #F9F9F9;
@@ -817,6 +853,17 @@
 				font-weight: 400;
 				color: #999999;
 			}
+		}
+
+		.sendbox {
+			width: 120rpx;
+			line-height: 112rpx;
+			text-align: center;
+			font-size: 32rpx;
+		}
+
+		.activesend {
+			color: #1676FF;
 		}
 
 		.zan-pinglun {

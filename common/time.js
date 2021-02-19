@@ -4,7 +4,7 @@ const gettime = time => {
 	var hour = minute * 60
 	var day = hour * 24
 	var month = day * 30
-	var now = new Date().getTime()
+	var now = parseInt(new Date().getTime() / 1000 + 1) * 1000
 	//2020-11-24 00:00:02 如果time是这种格式，需要把“-”转换成 “/” str.replace(/-/g,"/"),兼容IOS安卓
 	var lastTime = new Date(time.replace(/-/g, "/")).getTime()
 	var diffValue = now - lastTime
@@ -26,7 +26,6 @@ const gettime = time => {
 	} else {
 		result = "刚刚"
 	}
-	// console.log(result)
 	return result
 }
 
