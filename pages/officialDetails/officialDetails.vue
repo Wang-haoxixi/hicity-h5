@@ -39,8 +39,12 @@
 									{{ gettime(item.createTime) }}
 								</view>
 							</view>
-							<view class="zan" @tap.stop='handlePraise(item)'>
-								<image :src="!isZan?'../../static/zan.png':'../../static/zanSelect.png'"></image>
+							<view class="zan" v-if="item.ifThumbsUp==0" @tap.stop='handlePraise(item)'>
+								<image src="../../static/icon-small-praise.png"></image>
+								<text>{{item.thumbNum}}</text>
+							</view>
+							<view class="zan-selected" v-else-if="item.ifThumbsUp==1" @tap.stop='handlePraise(item)'>
+								<image src="../../static/icon-small-praise-selected.png"></image>
 								<text>{{item.thumbNum}}</text>
 							</view>
 						</view>
@@ -74,13 +78,16 @@
 					</view>
 					<!-- 展开更多 -->
 					<view v-if="item.replyVO.total >5 && item.replyVO.current<item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
-						展开更多回复
+						展开{{item.replyVO.numberRemaining}}条回复
 					</view>
 				</view>
 			</view>
 
 			<view v-else class="noContent">
-				暂无评论
+				<image src="../../static/pic-no-comments.png"></image>
+				<view>
+					暂无评论
+				</view>
 			</view>
 
 			<!-- 加载更多 -->
@@ -96,19 +103,19 @@
 		<!-- 背景蒙层 -->
 		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
 		<!-- 底部发布评论部分 -->
-		<view class="publishCommentBox">
+		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
 			<view class="inpBox">
 				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
 				 placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
 			</view>
 			<view class="zan-pinglun" v-show="!isShowBg">
 				<view @tap='bottomGood()'>
-					<image src="../../static/zan.png" class="img"></image>
-					<text>312</text>
+					<image :src="detail.isLike?'../../static/icon-big-praise-selected.png':'../../static/icon-big-praise.png'" class="img"></image>
+					<text>{{detail.likesNum}}</text>
 				</view>
 				<view @tap="tapInput({type:'commentDetails'})">
 					<image src="../../static/pinglun.png" class="img"></image>
-					<text>1233</text>
+					<text>{{commentData.total}}</text>
 				</view>
 			</view>
 			<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg" @tap.stop="sendbtn">
@@ -139,7 +146,7 @@
 				isShowBg: false, //输入框背景
 				input1: '',
 				msgType: null, //传给移动端的type值
-
+				safebox: {},
 				tagStyle: {
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
@@ -152,15 +159,10 @@
 				},
 				comment: '',
 				commentId: '', //被回复的评论id
-				isZan: false, //是否被赞
 				pinglunPageStatus: 'more', //加载更多评论显示效果
-
 				promise: null,
-
 				tk: null,
-
 				contentD: null, //评论内容
-
 				replyVOCurrent: 1, //回复数据的当前页
 				parId: null, //被回复的评论
 			};
@@ -173,34 +175,22 @@
 		},
 		onLoad(option) {
 			this.id = option.id
-			// 文章详情
-			uni.request({
-				url: '/api/cms/open/official_details',
-				data: {
-					officialNewsId: option.id
-				},
-				success: (res) => {
-					console.log('res', res)
-					if (res.data.code !== 0) {
-						uni.redirectTo({
-							url: '../404/404'
-						});
-					}
-					this.detail = res.data.data.data
-					console.log('detail', this.detail)
-				}
-			});
-			this.getCommentList()
+			// this.getConsultDetail()
+			// this.getCommentList()
+			this.handleToken('getDetail')
+			this.handleToken('getList')
 		},
 		onReachBottom() {
 			console.log('触底 ~')
 			if (this.commentData.current < this.commentData.pages) {
 				this.pinglunPageStatus = 'loading'
 				uni.request({
-					url: '/api/cms/open/news_comment_page',
+					url: '/api/cms/common_comment/page',
 					data: {
 						dataId: this.id, //数据ID
 						current: this.commentData.current + 1, //当前页
+						type: 2,
+						maxId: this.maxId
 					},
 					success: (res) => {
 						console.log('评论列表res', res)
@@ -223,6 +213,29 @@
 			}
 		},
 		methods: {
+			getConsultDetail() {
+				// 获取咨询详情
+				uni.request({
+					header: {
+						// "Authorization": 'Bearer ' + 'dee062e6-3bfe-40df-8225-7ffd784762d7'
+						"Authorization": 'Bearer ' + this.tk
+					},
+					url: '/api/cms/open/official_details',
+					data: {
+						officialNewsId: this.id
+					},
+					success: (res) => {
+						console.log('res', res)
+						if (res.data.code !== 0) {
+							uni.redirectTo({
+								url: '../404/404'
+							});
+						}
+						this.detail = res.data.data.data
+						console.log('detail', this.detail)
+					}
+				});
+			},
 			// 评论详情
 			comDetail() {
 				let that = this
@@ -243,7 +256,7 @@
 					data: {
 						content: this.contentD, //评论内容
 						dataId: this.id, //数据ID
-						type: 2, //数据类型 1-官方发布 2-热门新闻
+						type: 1, //数据类型 1-官方发布 2-热门新闻
 					},
 					complete: (res) => {
 						// uni.showToast({
@@ -264,7 +277,7 @@
 								duration: 1500,
 								icon: "none",
 							});
-							
+
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
@@ -414,7 +427,8 @@
 					data: {
 						commentId: that.parId, //评论ID
 						size: 5,
-						current: that.replyVOCurrent
+						current: that.replyVOCurrent,
+						maxId: that.maxId
 					},
 					complete: (res) => {
 						// uni.showToast({
@@ -422,6 +436,7 @@
 						// 	duration: 20000,
 						// 	icon: "none",
 						// });
+						// console.log(res)
 
 						if (res.statusCode == 200) {
 							if (res.data.code !== 0) {
@@ -486,6 +501,8 @@
 				// 	icon: 'none',
 				// 	duration: 3000
 				// });
+				// token存本地
+				uni.setStorageSync('tok', res.token);
 				this.tk = res.token
 				if (res.type == "commentDetails") {
 					this.comDetail()
@@ -495,15 +512,34 @@
 					this.comSecond()
 				} else if (res.type == "showMore") {
 					this.showMore()
+				} else if (res.type == "getList") {
+					console.log('获取评论列表...')
+					// uni.showToast({
+					// 	title: '获取列表成功',
+					// 	icon: 'none',
+					// 	duration: 3000
+					// });
+					this.getCommentList()
+				} else if (res.type == 'getDetail') {
+					this.getConsultDetail()
+				} else if (res.type == 'praiseDetail') {
+					this.praiseDetail()
 				}
 			},
 			// 获取评论列表
 			getCommentList() {
 				uni.request({
-					url: '/api/cms/open/official_comment_page',
+					header: {
+						// "Authorization": 'Bearer ' + '8c20e131-1d0c-402c-8d36-45291cdea909'
+						"Authorization": 'Bearer ' + this.tk
+					},
+					// url: '/api/cms/open/news_comment_page',
+					url: '/api/cms/common_comment/page',
 					data: {
 						dataId: this.id, //数据ID
+						type: 1, // 1-官方发布 2-热门新闻 3-游记  4-热议
 						current: 1, //当前页
+						maxId: ''
 					},
 					success: (res) => {
 						console.log('评论列表res', res)
@@ -515,20 +551,60 @@
 							});
 						}
 						this.commentData = res.data.data.data
+						this.maxId = res.data.data.data.maxId
 					}
 				})
 			},
 			// 赞
 			handlePraise(item) {
 				console.log(item)
-				this.isZan = !this.isZan
-				item.thumbNum += 1
+				if (item.ifThumbsUp == 0) {
+					uni.request({
+						header: {
+							"Authorization": 'Bearer ' + this.tk
+						},
+						url: '/api/cms/thumbs_up/create',
+						method: "POST",
+						data: {
+							type: 2, //点赞类型(1: 游记点赞, 2: 评论点赞, 3: 热议点赞, 4: 热门新闻资讯点赞,  5: 官方发布资讯点赞)
+							dataId: item.commentId
+						},
+						success: (res) => {
+							console.log('咨询点赞', res)
+							if (res.data.code == 0) {
+								item.ifThumbsUp = 1
+								item.thumbNum += 1
+							}
+						}
+					})
+				} else {
+					uni.request({
+						header: {
+							"Authorization": 'Bearer ' + this.tk
+						},
+						url: '/api/cms/thumbs_up/cancel',
+						method: "POST",
+						data: {
+							type: 2,
+							dataId: item.commentId
+						},
+						success: (res) => {
+							console.log('咨询取消点赞', res)
+							if (res.data.code == 0) {
+								item.ifThumbsUp = 0
+								item.thumbNum -= 1
+							}
+						}
+					})
+				}
 			},
 			// 点击评论输入框
 			tapInput(opt) {
 				this.msgType = opt.type
 				this.isShowBg = true
-				this.$refs.inputFocus.focus = true
+				this.$nextTick(function() {
+					this.$refs.inputFocus.focus = true
+				})
 			},
 			// 点击一级评论
 			tapCommentFirst(opt) {
@@ -563,23 +639,70 @@
 				this.isShowBg = false
 				this.input1 = ''
 			},
+			praiseDetail() {
+				if (this.detail.isLike) {
+					uni.request({
+						header: {
+							"Authorization": 'Bearer ' + this.tk
+						},
+						url: '/api/cms/thumbs_up/cancel',
+						method: "POST",
+						data: {
+							type: 5,
+							dataId: this.id
+						},
+						success: (res) => {
+							console.log('咨询取消点赞', res)
+							if (res.data.code == 0) {
+								this.detail.isLike = false
+								// console.log(this.detail)
+								this.detail.likesNum -= 1
+							}
+						}
+					})
+				} else {
+					uni.request({
+						header: {
+							"Authorization": 'Bearer ' + this.tk
+						},
+						url: '/api/cms/thumbs_up/create',
+						method: "POST",
+						data: {
+							type: 5,
+							dataId: this.id
+						},
+						success: (res) => {
+							console.log('咨询点赞', res)
+							if (res.data.code == 0) {
+								this.detail.isLike = true
+								// console.log(this.detail)
+								this.detail.likesNum += 1
+							}
+						}
+					})
+				}
+			},
 			// 底部点赞
 			bottomGood() {
-				console.log('底部点赞')
+				this.handleToken('praiseDetail')
+				// this.praiseDetail()
 			},
 			// 展开更多
 			handleShowMore(queryItem) {
-				this.handleToken('showMore')
+				console.log(queryItem)
+				this.maxId = queryItem.replyVO.maxId
 				this.replyVOCurrent = queryItem.replyVO.current
 				this.parId = queryItem.commentId
+				this.handleToken('showMore')
+				// this.showMore()
 			}
 		},
 		onPageScroll(e) {
-			this.input1 = ''
-			this.isShowBg = false
-			this.$refs.inputFocus.focus = false
+			// this.input1 = ''
+			// this.isShowBg = false
+			// this.$refs.inputFocus.focus = false
 		},
-		onHide(){
+		onHide() {
 			this.input1 = ''
 			this.isShowBg = false
 		},
@@ -642,6 +765,7 @@
 
 	.comment-box {
 		padding: 32rpx 32rpx 100rpx 32rpx;
+		@extend %safe-bottom-box;
 
 		.commentBar {
 			height: 70rpx;
@@ -670,12 +794,21 @@
 		}
 
 		.noContent {
-			height: 200rpx;
-			width: 100%;
+			padding-top: 16rpx;
+			font-size: 28rpx;
+			font-weight: 400;
+			color: #999999;
 			text-align: center;
-			line-height: 200rpx;
-			font-size: 24rpx;
-			color: #CCCCCC;
+
+			>image {
+				width: 280rpx;
+				height: 180rpx;
+			}
+
+			>view {
+				padding-top: 48rpx;
+			}
+
 		}
 
 		.load-more {
@@ -730,6 +863,28 @@
 						}
 					}
 
+					.zan-selected {
+						width: 100rpx;
+						height: 48rpx;
+						border: 2rpx solid #1676FF;
+						border-radius: 40rpx;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+
+						>image {
+							width: 28rpx;
+							height: 28rpx;
+							margin-right: 6rpx;
+						}
+
+						>text {
+							font-size: 22rpx;
+							font-weight: 400;
+							color: #1676FF;
+						}
+					}
+
 					.zan {
 						width: 100rpx;
 						height: 48rpx;
@@ -749,6 +904,8 @@
 							font-size: 22rpx;
 							font-weight: 400;
 							color: #999999;
+							// width: 24rpx;
+							text-align: center;
 						}
 					}
 				}
@@ -821,6 +978,10 @@
 		position: fixed;
 		left: 0;
 		top: 0;
+	}
+
+	.safebox {
+		@extend %safe-bottom;
 	}
 
 	.publishCommentBox {

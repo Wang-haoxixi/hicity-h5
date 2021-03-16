@@ -43,7 +43,7 @@
 			if (that.getQueryVariable('type') == 'advisoryDetails') { //热门咨询详情
 				uni.redirectTo({
 					url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
-					// url: '../advisoryDetails/advisoryDetails?id=80'
+					// url: '../advisoryDetails/advisoryDetails?id=77'
 				});
 			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
