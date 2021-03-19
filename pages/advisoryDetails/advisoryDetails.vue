@@ -72,7 +72,7 @@
 								{{item2.content}}
 							</view>
 							<view class="time">
-								{{item2.createTime}}
+								{{gettime(item2.createTime)}}
 							</view>
 						</view>
 					</view>
@@ -97,7 +97,6 @@
 				<uni-load-more :contentText="{contentnomore:'- THE END -'}" :iconSize='18' v-if="commentData.records.length>0 && commentData.records.length<=10"
 				 status="noMore"></uni-load-more>
 			</view>
-
 		</view>
 
 		<!-- 背景蒙层 -->
@@ -175,13 +174,13 @@
 		},
 		onLoad(option) {
 			this.id = option.id
-			this.getConsultDetail()
-			this.getCommentList()
-			// this.handleToken('getDetail')
-			// this.handleToken('getList')
+			// this.handleToken('')//此处进详情便获取一次token值
+			// this.getConsultDetail()
+			// this.getCommentList()
+			this.handleToken('getDetail')
+			this.handleToken('getList')
 		},
 		onReachBottom() {
-			console.log('触底 ~')
 			if (this.commentData.current < this.commentData.pages) {
 				this.pinglunPageStatus = 'loading'
 				uni.request({
@@ -193,7 +192,6 @@
 						maxId: this.maxId
 					},
 					success: (res) => {
-						console.log('评论列表res', res)
 						if (res.data.code !== 0) {
 							return uni.showToast({
 								title: '获取评论列表失败',
@@ -214,6 +212,11 @@
 		},
 		methods: {
 			getConsultDetail() {
+				// uni.showToast({
+				// 	title: 'token:' + this.tk,//null
+				// 	icon: 'none',
+				// 	duration: 3000
+				// });
 				// 获取咨询详情
 				uni.request({
 					header: {
@@ -225,14 +228,16 @@
 						newsId: this.id
 					},
 					success: (res) => {
-						console.log('res', res)
+						// uni.showToast({
+						// 	title: JSON.stringify(res),
+						// 	icon: 'none'
+						// });
 						if (res.data.code !== 0) {
 							uni.redirectTo({
 								url: '../404/404'
 							});
 						}
 						this.detail = res.data.data.data
-						console.log('detail', this.detail)
 					}
 				});
 			},
@@ -282,14 +287,14 @@
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							uni.showToast({
-								title: '登录过期',
+								title: '请先登录',
 								duration: 1500,
 								icon: "none",
 							});
 							this.input1 = ''
 							this.isShowBg = false
 							setTimeout(() => {
-								window.android.invoke_native("goLogin", null, "androidRst")
+								return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 							}, 1500)
 
 						} else {
@@ -346,7 +351,7 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							window.android.invoke_native("goLogin", null, "androidRst")
+							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -401,7 +406,7 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							window.android.invoke_native("goLogin", null, "androidRst")
+							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -436,7 +441,6 @@
 						// 	duration: 20000,
 						// 	icon: "none",
 						// });
-						// console.log(res)
 
 						if (res.statusCode == 200) {
 							if (res.data.code !== 0) {
@@ -454,7 +458,7 @@
 								}
 							})
 						} else if (res.statusCode == 401) {
-							window.android.invoke_native("goLogin", null, "androidRst")
+							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -502,7 +506,7 @@
 				// 	duration: 3000
 				// });
 				// token存本地
-				uni.setStorageSync('tok', res.token);
+				// uni.setStorageSync('myToken', res.token);
 				this.tk = res.token
 				if (res.type == "commentDetails") {
 					this.comDetail()
@@ -513,12 +517,6 @@
 				} else if (res.type == "showMore") {
 					this.showMore()
 				} else if (res.type == "getList") {
-					console.log('获取评论列表...')
-					// uni.showToast({
-					// 	title: '获取列表成功',
-					// 	icon: 'none',
-					// 	duration: 3000
-					// });
 					this.getCommentList()
 				} else if (res.type == 'getDetail') {
 					this.getConsultDetail()
@@ -528,6 +526,11 @@
 			},
 			// 获取评论列表
 			getCommentList() {
+				// uni.showToast({
+				// 	title: 'token:' + this.token,
+				// 	icon: 'none',
+				// 	duration: 3000
+				// });
 				uni.request({
 					header: {
 						// "Authorization": 'Bearer ' + '8c20e131-1d0c-402c-8d36-45291cdea909'
@@ -542,7 +545,6 @@
 						maxId: ''
 					},
 					success: (res) => {
-						console.log('评论列表res', res)
 						if (res.data.code !== 0) {
 							return uni.showToast({
 								title: '获取评论列表失败',
@@ -555,10 +557,12 @@
 					}
 				})
 			},
-			// 赞
+			// 评论点赞
 			handlePraise(item) {
-				console.log(item)
-				if (item.ifThumbsUp == 0) {
+				// 此处为为登录状态
+				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				// 此处为已登录状态
+				if (item.ifThumbsUp == 0) {//未点赞
 					uni.request({
 						header: {
 							"Authorization": 'Bearer ' + this.tk
@@ -570,14 +574,13 @@
 							dataId: item.commentId
 						},
 						success: (res) => {
-							console.log('咨询点赞', res)
 							if (res.data.code == 0) {
 								item.ifThumbsUp = 1
 								item.thumbNum += 1
 							}
 						}
 					})
-				} else {
+				} else if(item.ifThumbsUp == 1){//已点赞
 					uni.request({
 						header: {
 							"Authorization": 'Bearer ' + this.tk
@@ -589,7 +592,6 @@
 							dataId: item.commentId
 						},
 						success: (res) => {
-							console.log('咨询取消点赞', res)
 							if (res.data.code == 0) {
 								item.ifThumbsUp = 0
 								item.thumbNum -= 1
@@ -640,7 +642,15 @@
 				this.input1 = ''
 			},
 			praiseDetail() {
-				if (this.detail.isLike) {
+				// uni.showToast({
+				// 	title: this.tk,
+				// 	icon: 'none',
+				// 	duration: 10000
+				// });
+				// 未登录状态下
+				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				// 已登录状态下
+				if (this.detail.isLike) {//已点赞
 					uni.request({
 						header: {
 							"Authorization": 'Bearer ' + this.tk
@@ -652,15 +662,18 @@
 							dataId: this.id
 						},
 						success: (res) => {
-							console.log('咨询取消点赞', res)
+							uni.showToast({
+								title: "已取消点赞",
+								icon: 'none',
+								duration: 10000
+							});
 							if (res.data.code == 0) {
 								this.detail.isLike = false
-								// console.log(this.detail)
 								this.detail.likesNum -= 1
 							}
 						}
 					})
-				} else {
+				} else {//未点赞
 					uni.request({
 						header: {
 							"Authorization": 'Bearer ' + this.tk
@@ -672,10 +685,13 @@
 							dataId: this.id
 						},
 						success: (res) => {
-							console.log('咨询点赞', res)
+							uni.showToast({
+								title: "点赞成功",
+								icon: 'none',
+								duration: 10000
+							});
 							if (res.data.code == 0) {
 								this.detail.isLike = true
-								// console.log(this.detail)
 								this.detail.likesNum += 1
 							}
 						}
@@ -684,12 +700,11 @@
 			},
 			// 底部点赞
 			bottomGood() {
-				this.handleToken('praiseDetail')
-				// this.praiseDetail()
+				// this.handleToken('praiseDetail')
+				this.praiseDetail()
 			},
 			// 展开更多
 			handleShowMore(queryItem) {
-				console.log(queryItem)
 				this.maxId = queryItem.replyVO.maxId
 				this.replyVOCurrent = queryItem.replyVO.current
 				this.parId = queryItem.commentId
@@ -878,9 +893,11 @@
 						}
 
 						>text {
+							width: 30rpx;
 							font-size: 22rpx;
 							font-weight: 400;
 							color: #1676FF;
+							text-align: center;
 						}
 					}
 
@@ -900,10 +917,10 @@
 						}
 
 						>text {
+							width: 30rpx;
 							font-size: 22rpx;
 							font-weight: 400;
 							color: #999999;
-							// width: 24rpx;
 							text-align: center;
 						}
 					}
@@ -923,7 +940,6 @@
 
 				.second-comment-avatar {
 					width: 48rpx;
-
 					image {
 						width: 48rpx;
 						height: 48rpx;
