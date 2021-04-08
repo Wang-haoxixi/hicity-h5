@@ -665,7 +665,7 @@
 							uni.showToast({
 								title: "已取消点赞",
 								icon: 'none',
-								duration: 10000
+								duration: 2000
 							});
 							if (res.data.code == 0) {
 								this.detail.isLike = false
@@ -681,14 +681,14 @@
 						url: '/api/cms/thumbs_up/create',
 						method: "POST",
 						data: {
-							type: 4,
+							type: 5,
 							dataId: this.id
 						},
 						success: (res) => {
 							uni.showToast({
 								title: "点赞成功",
 								icon: 'none',
-								duration: 10000
+								duration: 2000
 							});
 							if (res.data.code == 0) {
 								this.detail.isLike = true
