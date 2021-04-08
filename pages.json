@@ -56,6 +56,25 @@
             }
             
         }
+        ,{
+            "path" : "pages/agreement/agreement",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "超能城市APP用户服务协议",
+                "enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+            }
+        }
+        ,{
+            "path" : "pages/privacyClause/privacyClause",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "超能城市app隐私条款",
+                "enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

@@ -61,6 +61,14 @@
 				uni.redirectTo({
 					url: '../joinUs/joinUs'
 				});
+			} else if (that.getQueryVariable('type') == 'agreement') { //服务协议
+				uni.redirectTo({
+					url: '../agreement/agreement'
+				});
+			} else if (that.getQueryVariable('type') == 'privacy') { //隐私条款
+				uni.redirectTo({
+					url: '../privacyClause/privacyClause'
+				});
 			}
 		}
 	};
