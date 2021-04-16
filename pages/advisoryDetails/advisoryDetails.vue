@@ -92,10 +92,8 @@
 
 			<!-- 加载更多 -->
 			<view class="load-more">
-				<uni-load-more :contentText="{contentnomore:'- THE END -'}" :iconSize='18' v-if="commentData.records.length>10"
-				 :status="pinglunPageStatus"></uni-load-more>
-				<uni-load-more :contentText="{contentnomore:'- THE END -'}" :iconSize='18' v-if="commentData.records.length>0 && commentData.records.length<=10"
-				 status="noMore"></uni-load-more>
+				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '- THE END -'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
+				 </uni-load-more>
 			</view>
 		</view>
 
@@ -166,13 +164,10 @@
 				parId: null, //被回复的评论
 			};
 		},
-
-		created() {
+		onLoad(option) {
 			// androidRst getToken 方法挂window上
 			window.androidRst = this.androidRst
 			window.getIosToken = this.getIosToken
-		},
-		onLoad(option) {
 			this.id = option.id
 			// this.handleToken('')//此处进详情便获取一次token值
 			// this.getConsultDetail()
@@ -187,7 +182,7 @@
 					url: '/api/cms/common_comment/page',
 					data: {
 						dataId: this.id, //数据ID
-						current: this.commentData.current + 1, //当前页
+						current: this.commentData.current += 1, //当前页
 						type: 2,
 						maxId: this.maxId
 					},
@@ -208,12 +203,14 @@
 						this.commentData.records = this.commentData.records.concat(res.data.data.data.records)
 					}
 				})
+			}else{
+				this.pinglunPageStatus = 'noMore'
 			}
 		},
 		methods: {
 			getConsultDetail() {
 				// uni.showToast({
-				// 	title: 'token:' + this.tk,//null
+				// 	title: '1122',
 				// 	icon: 'none',
 				// 	duration: 3000
 				// });
@@ -554,6 +551,9 @@
 						}
 						this.commentData = res.data.data.data
 						this.maxId = res.data.data.data.maxId
+						if(this.commentData.pages == 1){
+							this.pinglunPageStatus = 'noMore'
+						}
 					}
 				})
 			},
