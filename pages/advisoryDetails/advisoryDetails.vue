@@ -5,7 +5,7 @@
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
-			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<jyf-parser class="parser" :html="getContent(detail.content)" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 		<view class="noData" v-if="!detail">
@@ -26,7 +26,7 @@
 
 				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
 					<!-- 一级评论 -->
-					<view @tap="tapCommentFirst({id:item.commentId,type:'commentFirst'})">
+					<view @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">
 						<view class="first-comment-top">
 							<view class="imgBox">
 								<image :src="item.createByAvatar"></image>
@@ -54,7 +54,7 @@
 					</view>
 
 					<!-- 二级评论 -->
-					<view @tap="tapCommentSecond({id:item2.commentId,type:'commentSecond'})" class="second-comment" v-for="(item2,i2) in item.replyVO.records"
+					<view @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})" class="second-comment" v-for="(item2,i2) in item.replyVO.records"
 					 :key='i2'>
 						<view class="second-comment-avatar">
 							<image :src="item2.createAvatar"></image>
@@ -92,7 +92,7 @@
 
 			<!-- 加载更多 -->
 			<view class="load-more">
-				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '- THE END -'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
+				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
 				 </uni-load-more>
 			</view>
 		</view>
@@ -103,7 +103,7 @@
 		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
 			<view class="inpBox">
 				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
-				 placeholder-class='placeholderStyle' placeholder="说点什么吧~" />
+				 placeholder-class='placeholderStyle' :placeholder="placeholder" />
 			</view>
 			<view class="zan-pinglun" v-show="!isShowBg">
 				<view @tap='bottomGood()'>
@@ -162,6 +162,8 @@
 				contentD: null, //评论内容
 				replyVOCurrent: 1, //回复数据的当前页
 				parId: null, //被回复的评论
+				
+				placeholder: '说点儿什么吧~'
 			};
 		},
 		onLoad(option) {
@@ -208,6 +210,9 @@
 			}
 		},
 		methods: {
+			getContent(content){
+				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
+			},
 			getConsultDetail() {
 				// uni.showToast({
 				// 	title: '1122',
@@ -217,7 +222,7 @@
 				// 获取咨询详情
 				uni.request({
 					header: {
-						// "Authorization": 'Bearer ' + 'dee062e6-3bfe-40df-8225-7ffd784762d7'
+						// "Authorization": 'Bearer ' + '006f1779-19f6-417d-82bc-677972beaa92'
 						"Authorization": 'Bearer ' + this.tk
 					},
 					url: '/api/cms/open/news_details',
@@ -226,8 +231,8 @@
 					},
 					success: (res) => {
 						// uni.showToast({
-						// 	title: JSON.stringify(res),
-						// 	icon: 'none'
+						// 	title: JSON.stringify(res.data.data.data.content),
+						// 	icon: 'none',
 						// });
 						if (res.data.code !== 0) {
 							uni.redirectTo({
@@ -241,7 +246,8 @@
 			// 评论详情
 			comDetail() {
 				let that = this
-				if (this.contentD == '') {
+				if (this.contentD.trim().length == 0) {
+					this.input1 = ''
 					return uni.showToast({
 						title: '内容不能为空',
 						duration: 1500,
@@ -307,7 +313,8 @@
 			// 一级回复
 			comFirst() {
 				let that = this
-				if (this.contentD == '') {
+				if (this.contentD.trim().length == 0) {
+					this.input1 = ''
 					return uni.showToast({
 						title: '内容不能为空',
 						duration: 1500,
@@ -362,7 +369,8 @@
 			// 二级回复
 			comSecond() {
 				let that = this
-				if (this.contentD == '') {
+				if (this.contentD.trim().length == 0) {
+					this.input1 = ''
 					return uni.showToast({
 						title: '内容不能为空',
 						duration: 1500,
@@ -610,6 +618,7 @@
 			},
 			// 点击一级评论
 			tapCommentFirst(opt) {
+				this.placeholder = '回复 @' + opt.name
 				this.msgType = opt.type
 				// 获取评论id
 				this.commentId = opt.id
@@ -618,6 +627,7 @@
 			},
 			// 点击二级评论
 			tapCommentSecond(opt) {
+				this.placeholder = '回复 @' + opt.name
 				this.msgType = opt.type
 				// 获取评论id
 				this.commentId = opt.id
@@ -626,6 +636,7 @@
 			},
 			// 关闭背景
 			closeBg() {
+				this.placeholder = '说点儿什么吧~'
 				this.isShowBg = false
 				this.$refs.inputFocus.focus = false
 			},
@@ -713,9 +724,14 @@
 			}
 		},
 		onPageScroll(e) {
-			// this.input1 = ''
-			// this.isShowBg = false
-			// this.$refs.inputFocus.focus = false
+			// uni.showToast({
+			// 	title: JSON.stringify(e.scrollTop),
+			// 	icon: 'none',
+			// 	duration: 3000
+			// });
+			// 	this.input1 = ''
+			// 	this.isShowBg = false
+			// 	this.$refs.inputFocus.focus = false
 		},
 		onHide() {
 			this.input1 = ''

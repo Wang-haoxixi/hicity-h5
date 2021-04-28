@@ -1,7 +1,7 @@
 <template>
 	<view class="error404">
 		<view class="errorImg">
-			<image src="../../static/404.png" mode="widthFix"></image>
+			<image :src="$ossUrl('h5_bg_404.png')" mode="widthFix"></image>
 		</view>
 		<view style="color: #919397;font-size: 24rpx;margin-top: 20rpx;">您访问的资源不见了</view>
 	</view>

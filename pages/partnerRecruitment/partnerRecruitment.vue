@@ -1,12 +1,12 @@
 <template>
 	<view class="partnerRecruitment">
-		<image src="../../static/pic-partnerRecruitment.png" class="pic-partnerRecruitment"></image>
-		<image src="../../static/pic-partnershipDirection.png" class="pic-partnershipDirection"></image>
-		<image src="../../static/pic-supportSystem.png" class="pic-supportSystem"></image>
-		<image src="../../static/pic-equityValue.png" class="pic-equityValue"></image>
-		<image src="../../static/pic-honorQualification.png" class="pic-honorQualification"></image>
-		<image src="../../static/pic-partner.png" class="pic-partner"></image>
-		<image src="../../static/pic-cellOur.png" class="pic-cellOur"></image>
+		<image :src="$ossUrl('h5_bg_partnerRecruitment.png')" class="pic-partnerRecruitment"></image>
+		<image :src="$ossUrl('h5_bg_partnershipDirection.png')" class="pic-partnershipDirection"></image>
+		<image :src="$ossUrl('h5_bg_supportSystem.png')" class="pic-supportSystem"></image>
+		<image :src="$ossUrl('h5_bg_equityValue.png')" class="pic-equityValue"></image>
+		<image :src="$ossUrl('h5_bg_honorQualification.png')" class="pic-honorQualification"></image>
+		<image :src="$ossUrl('h5_bg_partner.png')" class="pic-partner"></image>
+		<image :src="$ossUrl('h5_pic_cellOur.png')" class="pic-cellOur"></image>
 		<image src="../../static/pic-jionUs.png" class="pic-jionUs" @tap="jionUs"></image>
 	</view>
 </template>

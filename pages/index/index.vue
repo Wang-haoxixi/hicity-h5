@@ -1,6 +1,6 @@
 <template>
 	<view class="index">
-		<image src="../../static/loading-white.gif" class="gif-white response" style="height:480rpx"></image>
+		<image :src="$ossUrl('h5_bg_loading_white.gif')" class="gif-white response" style="height:480rpx"></image>
 	</view>
 </template>
 
@@ -42,8 +42,8 @@
 			// that.type = that.getQueryVariable('type');
 			if (that.getQueryVariable('type') == 'advisoryDetails') { //热门咨询详情
 				uni.redirectTo({
-					url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
-					// url: '../advisoryDetails/advisoryDetails?id=77'
+					// url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
+					url: '../advisoryDetails/advisoryDetails?id=100'
 				});
 			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
