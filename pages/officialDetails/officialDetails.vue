@@ -185,7 +185,7 @@
 					data: {
 						dataId: this.id, //数据ID
 						current: this.commentData.current += 1, //当前页
-						type: 2,
+						type: 1,
 						maxId: this.maxId
 					},
 					success: (res) => {
@@ -196,6 +196,7 @@
 								icon: "none",
 							});
 						}
+						
 						this.commentData.current = res.data.data.data.current
 						if (this.commentData.current < this.commentData.pages) {
 							this.pinglunPageStatus = 'more'
@@ -538,7 +539,7 @@
 				// });
 				uni.request({
 					header: {
-						// "Authorization": 'Bearer ' + '8c20e131-1d0c-402c-8d36-45291cdea909'
+						// "Authorization": 'Bearer ' + '76b886ca-f4a9-4680-9fea-e97e4d73ac10'
 						"Authorization": 'Bearer ' + this.tk
 					},
 					// url: '/api/cms/open/news_comment_page',

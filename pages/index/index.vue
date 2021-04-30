@@ -42,8 +42,8 @@
 			// that.type = that.getQueryVariable('type');
 			if (that.getQueryVariable('type') == 'advisoryDetails') { //热门咨询详情
 				uni.redirectTo({
-					// url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
-					url: '../advisoryDetails/advisoryDetails?id=100'
+					url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
+					// url: '../advisoryDetails/advisoryDetails?id=96'
 				});
 			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
