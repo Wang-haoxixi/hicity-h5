@@ -75,6 +75,37 @@
             }
             
         }
+        ,{
+            "path" : "pages/informationDetails/informationDetails",
+            "style" :                                                                                    
+            {
+                "titleNView": false,
+                "onReachBottomDistance": 0,
+                // "backgroundColor": "#FFFFFF"
+                "navigationBarTitleText": "资讯详情"
+            }
+            
+        }
+        ,{
+            "path" : "pages/downloadApp/downloadApp",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "超能城市",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/travelNotes/travelNotes",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "游记详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

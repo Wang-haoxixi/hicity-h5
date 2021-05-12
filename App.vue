@@ -13,7 +13,8 @@
 </script>
 
 <style>
-	
+	@import "colorui/main.css";
+	@import "colorui/icon.css";
 	/*每个页面公共css */
 	/* 引入动画库 */
 	@import './common/animate.css';

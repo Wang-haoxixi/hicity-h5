@@ -12,7 +12,7 @@
 			暂无数据
 		</view>
 
-		<view class="hr"></view>
+		<!-- <view class="hr"></view> -->
 
 		<!-- 评论部分 -->
 		<!-- <view class="comment-box">
@@ -95,31 +95,30 @@
 				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
 				 </uni-load-more>
 			</view>
-		</view> -->
-
+		</view>
+ -->
 		<!-- 背景蒙层 -->
-		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
+		<!-- <view :class="{inpBg:isShowBg}" @tap="closeBg"></view> -->
 		<!-- 底部发布评论部分 -->
-		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
+		<view class="publishCommentBox" :class="{safebox:!isShowBg}" @tap="goDownloadApp">
 			<view class="inpBox">
-				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
-				 placeholder-class='placeholderStyle' :placeholder="placeholder" />
+				<input class="uni-input" disabled="true"/>
 			</view>
 			<view class="zan-pinglun" v-show="!isShowBg">
-				<view @tap='bottomGood()'>
-					<image :src="detail.isLike?'../../static/icon-big-praise-selected.png':'../../static/icon-big-praise.png'" class="img"></image>
-					<text>{{detail.likesNum}}</text>
+				<view>
+					<image src='../../static/icon-big-praise.png' class="img"></image>
+					<text>{{isEmpty(detail.likesNum)? '0' : detail.likesNum}}</text>
 				</view>
-				<view @tap="tapInput({type:'commentDetails'})">
+				<view>
 					<image src="../../static/pinglun.png" class="img"></image>
-					<text>{{commentData.total}}</text>
+					<text>{{isEmpty(commentData.total)? '0' : detail.likesNum}}</text>
 				</view>
 			</view>
-			<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg" @tap.stop="sendbtn">
+			<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg">
 				发送
 			</view>
 		</view>
-
+		<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
 	</view>
 </template>
 
@@ -133,6 +132,9 @@
 	import {
 		gettime
 	} from "@/common/time.js"
+	import {
+		isEmpty
+	} from '@/common/utils.js'
 	export default {
 		components: {
 			jyfParser,
@@ -174,8 +176,8 @@
 			// this.handleToken('')//此处进详情便获取一次token值
 			this.getConsultDetail()
 			// this.getCommentList()
-			this.handleToken('getDetail')
-			this.handleToken('getList')
+			// this.handleToken('getDetail')
+			// this.handleToken('getList')
 		},
 		onReachBottom() {
 			if (this.commentData.current < this.commentData.pages) {
@@ -210,6 +212,12 @@
 			}
 		},
 		methods: {
+			isEmpty,
+			goDownloadApp(){
+				uni.navigateTo({
+					url:'../downloadApp/downloadApp?id=' + this.id
+				})
+			},
 			getContent(content){
 				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
 			},
@@ -221,10 +229,10 @@
 				// });
 				// 获取咨询详情
 				uni.request({
-					// header: {
-					// 	// "Authorization": 'Bearer ' + '006f1779-19f6-417d-82bc-677972beaa92'
-					// 	"Authorization": 'Bearer ' + this.tk
-					// },
+					header: {
+						// "Authorization": 'Bearer ' + '006f1779-19f6-417d-82bc-677972beaa92'
+						"Authorization": 'Bearer ' + this.tk
+					},
 					url: '/api/cms/open/news_details',
 					data: {
 						newsId: this.id
@@ -478,11 +486,11 @@
 			handleToken(type) {
 				if (isAndroid) {
 					// 获取安卓传递过来的token
-					// window.android.invoke_native("getToken", `{resultType:${type}}`, "androidRst")
+					window.android.invoke_native("getToken", `{resultType:${type}}`, "androidRst")
 					return
 				} else if (isIOS) {
 					// 获取ios传递过来的token   
-					// window.webkit.messageHandlers.IOSGetToken.postMessage(type)
+					window.webkit.messageHandlers.IOSGetToken.postMessage(type)
 					return
 				}
 			},
@@ -721,7 +729,7 @@
 				this.parId = queryItem.commentId
 				this.handleToken('showMore')
 				// this.showMore()
-			}
+			},
 		},
 		onPageScroll(e) {
 			// uni.showToast({
@@ -1017,7 +1025,7 @@
 
 	.publishCommentBox {
 		background: #FFFFFF;
-		height: 112rpx;
+		height: 116rpx;
 		width: 100%;
 		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		position: fixed;
@@ -1082,5 +1090,12 @@
 			}
 
 		}
+	}
+	.openImg{
+		width: 148rpx;
+		height: 148rpx;
+		position: fixed;
+		right: 14rpx;
+		bottom: 128rpx;
 	}
 </style>

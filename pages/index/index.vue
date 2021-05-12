@@ -22,15 +22,15 @@
 			getQueryVariable(variable) {
 				//获取地址栏参数信息 - 从第一个 问号? 开始截取 URL中参数
 				var query = window.location.search.substring(1);
-				console.log('query参数', query) //type=advisoryDetails&id=53
+				// console.log('query参数', query) //type=advisoryDetails&id=53
 				// 以‘&’符号将query分割为数组
 				var arr = query.split('&');
-				console.log('arr', arr) //["type=advisoryDetails", "id=53"]  
+				// console.log('arr', arr) //["type=advisoryDetails", "id=53"]  
 				for (var i = 0; i < arr.length; i++) {
 					var pair = arr[i].split('=');
-					console.log('pair', pair) //["type", "advisoryDetails"]  ["id", "53"]
+					// console.log('pair', pair) //["type", "advisoryDetails"]  ["id", "53"]
 					if (pair[0] == variable) { //若pair[0] == 'type',则返回页面参数
-						console.log('pair[1]', pair[1]) //advisoryDetails
+						// console.log('pair[1]', pair[1]) //advisoryDetails
 						return pair[1]; //返回数组第二个参数
 					}
 				}
@@ -68,6 +68,16 @@
 			} else if (that.getQueryVariable('type') == 'privacy') { //隐私条款
 				uni.redirectTo({
 					url: '../privacyClause/privacyClause'
+				});
+			}
+			else if (that.getQueryVariable('type') == 'informationDetails') { //资讯详情分享H5
+				uni.redirectTo({
+					url: '../informationDetails/informationDetails?id='+ that.getQueryVariable('id')
+				});
+			}
+			else if (that.getQueryVariable('type') == 'travelNotes') { //游记详情分享H5
+				uni.redirectTo({
+					url: '../travelNotes/travelNotes?id='+ that.getQueryVariable('id')
 				});
 			}
 		}
