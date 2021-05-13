@@ -5,7 +5,7 @@
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
-			<jyf-parser class="parser" :html="getContent(detail.content)" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 		<view class="noData" v-if="!detail">
@@ -15,7 +15,7 @@
 		<view class="hr"></view>
 
 		<!-- 评论部分 -->
-		<!-- <view class="comment-box">
+		<view class="comment-box">
 			<view class="commentBar">
 				<view class="commentBar-item">
 					<text class="commentTitle">全部评论</text><text>({{commentData.total}})</text>
@@ -25,7 +25,7 @@
 			<view class="commentBody" v-if="!commentData.total==0">
 
 				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
-					一级评论
+					<!-- 一级评论 -->
 					<view @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">
 						<view class="first-comment-top">
 							<view class="imgBox">
@@ -53,7 +53,7 @@
 						</text>
 					</view>
 
-					二级评论
+					<!-- 二级评论 -->
 					<view @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})" class="second-comment" v-for="(item2,i2) in item.replyVO.records"
 					 :key='i2'>
 						<view class="second-comment-avatar">
@@ -76,7 +76,7 @@
 							</view>
 						</view>
 					</view>
-					展开更多
+					<!-- 展开更多 -->
 					<view v-if="item.replyVO.total >5 && item.replyVO.current<item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
 						展开{{item.replyVO.numberRemaining}}条回复
 					</view>
@@ -90,12 +90,11 @@
 				</view>
 			</view>
 
-			加载更多
 			<view class="load-more">
 				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
 				 </uni-load-more>
 			</view>
-		</view> -->
+		</view>
 
 		<!-- 背景蒙层 -->
 		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
@@ -173,7 +172,7 @@
 			this.id = option.id
 			// this.handleToken('')//此处进详情便获取一次token值
 			this.getConsultDetail()
-			// this.getCommentList()
+			this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
 		},
@@ -221,10 +220,10 @@
 				// });
 				// 获取咨询详情
 				uni.request({
-					// header: {
-					// 	// "Authorization": 'Bearer ' + '006f1779-19f6-417d-82bc-677972beaa92'
-					// 	"Authorization": 'Bearer ' + this.tk
-					// },
+					header: {
+						// "Authorization": 'Bearer ' + '006f1779-19f6-417d-82bc-677972beaa92'
+						"Authorization": 'Bearer ' + this.tk
+					},
 					url: '/api/cms/open/news_details',
 					data: {
 						newsId: this.id
@@ -297,7 +296,8 @@
 							this.input1 = ''
 							this.isShowBg = false
 							setTimeout(() => {
-								return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+								return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null) || 
+								window.android.invoke_native("goLogin", null, "androidRst")
 							}, 1500)
 
 						} else {
@@ -355,7 +355,8 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null) || 
+							window.android.invoke_native("goLogin", null, "androidRst")
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -411,7 +412,8 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null) || 
+							window.android.invoke_native("goLogin", null, "androidRst")
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -463,7 +465,8 @@
 								}
 							})
 						} else if (res.statusCode == 401) {
-							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null) || 
+							window.android.invoke_native("goLogin", null, "androidRst")
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -478,11 +481,11 @@
 			handleToken(type) {
 				if (isAndroid) {
 					// 获取安卓传递过来的token
-					// window.android.invoke_native("getToken", `{resultType:${type}}`, "androidRst")
+					window.android.invoke_native("getToken", `{resultType:${type}}`, "androidRst")
 					return
 				} else if (isIOS) {
 					// 获取ios传递过来的token   
-					// window.webkit.messageHandlers.IOSGetToken.postMessage(type)
+					window.webkit.messageHandlers.IOSGetToken.postMessage(type)
 					return
 				}
 			},
@@ -501,6 +504,13 @@
 					this.comSecond()
 				} else if (res.resultType == "showMore") {
 					this.showMore()
+				}
+				else if (res.resultType == "getList") {
+					this.getCommentList()
+				} else if (res.resultType == 'getDetail') {
+					this.getConsultDetail()
+				} else if (res.resultType == 'praiseDetail') {
+					this.praiseDetail()
 				}
 			},
 			// ios的回调
@@ -568,7 +578,8 @@
 			// 评论点赞
 			handlePraise(item) {
 				// 此处为为登录状态
-				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null) || 
+				window.android.invoke_native("goLogin", null, "androidRst")
 				// 此处为已登录状态
 				if (item.ifThumbsUp == 0) {//未点赞
 					uni.request({
@@ -659,7 +670,8 @@
 				// 	duration: 10000
 				// });
 				// 未登录状态下
-				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null) || 
+				window.android.invoke_native("goLogin", null, "androidRst")
 				// 已登录状态下
 				if (this.detail.isLike) {//已点赞
 					uni.request({
@@ -1012,7 +1024,7 @@
 	}
 
 	.safebox {
-		@extend %safe-bottom;
+		// @extend %safe-bottom;
 	}
 
 	.publishCommentBox {
@@ -1024,7 +1036,7 @@
 		bottom: 0;
 		left: 0;
 		display: flex;
-
+		
 		.inpBox {
 			flex: 2;
 			display: flex;
