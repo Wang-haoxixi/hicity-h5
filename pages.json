@@ -116,6 +116,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/position/position",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "岗位详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
