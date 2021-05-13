@@ -59,7 +59,7 @@
 			};
 		},
 		onLoad(options) {
-			this.id =options.id,
+			this.id =options.id
 			this.getDetails(this.id)
 			this.$nextTick(function(){
 				uni.createSelectorQuery()

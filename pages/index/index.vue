@@ -95,6 +95,16 @@
 					url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id')
 				});
 			}
+			else if (that.getQueryVariable('type') == 'hotTalk') { //话题详情分享H5
+				uni.redirectTo({
+					url: '../hotTalk/hotTalk?id='+ that.getQueryVariable('id')
+				});
+			}
+			else if (that.getQueryVariable('type') == 'officialPublic') { //话题详情分享H5
+				uni.redirectTo({
+					url: '../officialPublic/officialPublic?id='+ that.getQueryVariable('id')
+				});
+			}
 		}
 	};
 </script>

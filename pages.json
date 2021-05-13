@@ -136,6 +136,26 @@
             }
             
         }
+        ,{
+            "path" : "pages/hotTalk/hotTalk",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "话题详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/officialPublic/officialPublic",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "官方详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
