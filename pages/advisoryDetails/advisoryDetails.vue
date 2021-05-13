@@ -23,62 +23,72 @@
 			</view>
 
 			<view class="commentBody" v-if="!commentData.total==0">
-
-				<view class="first-comment" v-for="(item,i) in commentData.records" :key='i'>
-					<!-- 一级评论 -->
-					<view @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">
-						<view class="first-comment-top">
-							<view class="imgBox">
-								<image :src="item.createByAvatar"></image>
-							</view>
-							<view class="name-time">
-								<view class="name">
-									{{item.createByName}}
-								</view>
-								<view class="time">
-									{{ gettime(item.createTime) }}
+				
+				<view class="comment-item u-f" v-for="(item,i) in commentData.records" :key='i'>
+					<view class="avatar-box">
+						<image :src="item.createByAvatar" mode="aspectFill"></image>
+					</view>
+					<view class="right-comment-box u-f1">
+						<view class="name-praise-box u-f-ac">
+							<view class="name u-f1">
+								<view class="hiddenEllipsisNowrap" style="width: 470rpx;">
+									{{ $isEmpty(item.createByName) ? '' : item.createByName }}
 								</view>
 							</view>
-							<view class="zan" v-if="item.ifThumbsUp==0" @tap.stop='handlePraise(item)'>
-								<image src="../../static/icon-small-praise.png"></image>
-								<text>{{item.thumbNum}}</text>
+							<view class="praise u-f u-f-ajc" @tap.stop='handlePraise(item)' v-if="item.ifThumbsUp==0" style="flex-direction: column;">
+								<image :src="$ossUrl('icon_debate_praise_gray.png')"></image>
+								<text>{{ $isEmpty(item.thumbNum) ? 0 : item.thumbNum }}</text>
 							</view>
-							<view class="zan-selected" v-else-if="item.ifThumbsUp==1" @tap.stop='handlePraise(item)'>
-								<image src="../../static/icon-small-praise-selected.png"></image>
-								<text>{{item.thumbNum}}</text>
-							</view>
-						</view>
-						<text space="nbsp" class="first-comment-bottom">
-							{{item.content}}
-						</text>
-					</view>
-
-					<!-- 二级评论 -->
-					<view @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})" class="second-comment" v-for="(item2,i2) in item.replyVO.records"
-					 :key='i2'>
-						<view class="second-comment-avatar">
-							<image :src="item2.createAvatar"></image>
-						</view>
-						<view class="second-comment-content">
-							<view class="name">
-								{{item2.createByName}}
-							</view>
-							判断二级评论的父级id是否与自己的id相等,为true即回复的父级，false则回复的自己
-							<view class="text" v-if="item2.rankingCommentId===item.commentId">
-								{{item2.content}}
-							</view>
-							<view class="text" v-else>
-								<text space="nbsp"> 回复 </text><text style="color: #888888;" space="nbsp">{{item2.replyName}} :</text>
-								{{item2.content}}
-							</view>
-							<view class="time">
-								{{gettime(item2.createTime)}}
+							<view class="praise u-f u-f-ajc" @tap.stop='handlePraise(item)' v-else style="flex-direction: column;">
+								<image :src="$ossUrl('icon_debate_praise_orange.png')"></image>
+								<text>{{ $isEmpty(item.thumbNum) ? 0 : item.thumbNum }}</text>
 							</view>
 						</view>
-					</view>
-					<!-- 展开更多 -->
-					<view v-if="item.replyVO.total >5 && item.replyVO.current<item.replyVO.pages" class="more" @tap='handleShowMore(item)'>
-						展开{{item.replyVO.numberRemaining}}条回复
+						<view class="comment-content" @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">
+							{{ $isEmpty(item.content) ? 0 : item.content }}
+						</view>
+						
+						<view class="date-box">
+							{{ gettime($isEmpty(item.createTime) ? '' : item.createTime) }}
+							<text @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">回复</text>
+						</view>
+						<!-- 回复内容 -->
+						<view class="reply-box u-f" v-for="(item2,i2) in item.replyVO.records" :key='i2'>
+							<view class="avatar-box">
+								<image :src="item2.createAvatar"></image>
+							</view>
+							<view class="right-reply-box u-f1">
+								<view class="name-praise-box u-f-ac">
+									<view class="name u-f1">
+										<view class="hiddenEllipsisNowrap" style="width: 398rpx;">
+											{{ $isEmpty(item2.createByName) ? '' : item2.createByName }}
+										</view>
+									</view>
+								</view>
+								<view class="reply-comment" v-if="item2.rankingCommentId === item.commentId" @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">
+									{{ $isEmpty(item2.content) ? '' : item2.content }}
+								</view>
+								<view class="" v-else>
+									<text @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">回复 </text>
+									<text style="color: #999999;">
+										{{ $isEmpty(item2.replyName) ? '' : item2.replyName }} </text>
+									<text>：</text>
+									{{ $isEmpty(item2.content) ? '' : item2.content }}
+								</view>
+								<view class="reply-date-box">
+									{{ gettime($isEmpty(item2.createTime) ? '' : item2.createTime) }}
+									<text @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">回复</text>
+								</view>
+							</view>
+						</view>
+						<!-- 展开更多 -->
+						<view @tap='handleShowMore(item)' class="show-more-box u-f-ac" v-if="item.replyVO.total >5 && item.replyVO.current<item.replyVO.pages">
+							<view class="more-box u-f-ajc">
+								<image :src="$ossUrl('icon_debate_more.png')" class="img-more"></image>
+							</view>
+							<text>展开{{ $isEmpty(item.replyVO.numberRemaining) ? 0 : item.replyVO.numberRemaining }}条回复</text>
+							<image :src="$ossUrl('icon_debate_show.png')" class="img-show"></image>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -95,7 +105,8 @@
 				 </uni-load-more>
 			</view>
 		</view>
-
+		
+	
 		<!-- 背景蒙层 -->
 		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
 		<!-- 底部发布评论部分 -->
@@ -723,8 +734,8 @@
 			},
 			// 底部点赞
 			bottomGood() {
-				// this.handleToken('praiseDetail')
-				this.praiseDetail()
+				this.handleToken('praiseDetail')
+				// this.praiseDetail()
 			},
 			// 展开更多
 			handleShowMore(queryItem) {
@@ -808,7 +819,7 @@
 
 	.comment-box {
 		padding: 32rpx 32rpx 100rpx 32rpx;
-		@extend %safe-bottom-box;
+		// @extend %safe-bottom-box;
 
 		.commentBar {
 			height: 70rpx;
@@ -861,156 +872,108 @@
 			.first-comment:last-of-type {
 				margin-bottom: 0;
 			}
-
-			// height: 100%;
-			.first-comment {
-				margin: 32rpx 0;
-				padding-bottom: 32rpx;
-				border-bottom: 2rpx solid #EDEDED;
-
-				.first-comment-top {
-					display: flex;
-					align-items: center;
-					margin-bottom: 20rpx;
-
-					.imgBox {
-						width: 76rpx;
-						height: 76rpx;
-
-						>image {
-							width: 100%;
-							height: 100%;
-							border-radius: 100%;
-						}
-					}
-
-					.name-time {
-						flex: 1;
-						display: flex;
-						flex-direction: column;
-						// justify-content: center;
-						margin-left: 20rpx;
-
-						.name {
-							font-size: 28rpx;
-							font-weight: 500;
-							color: #333333;
-						}
-
-						.time {
-							font-size: 24rpx;
-							font-weight: 400;
-							color: #999999;
-							margin-top: 6rpx;
-						}
-					}
-
-					.zan-selected {
-						width: 100rpx;
-						height: 48rpx;
-						border: 2rpx solid #1676FF;
-						border-radius: 40rpx;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-
-						>image {
-							width: 28rpx;
-							height: 28rpx;
-							margin-right: 6rpx;
-						}
-
-						>text {
-							width: 30rpx;
-							font-size: 22rpx;
-							font-weight: 400;
-							color: #1676FF;
-							text-align: center;
-						}
-					}
-
-					.zan {
-						width: 100rpx;
-						height: 48rpx;
-						border: 2rpx solid #EDEDED;
-						border-radius: 40rpx;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-
-						>image {
-							width: 28rpx;
-							height: 28rpx;
-							margin-right: 6rpx;
-						}
-
-						>text {
-							width: 30rpx;
-							font-size: 22rpx;
-							font-weight: 400;
-							color: #999999;
-							text-align: center;
-						}
-					}
-				}
-
-				.first-comment-bottom {
-					margin-top: 20rpx;
-					font-size: 28rpx;
-					font-weight: 400;
-					color: #333333;
-				}
-
-				.second-comment {
-					margin-top: 32rpx;
-					display: flex;
-				}
-
-				.second-comment-avatar {
-					width: 48rpx;
-					image {
-						width: 48rpx;
-						height: 48rpx;
+			// ===========
+			.comment-item{
+				padding: 24rpx 0rpx 36rpx 0rpx;
+				border-bottom: 2rpx solid #F6F6F6;
+				@extend %safe-bottom-box;
+				.avatar-box{
+					width: 64rpx;
+					height: 64rpx;
+					margin-right: 16rpx;
+					>image{
+						width: 64rpx;
+						height: 64rpx;
 						border-radius: 50%;
 					}
 				}
-
-				.second-comment-content {
-					margin-left: 16rpx;
-					flex: 1;
-
-					.name {
-						font-size: 28rpx;
-						font-weight: 500;
-						color: #333333;
-						height: 48rpx;
-						line-height: 48rpx;
+				.right-comment-box{
+					.name-praise-box{
+						height: 64rpx;
+						.name{
+							font-size: 28rpx;
+							color: #5F5F5F;
+						}
+						.praise{
+							>image{
+								width: 24rpx;
+								height: 24rpx;
+							}
+							>text{
+								color: #999999;
+								font-size: 22rpx;
+							}
+						}
 					}
-
-					.text {
+					.comment-content{
+						width: 530rpx;
+						color: #272727;
 						font-size: 28rpx;
-						font-weight: 400;
-						line-height: 48rpx;
-						color: #333333;
 					}
-
-					.time {
-						font-size: 24rpx;
-						font-weight: 400;
-						line-height: 32rpx;
+					
+					.date-box{
+						padding-top: 16rpx;
 						color: #999999;
+						font-size: 24rpx;
+						>text{
+							color: #2B579F;
+							padding-left: 16rpx;
+						}
 					}
-
-				}
-
-				.more {
-					font-size: 28rpx;
-					font-weight: 400;
-					margin-top: 16rpx;
-					color: #1676FF;
-					margin-left: 66rpx;
+					.reply-box{
+						padding-top: 24rpx;
+						.avatar-box{
+							width: 56rpx;
+							height: 56rpx;
+							>image{
+								width: 56rpx;
+								height: 56rpx;
+								border-radius: 50%;
+							}
+						}
+						.right-reply-box{
+							.name-praise-box{
+								height: 56rpx;
+							}
+							.reply-comment{
+								width: 458rpx;
+								padding-top: 6rpx;
+							}
+							.reply-date-box{
+								padding-top: 16rpx;
+								color: #999999;
+								font-size: 24rpx;
+								>text{
+									color: #2B579F;
+									padding-left: 16rpx;
+								}
+							}
+						}
+					}
+					.show-more-box{
+						.more-box{
+							width: 44rpx;
+							height: 44rpx;
+							background-color: #F5F7F8;
+							border-radius: 50%;
+						}
+						padding-top: 30rpx;
+						.img-more{
+							width: 24rpx;
+							height: 24rpx;
+						}
+						>text{
+							padding: 0 10rpx 0 20rpx;
+							color: #2B579F;
+						}
+						.img-show{
+							width: 44rpx;
+							height: 44rpx;
+						}
+					}
 				}
 			}
+			// ===========
 		}
 	}
 
