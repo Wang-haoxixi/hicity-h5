@@ -80,6 +80,11 @@
 					url: '../travelNotes/travelNotes?id='+ that.getQueryVariable('id')
 				});
 			}
+			else if (that.getQueryVariable('type') == 'productDetails') { //商品详情分享H5
+				uni.redirectTo({
+					url: '../productDetails/productDetails?id='+ that.getQueryVariable('id')
+				});
+			}
 		}
 	};
 </script>

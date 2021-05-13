@@ -15,7 +15,7 @@
 			</view>
 		</view>
 		<!-- 外部浏览器页面 -->
-		<view class="" v-else style="padding: 0rpx 32rpx;display: flex;flex-direction: column; align-items: center;">
+		<view class="" v-else style="padding: 0rpx 32rpx;display: flex;flex-direction: column; align-items: center;margin-bottom: 134rpx;">
 			<image src="../../static/logo.png" mode="" style="width: 192rpx;height: 192rpx;margin-top: 360rpx;"></image>
 			<view class="" style="color: #272727;font-size: 40rpx;line-height: 56rpx;font-weight: bold;margin-top: 40rpx;margin-bottom: 490rpx;">
 				城市在握 成事在我
@@ -87,11 +87,14 @@
 				user:'',
 				isAndroid:'',
 				isIOS:'',
-				id:''
+				id:'',
+				type:''
 			};
 		},
-		onLoad() {
+		onLoad(options) {
 			this.id = options.id
+			this.type = options.type
+			console.log(this.type)
 			this.goApp()
 		},
 		methods:{
@@ -111,11 +114,11 @@
 					//微信内置浏览器判断机型
 					if (/android/i.test(navigator.userAgent)){
 			　　      // 安卓手机
-						this.user="1";
+						that.user="1";
 					}
 					if (/ipad|iphone|mac/i.test(navigator.userAgent)){
 						//  苹果手机
-						this.user="0";
+						that.user="0";
 					}
 				} else {
 					let u = navigator.userAgent;
@@ -123,17 +126,16 @@
 					that.isAndroid = u.indexOf('Android') > -1; //安卓终端
 					that.isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
 					if (that.isAndroid) {
-						// console.log(666)
 						// 安卓的scheme协议跳转
 						// window.location.href = 'personalstyle://?id=' + that.data.userId;
-						// window.location.href = `govmadeyoucan://ucan?token=${token}`;
-						window.location.href = 'hicity://wecan/informationDetails?id=' + that.id;
+						// window.location.href = `govmadeyoucan://`;
+						window.location.href = "hicity://wecan/" + that.type + "?id=" + that.id;
 						setTimeout(function() {
 							let hidden = window.document.hidden || window.document.mozHidden || window.document
 								.msHidden || window.document
 								.webkitHidden;
 							if (typeof hidden == 'undefined' || hidden == false) {
-								// window.location.href = 'http://wn.woneng.net/uca';
+								window.location.href = 'http://wn.woneng.net/hicity';
 							} else {
 								window.close()
 							}
@@ -141,27 +143,8 @@
 					}
 					if (that.isIOS) {
 						// IOS下的scheme协议跳转
-						// window.location.href = 'personalstyle://?id=' + that.data.userId;
-						// window.location.href = 'govmadeyoucan://ucan?token=${token}';
-						// window.location.href = 'govmadeyoucan://x-callback-url?x-error={{https://apps.apple.com/cn/app/id1556162940}}';
-						// setTimeout(function() {
-						// 	let hidden = window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document
-						// 		.webkitHidden;
-						// 	if (typeof hidden == 'undefined' || hidden == false) {
-						// 		// window.location.href = 'https://apps.apple.com/cn/app/id1508431149';
-						// 		 // var timeOutDateTime = new Date();
-						// 			// if (timeOutDateTime - loadDateTime < 5000) {
-						// 			// 	window.location.href = "..."; //ios下载地址  
-						// 			// } else {
-						// 			// 	window.close();
-						// 			// }
-						// 		window.location.href = 'https://apps.apple.com/cn/app/id1556162940';
-						// 	}else{
-						// 		return
-						// 	}
-						// }, 2000);
 						var loadDateTime = new Date();
-						window.location = "hicity://wecan/informationDetails?id=" + that.id; //schema链接或者universal link
+						window.location = "hicity://wecan/" +that.type+ "?id=" + that.id; //schema链接或者universal link
 						window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
 							var timeOutDateTime = new Date();
 							if (timeOutDateTime - loadDateTime < 5000) {
