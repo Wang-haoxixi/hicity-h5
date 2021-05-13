@@ -5,7 +5,7 @@
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.officialNewsName}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
-			<jyf-parser class="parser" :html="getContent(detail.officialNewsContent)" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 		<view class="noData" v-if="!detail">
@@ -502,6 +502,13 @@
 					this.comSecond()
 				} else if (res.resultType == "showMore") {
 					this.showMore()
+				}
+				else if (res.resultType == "getList") {
+					this.getCommentList()
+				} else if (res.resultType == 'getDetail') {
+					this.getConsultDetail()
+				} else if (res.resultType == 'praiseDetail') {
+					this.praiseDetail()
 				}
 			},
 			// ios的回调
@@ -1013,7 +1020,7 @@
 	}
 
 	.safebox {
-		@extend %safe-bottom;
+		// @extend %safe-bottom;
 	}
 
 	.publishCommentBox {
