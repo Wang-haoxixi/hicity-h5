@@ -215,7 +215,7 @@
 			isEmpty,
 			goDownloadApp(){
 				uni.navigateTo({
-					url:'../downloadApp/downloadApp?id=' + this.id
+					url:'../downloadApp/downloadApp?id=' + this.id + '&type=informationDetails'
 				})
 			},
 			getContent(content){

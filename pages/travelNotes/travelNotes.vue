@@ -3,7 +3,7 @@
 		<view class="" style="position: relative;">
 			 <swiper @change="changeHeight" circular class="swiper" :style="{height :swiperHeight +'px' }">
 				<swiper-item v-for="(item,index) of details.images" :key="index">
-					<image :src="item.imageUrl" mode="" style="width: 100%;" :style="{height: item.height + 'px'}"></image>
+					<image lazy-load="true" :src="item.imageUrl" mode="" style="width: 100%;" :style="{height: item.height + 'px'}" @tap="previewImage(images,index)"></image>
 				</swiper-item>
 			</swiper>
 			<view class="" style="position: absolute;bottom: 16rpx;left: 32rpx;right: 32rpx; z-index: 20;color: #FFFFFF;display:flex;align-items: center;justify-content: space-between;">
@@ -72,7 +72,8 @@
 
 <script>
 	import {
-		isEmpty
+		isEmpty,
+		previewImage
 	} from '@/common/utils.js'
 	export default {
 		data() {
@@ -83,7 +84,8 @@
 				},
 				swiperHeight:'',
 				item_id:1,
-				bottomHeight:''
+				bottomHeight:'',
+				images:[]
 			};
 		},
 		onLoad(options) {
@@ -101,9 +103,10 @@
 		},
 		methods:{
 			isEmpty,
+			previewImage,
 			goDownloadApp(){
 				uni.navigateTo({
-					url:'../downloadApp/downloadApp?id=' + this.id
+					url:'../downloadApp/downloadApp?id=' + this.id + '&type=travelNotes'
 				})
 			},
 			changeHeight(e){
@@ -135,6 +138,9 @@
 							})
 							// console.log(this.details)
 							this.swiperHeight = this.details.images[0].height
+							this.images = this.details.images.map(item=>{
+								return item.imageUrl
+							})
 						}
 					}
 				})
