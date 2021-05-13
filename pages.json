@@ -126,6 +126,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/activityDetails/activityDetails",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "活动详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

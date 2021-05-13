@@ -101,7 +101,7 @@
 }
 .publishCommentBox {
 	background: #FFFFFF;
-	height: 112rpx;
+	height: 116rpx;
 	width: 100%;
 	box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 	position: fixed;

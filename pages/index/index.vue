@@ -90,6 +90,11 @@
 					url: '../position/position?id='+ that.getQueryVariable('id')
 				});
 			}
+			else if (that.getQueryVariable('type') == 'activityDetails') { //活动详情分享H5
+				uni.redirectTo({
+					url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id')
+				});
+			}
 		}
 	};
 </script>
