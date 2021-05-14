@@ -38,6 +38,10 @@
 </template>
 
 <script>
+	import {
+		isEmpty,
+		previewImage
+	} from '@/common/utils.js'
 	export default {
 		data() {
 			return {
@@ -61,6 +65,7 @@
 			})
 		},
 		methods:{
+			previewImage,
 			getDetails(id){
 				uni.request({
 					url: '/api/fms/cowry_goods/mobile/detail/' +id,
@@ -73,7 +78,6 @@
 							});
 						}else{
 							this.details = res.data.data.data
-							console.log(this.details)
 							this.images=this.details.images.map(item=>{
 								return item.imageUrl
 							})
@@ -97,7 +101,7 @@
 }
 .publishCommentBox {
 	background: #FFFFFF;
-	height: 112rpx;
+	height: 116rpx;
 	width: 100%;
 	box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 	position: fixed;
