@@ -4,8 +4,25 @@
 		<!-- 详情内容 -->
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.officialNewsName}}</view>
-			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
+			<view class="publish-time u-f u-f-jsb">
+				<view class="u-f-ac">
+					<image v-if="detail.dataType=='2'" src="../../static/icon_detail_original_small.png" mode=""></image>
+					<text style="color: #415BFD;" v-if="detail.dataType=='1'">{{ detail.author }}</text> 
+					<text style="color: #415BFD;" v-else @tap="toHomepage">{{ detail.author }}</text> 
+				</view>
+				<text>{{ gettime(detail.createTime) }}</text>
+			</view>
 			<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
+			
+			<!-- notice -->
+			<view class="notice">
+				<view v-if="detail.dataType=='1'">
+					原文由{{ detail.author }}发布于{{ detail.newsSource }}，由 <text style="color: #415BFD;">{{detail.createByName}}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+				</view>
+				<view v-else-if="detail.dataType=='2'">
+					本文由 <text style="color: #415BFD;" @tap="toHomepage">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+				</view>
+			</view>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 		<view class="noData" v-if="!detail">
@@ -121,7 +138,7 @@
 					<text>{{detail.likesNum}}</text>
 				</view>
 				<view @tap="tapInput({type:'commentDetails'})">
-					<image src="../../static/pinglun.png" class="img"></image>
+					<image src="../../static/icon_detail_pinglun.png" class="img"></image>
 					<text>{{commentData.total}}</text>
 				</view>
 			</view>
@@ -221,6 +238,18 @@
 			}
 		},
 		methods: {
+			toHomepage(){
+				// uni.showToast({
+				// 	title: this.detail.author,
+				// 	icon: 'none',
+				// 	duration: 5000
+				// });
+				if(isAndroid){
+					return window.android.invoke_native("user", JSON.stringify({userId : this.detail.createBy}), "androidRst")
+				}else if(isIOS){
+					return window.webkit.messageHandlers.user.postMessage(this.detail.createBy)
+				}
+			},
 			getContent(content){
 				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
 			},
@@ -308,7 +337,13 @@
 							this.input1 = ''
 							this.isShowBg = false
 							setTimeout(() => {
-								return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+								if(!this.tk){
+									if(isAndroid){
+										return window.android.invoke_native("goLogin", null, "androidRst")
+									}else if(isIOS){
+										return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+									}
+								}
 							}, 1500)
 
 						} else {
@@ -366,7 +401,13 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+							if(!this.tk){
+								if(isAndroid){
+									return window.android.invoke_native("goLogin", null, "androidRst")
+								}else if(isIOS){
+									return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+								}
+							}
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -422,7 +463,13 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+							if(!this.tk){
+								if(isAndroid){
+									return window.android.invoke_native("goLogin", null, "androidRst")
+								}else if(isIOS){
+									return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+								}
+							}
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -474,7 +521,13 @@
 								}
 							})
 						} else if (res.statusCode == 401) {
-							return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+							if(!this.tk){
+								if(isAndroid){
+									return window.android.invoke_native("goLogin", null, "androidRst")
+								}else if(isIOS){
+									return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+								}
+							}
 						} else {
 							uni.showToast({
 								title: '请检查您的网路状态',
@@ -586,7 +639,13 @@
 			// 评论点赞
 			handlePraise(item) {
 				// 此处为为登录状态
-				if (!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				if(!this.tk){
+					if(isAndroid){
+						return window.android.invoke_native("goLogin", null, "androidRst")
+					}else if(isIOS){
+						return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+					}
+				}
 				// 此处为已登录状态
 				if (item.ifThumbsUp == 0) { //未点赞
 					uni.request({
@@ -677,7 +736,13 @@
 				// 	duration: 10000
 				// });
 				// 未登录状态下
-				if(!this.tk) return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				if(!this.tk){
+					if(isAndroid){
+						return window.android.invoke_native("goLogin", null, "androidRst")
+					}else if(isIOS){
+						return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+					}
+				}
 				// 已登录状态下
 				if (this.detail.isLike) { //已点赞
 					uni.request({
@@ -792,10 +857,23 @@
 			height: 34rpx;
 			font-size: 24rpx;
 			color: #999999;
+			
+			image{
+				width: 68rpx;
+				height: 36rpx;
+				margin-right: 12rpx;
+			}
 		}
 
 		.parser {
 			margin-top: 48rpx;
+		}
+		
+		.notice{
+			padding-top: 20rpx;
+			color: #999999;
+			font-size: 24rpx;
+			line-height: 40rpx;
 		}
 
 		.browse-num {
