@@ -5,7 +5,7 @@
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
-			<jyf-parser class="parser" :html="getContent(detail.content)" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 		<view class="noData" v-if="!detail">

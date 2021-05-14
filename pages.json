@@ -142,6 +142,7 @@
             {
 				"titleNView": false,
                 "navigationBarTitleText": "话题详情",
+				"onReachBottomDistance": 50,
                 "enablePullDownRefresh": false
             }
             
