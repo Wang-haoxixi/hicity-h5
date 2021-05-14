@@ -148,7 +148,7 @@
 						window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
 							var timeOutDateTime = new Date();
 							if (timeOutDateTime - loadDateTime < 5000) {
-								window.location = "https://apps.apple.com/cn/app/id1556162940"; //ios下载地址  
+								window.location = "https://apps.apple.com/cn/app/1557181605"; //ios下载地址  
 							} else {
 								window.close();
 							}
