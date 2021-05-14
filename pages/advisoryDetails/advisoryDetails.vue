@@ -199,8 +199,8 @@
 			window.getIosToken = this.getIosToken
 			this.id = option.id
 			// this.handleToken('')//此处进详情便获取一次token值
-			this.getConsultDetail()
-			this.getCommentList()
+			// this.getConsultDetail()
+			// this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
 		},
