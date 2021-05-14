@@ -5,7 +5,7 @@
 			<view class="detail-box" v-if="detail">
 				<view class="title">{{detail.officialNewsName}}</view>
 				<view class="publish-time">发布时间：{{detail.createTime}}</view>
-				<jyf-parser class="parser" :html="getContent(detail.officialNewsContent)" :tag-style="tagStyle" lazy-load></jyf-parser>
+				<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
 			</view>
 			<view class="noData" v-if="!detail">
 				暂无数据
