@@ -6,13 +6,18 @@
 					<image lazy-load="true" :src="item.imageUrl" mode="" style="width: 100%;" :style="{height: item.height + 'px'}" @tap="previewImage(images,index)"></image>
 				</swiper-item>
 			</swiper>
-			<view class="" style="position: absolute;bottom: 16rpx;left: 32rpx;right: 32rpx; z-index: 20;color: #FFFFFF;display:flex;align-items: center;justify-content: space-between;">
+			<view v-if="details.location" class="" style="position: absolute;bottom: 16rpx;left: 32rpx;right: 32rpx; z-index: 20;color: #FFFFFF;display:flex;align-items: center;justify-content: space-between;">
 				<view class="" v-if="details.location" style="display:flex;align-items: center;padding: 6rpx 24rpx; background: rgba(39, 39, 39, .4);border-radius: 34rpx;">
 					<image src="../../static/icon-location.png" mode="" style="width: 28rpx;height: 28rpx;margin-right: 8rpx;"></image>
 					<view class="singleEllipsis" style="font-size: 24rpx;line-height: 34rpx;max-width:464rpx;">
 						{{details.location}}
 					</view>
 				</view>
+				<view class="" style="background: rgba(0, 0, 0, .4);border-radius: 20rpx;padding: 6rpx 20rpx;">
+					{{item_id}}/{{details.images.length}}
+				</view>
+			</view>
+			<view v-else class="" style="position: absolute;bottom: 16rpx;left: 32rpx;right: 32rpx; z-index: 20;color: #FFFFFF;display:flex;align-items: center;justify-content: flex-end;">
 				<view class="" style="background: rgba(0, 0, 0, .4);border-radius: 20rpx;padding: 6rpx 20rpx;">
 					{{item_id}}/{{details.images.length}}
 				</view>
@@ -51,22 +56,24 @@
 			</view>
 		</view>
 		<!-- 底部发布评论部分 -->
-		<view class="bottom" id="bottomHeight" @tap="goDownloadApp">
-			<view class="inpBox">
-				<input class="uni-input" disabled="true"/>
-			</view>
-			<view class="zan-pinglun">
-				<view>
-					<image src='../../static/icon-big-praise.png' class="img"></image>
-					<text>{{isEmpty(details.likeNumInt)? '0' : details.likeNumInt}}</text>
+		<view class="bottom safe-bottom" id="bottomHeight" @tap="goDownloadApp">
+			<view class="bottom-view">
+				<view class="inpBox">
+					<input class="uni-input" disabled="true" placeholder="说点什么吧~" placeholder-style="color:#999999;font-size:24rpx;line-height:56rpx"/>
 				</view>
-				<view>
-					<image src="../../static/pinglun.png" class="img"></image>
-					<text>{{isEmpty(details.numberComments)? '0' : details.numberComments}}</text>
+				<view class="zan-pinglun">
+					<view>
+						<image src='../../static/icon-big-praise.png' class="img"></image>
+						<text>{{isEmpty(details.likeNumInt)? '0' : details.likeNumInt}}</text>
+					</view>
+					<view>
+						<image src="../../static/pinglun.png" class="img"></image>
+						<text>{{isEmpty(details.numberComments)? '0' : details.numberComments}}</text>
+					</view>
 				</view>
 			</view>
 		</view>
-		<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
+		<image src="../../static/openApp.png" mode="" class="openImg" :style="{bottom:bottomHeight+'px'}" @tap="goDownloadApp"></image>
 	</view>
 </template>
 
@@ -98,6 +105,7 @@
 					.boundingClientRect()
 					.exec(ret => {
 						this.bottomHeight =  ret[0].height
+						// console.log(this.bottomHeight)
 				});
 			})
 		},
@@ -121,11 +129,18 @@
 					url: '/api/cms/travel/detail/' +id,
 					success: (res) => {
 						// console.log('圈子详情', res)
-						if (res.data.code !== 0) {
+						if (res.data.data.businessCode!==1000) {
 							return uni.showToast({
 								title: res.data.data.msg,
 								duration: 1500,
 								icon: "none",
+								success: () => {
+									setTimeout(()=>{
+										uni.redirectTo({
+											url: '../404/404'
+										});
+									},1500)
+								}
 							});
 						}else{
 							this.details = res.data.data.data
@@ -155,16 +170,23 @@
 		height: 148rpx;
 		position: fixed;
 		right: 14rpx;
-		bottom: 128rpx;
 	}
 .singleEllipsis {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
+	.safe-bottom {
+		/* iphonex 等安全区设置，底部安全区适配 */
+		/* #ifndef APP-NVUE */
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
+	
+		/* #endif */
+	}
 	.bottom {
-		background: #FFFFFF;
 		width: 100%;
+		background-color: #FFFFFF;
 		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		position: fixed;
 		bottom: 0;

@@ -38,7 +38,7 @@
 				style="color: #272727;font-size: 32rpx;line-height: 44rpx;font-weight: bold;margin-bottom: 32rpx;">
 				活动内容
 			</view>
-			<jyf-parser class="parser" :html="details.details" :tag-style="tagStyle" lazy-load :style="{marginBottom : bottomHeight+'px'}"
+			<jyf-parser class="parser" :html="details.details" :tag-style="tagStyle" lazy-load
 			></jyf-parser>
 		</view>
 		<!-- <wx-open-launch-weapp id="launch-btn" @launch="handleLaunch" @error="handleError" username="gh_995ee341f272"
@@ -86,15 +86,15 @@
 			this.source = options.source
 			this.getDetails(this.id)
 			// this.getConfig()
-			this.$nextTick(function() {
-				uni.createSelectorQuery()
-					.in(this)
-					.select('#bottomHeight')
-					.boundingClientRect()
-					.exec(ret => {
-						this.bottomHeight = ret[0].height
-					});
-			})
+			// this.$nextTick(function() {
+			// 	uni.createSelectorQuery()
+			// 		.in(this)
+			// 		.select('#bottomHeight')
+			// 		.boundingClientRect()
+			// 		.exec(ret => {
+			// 			this.bottomHeight = ret[0].height
+			// 		});
+			// })
 		},
 		methods: {
 			// wx api 注册
@@ -159,10 +159,17 @@
 					},
 					success: (res) => {
 						if (res.data.data.businessCode !== 1000) {
-							return uni.showToast({
+							uni.showToast({
 								title: res.data.data.msg,
 								duration: 1500,
 								icon: "none",
+								success: () => {
+									setTimeout(()=>{
+										uni.redirectTo({
+											url: '../404/404'
+										});
+									},1500)
+								}
 							});
 						} else {
 							this.details = res.data.data.data

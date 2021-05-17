@@ -72,10 +72,17 @@
 					},
 					success: (res) => {
 						if (res.data.data.businessCode !== 1000) {
-							return uni.showToast({
+							uni.showToast({
 								title: res.data.data.msg,
 								duration: 1500,
 								icon: "none",
+								success: () => {
+									setTimeout(()=>{
+										uni.redirectTo({
+											url: '../404/404'
+										});
+									},1500)
+								}
 							});
 						}else{
 							this.detail = res.data.data.data
