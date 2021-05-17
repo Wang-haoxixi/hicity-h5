@@ -13,6 +13,7 @@
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
 			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<!-- <jyf-parser class="parser" :html="aa" :tag-style="tagStyle" lazy-load></jyf-parser> -->
 			
 			<!-- notice -->
 			<view class="notice">
@@ -121,9 +122,9 @@
 				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
 				 </uni-load-more>
 			</view>
+			<!-- <view class="" style="height: 100rpx;"></view> -->
 		</view>
 		
-	
 		<!-- 背景蒙层 -->
 		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
 		<!-- 底部发布评论部分 -->
@@ -170,10 +171,11 @@
 				isShowBg: false, //输入框背景
 				input1: '',
 				msgType: null, //传给移动端的type值
-				safebox: {},
+				safebox: '',
 				tagStyle: {
 					body: 'line-height: 1.8;',
-					img: 'background-size: contain|cover;width:100%;height:auto;'
+					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
+					p: 'text-indent: 2em',//首行缩进两个字符
 				},
 				id: null, //资讯id
 				detail: {},
@@ -205,6 +207,7 @@
 			this.handleToken('getList')
 		},
 		onReachBottom() {
+			console.log('触底...')
 			if (this.commentData.current < this.commentData.pages) {
 				this.pinglunPageStatus = 'loading'
 				uni.request({
@@ -822,10 +825,13 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	page {
 		background-color: #FFFFFF;
 		height: 100%;
+	}
+	p{
+		text-indent: 0 !important;
 	}
 
 	.comment {
@@ -890,7 +896,8 @@
 	}
 
 	.comment-box {
-		padding: 32rpx 32rpx 100rpx 32rpx;
+		// padding: 32rpx 32rpx 100rpx 32rpx;
+		padding: 32rpx 32rpx 122rpx 32rpx;
 		// @extend %safe-bottom-box;
 
 		.commentBar {
@@ -936,10 +943,6 @@
 			}
 		}
 
-		.load-more {
-			padding: 40rpx 0;
-		}
-
 		.commentBody {
 			.first-comment:last-of-type {
 				margin-bottom: 0;
@@ -948,7 +951,7 @@
 			.comment-item{
 				padding: 24rpx 0rpx 36rpx 0rpx;
 				border-bottom: 2rpx solid #F6F6F6;
-				@extend %safe-bottom-box;
+				// @extend %safe-bottom-box;
 				.avatar-box{
 					width: 64rpx;
 					height: 64rpx;
@@ -1071,6 +1074,7 @@
 		bottom: 0;
 		left: 0;
 		display: flex;
+		// @extend %safe-bottom;
 		
 		.inpBox {
 			flex: 2;

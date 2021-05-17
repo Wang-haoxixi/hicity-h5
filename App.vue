@@ -19,4 +19,8 @@
 	/* 引入动画库 */
 	@import './common/animate.css';
 	@import './common/common.css';
+	
+	uni-toast .uni-simple-toast__text{
+		text-indent: 0!important;
+	}
 </style>

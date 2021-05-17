@@ -134,7 +134,7 @@
 			</view>
 			<view class="zan-pinglun" v-show="!isShowBg">
 				<view @tap='bottomGood()'>
-					<image :src="detail.isLike?'../../static/icon-big-praise-selected.png':'../../static/icon-big-praise.png'" class="img"></image>
+					<image :src="detail.isLike?'../../static/icon_debate_praise_orange_active.png':'../../static/icon_debate_praise_orange_big.png'" class="img"></image>
 					<text>{{detail.likesNum}}</text>
 				</view>
 				<view @tap="tapInput({type:'commentDetails'})">
@@ -173,7 +173,8 @@
 				safebox: {},
 				tagStyle: {
 					body: 'line-height: 1.8;',
-					img: 'background-size: contain|cover;width:100%;height:auto;'
+					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
+					p: 'text-indent: 2em',//首行缩进两个字符
 				},
 				id: null, //资讯id
 				detail: {},
@@ -828,6 +829,9 @@
 		background-color: #FFFFFF;
 		height: 100%;
 	}
+	p{
+		text-indent: 0 !important;
+	}
 
 	.comment {
 		height: 100%;
@@ -891,7 +895,7 @@
 	}
 
 	.comment-box {
-		padding: 32rpx 32rpx 100rpx 32rpx;
+		padding: 32rpx 32rpx 122rpx 32rpx;
 		// @extend %safe-bottom-box;
 
 		.commentBar {
@@ -937,10 +941,6 @@
 			}
 		}
 
-		.load-more {
-			padding: 40rpx 0;
-		}
-
 		.commentBody {
 			.first-comment:last-of-type {
 				margin-bottom: 0;
@@ -950,7 +950,7 @@
 			.comment-item{
 				padding: 24rpx 0rpx 36rpx 0rpx;
 				border-bottom: 2rpx solid #F6F6F6;
-				@extend %safe-bottom-box;
+				// @extend %safe-bottom-box;
 				.avatar-box{
 					width: 64rpx;
 					height: 64rpx;
