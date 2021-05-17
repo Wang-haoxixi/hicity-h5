@@ -38,24 +38,25 @@
 				style="color: #272727;font-size: 32rpx;line-height: 44rpx;font-weight: bold;margin-bottom: 32rpx;">
 				活动内容
 			</view>
-			<jyf-parser class="parser" :html="details.details" :tag-style="tagStyle" lazy-load
-				:style="{marginBottom:bottomHeight + 'px'}"></jyf-parser>
+			<jyf-parser class="parser" :html="details.details" :tag-style="tagStyle" lazy-load :style="{marginBottom : bottomHeight+'px'}"
+			></jyf-parser>
 		</view>
-		<wx-open-launch-weapp id="launch-btn" @launch="handleLaunch" @error="handleError" username="gh_995ee341f272"
+		<!-- <wx-open-launch-weapp id="launch-btn" @launch="handleLaunch" @error="handleError" username="gh_995ee341f272"
 			path="pages/index/index.html">
 			<script type="text/wxtag-template">
 				<style>
-				  .btn { padding: 12px;opacity:0 }
+				  .btn { padding: 12px;}
 				</style>
 				<button class="btn">打开小程序</button>
 			</script>
-		</wx-open-launch-weapp>
-		<view class="publishCommentBox" id="bottomHeight" style="width: 100%;padding: 16rpx 32rpx;">
-			<view class="" @tap="goDownloadApp"
-				style="color: #FFFFFF;background-color: #1676FF;border-radius: 50rpx;width: 100%;display: flex;align-items: center;justify-content: center;font-size: 28rpx;line-height: 40rpx;font-weight: bold;">
-				立即报名
+		</wx-open-launch-weapp> -->
+		<!-- <view v-if="source==1" class="bottom" style="padding: 24rpx 32rpx;" id="bottomHeight">
+			<view class="bottom-view" @tap="getConfig"
+				style="color: #FFFFFF;background-color: #415BFD;border-radius: 50rpx;width: 100%;display: flex;align-items: center;justify-content: center;font-size: 28rpx;line-height: 40rpx;font-weight: bold;">
+				打开小程序
 			</view>
-		</view>
+		</view> -->
+		<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
 	</view>
 </template>
 
@@ -74,12 +75,14 @@
 					body: 'line-height: 1.8;',
 					img: 'background-size: contain|cover;width:100%;height:auto;'
 				},
-				bottomHeight: ''
+				bottomHeight: '',
+				source:''
 			};
 		},
 		onLoad(options) {
 			this.id = options.id
 			// alert(options.source)
+			this.source = options.source
 			this.getDetails(this.id)
 			// this.getConfig()
 			this.$nextTick(function() {
@@ -95,15 +98,30 @@
 		methods: {
 			// wx api 注册
 			getConfig() {
-				wx.config({
-					debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-					appId: 'wx621b97776ce310ed', // 必填，公众号的唯一标识，填自己的！
-					timestamp: 15156615165, // 必填，生成签名的时间戳，刚才接口拿到的数据
-					nonceStr: 'dwawdawdwadwadw', // 必填，生成签名的随机串
-					signature: 'adwdwdwadwadwd', // 必填，签名，见附录1
-					jsApiList: ['wx-open-launch-weapp'],
-					openTagList: ['wx-open-launch-weapp'] // 跳转小程序时必填
-				});
+				let url =escape(window.location.href.split('#')[0])
+				uni.request({
+					url: '/admin/open/get_ticket?url=' + url,
+					success: (res) => {
+						console.log(res)
+						// if (res.data.data.businessCode !== 1000) {
+						// 	return uni.showToast({
+						// 		title: res.data.data.msg,
+						// 		duration: 1500,
+						// 		icon: "none",
+						// 	});
+						// } else {
+							wx.config({
+								debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+								appId: 'wx621b97776ce310ed', // 必填，公众号的唯一标识，填自己的！
+								timestamp: 1620983932936, // 必填，生成签名的时间戳，刚才接口拿到的数据
+								nonceStr: "716xhyt9yg0fx5an", // 必填，生成签名的随机串
+								signature: "d644c1626f7ea6d34ea473e1a255cf82557b11ae", // 必填，签名，见附录1
+								jsApiList: ['wx-open-launch-weapp'],
+								openTagList: ['wx-open-launch-weapp'] // 跳转小程序时必填
+							});
+						// }
+					}
+				})
 
 				wx.ready(res => {
 					console.log(res);
@@ -157,12 +175,35 @@
 				uni.navigateTo({
 					url: '../downloadApp/downloadApp?id=' + this.id + '&type=activityDetails'
 				})
+				// location.href = 'weixin://dl/business/?t=uLzUKiAEgDh'
 			},
 		}
 	}
 </script>
 
 <style lang="scss">
+	.bottom {
+		width: 750rpx;
+		position: fixed;
+		bottom: 0rpx;
+		background-color: #FFFFFF;
+		/* iphonex 等安全区设置，底部安全区适配 */
+		/* #ifndef APP-NVUE */
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
+	
+		/* #endif */
+		.bottom-view{
+			padding: 24rpx;
+		}
+	}
+	.bottom-safe {
+		/* iphonex 等安全区设置，底部安全区适配 */
+		/* #ifndef APP-NVUE */
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
+		/* #endif */
+	}
 	.publishCommentBox {
 		background: #FFFFFF;
 		height: 116rpx;
@@ -172,5 +213,12 @@
 		bottom: 0;
 		left: 0;
 		display: flex;
+	}
+	.openImg{
+		width: 148rpx;
+		height: 148rpx;
+		position: fixed;
+		right: 14rpx;
+		bottom: 128rpx;
 	}
 </style>

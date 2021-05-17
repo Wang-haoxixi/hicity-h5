@@ -7,6 +7,7 @@ const isEmpty = (item) => {
 	}
 }
 const previewImage = (imgs, index) => {
+	console.log(imgs)
 	imgs.forEach((item, index) => {
 		if (item.substring(0, 2) == '//') {
 			imgs[index] = 'https:' + item;
