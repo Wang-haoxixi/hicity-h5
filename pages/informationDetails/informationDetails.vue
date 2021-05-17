@@ -100,22 +100,24 @@
 		<!-- 背景蒙层 -->
 		<!-- <view :class="{inpBg:isShowBg}" @tap="closeBg"></view> -->
 		<!-- 底部发布评论部分 -->
-		<view class="publishCommentBox" :class="{safebox:!isShowBg}" @tap="goDownloadApp">
-			<view class="inpBox">
-				<input class="uni-input" disabled="true"/>
-			</view>
-			<view class="zan-pinglun" v-show="!isShowBg">
-				<view>
-					<image src='../../static/icon-big-praise.png' class="img"></image>
-					<text>{{isEmpty(detail.likesNum)? '0' : detail.likesNum}}</text>
+		<view class="bottom safe-bottom" @tap="goDownloadApp">
+			<view class="bottom-view">
+				<view class="inpBox">
+					<input class="uni-input" disabled="true"/>
 				</view>
-				<view>
-					<image src="../../static/pinglun.png" class="img"></image>
-					<text>{{isEmpty(commentData.total)? '0' : detail.likesNum}}</text>
+				<view class="zan-pinglun" v-show="!isShowBg">
+					<view>
+						<image src='../../static/icon-big-praise.png' class="img"></image>
+						<text>{{isEmpty(detail.likesNum)? '0' : detail.likesNum}}</text>
+					</view>
+					<view>
+						<image src="../../static/pinglun.png" class="img"></image>
+						<text>{{isEmpty(commentData.total)? '0' : detail.likesNum}}</text>
+					</view>
 				</view>
-			</view>
-			<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg">
-				发送
+				<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg">
+					发送
+				</view>
 			</view>
 		</view>
 		<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
@@ -148,7 +150,8 @@
 				safebox: {},
 				tagStyle: {
 					body: 'line-height: 1.8;',
-					img: 'background-size: contain|cover;width:100%;height:auto;'
+					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
+					p: 'text-indent: 2em',//首行缩进两个字符
 				},
 				id: null, //资讯id
 				detail: {},
@@ -749,6 +752,14 @@
 </script>
 
 <style lang="scss">
+	.safe-bottom {
+		/* iphonex 等安全区设置，底部安全区适配 */
+		/* #ifndef APP-NVUE */
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
+	
+		/* #endif */
+	}
 	page {
 		background-color: #FFFFFF;
 		height: 100%;
@@ -1023,16 +1034,17 @@
 		@extend %safe-bottom;
 	}
 
-	.publishCommentBox {
-		background: #FFFFFF;
-		height: 116rpx;
+	.bottom {
 		width: 100%;
-		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		position: fixed;
-		bottom: 0;
-		left: 0;
-		display: flex;
-
+		bottom: 0rpx;
+		background-color: #FFFFFF;
+		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
+		.bottom-view{
+			padding: 24rpx;
+			display: flex;
+			width: 100%;
+		}
 		.inpBox {
 			flex: 2;
 			display: flex;

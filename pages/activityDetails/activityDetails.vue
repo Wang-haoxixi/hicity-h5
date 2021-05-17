@@ -73,7 +73,8 @@
 				details: {},
 				tagStyle: {
 					body: 'line-height: 1.8;',
-					img: 'background-size: contain|cover;width:100%;height:auto;'
+					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
+					p: 'text-indent: 2em',//首行缩进两个字符
 				},
 				bottomHeight: '',
 				source:''
@@ -182,22 +183,20 @@
 </script>
 
 <style lang="scss">
+	// p{
+	// 	text-indent: 0 !important;
+	// }
 	.bottom {
 		width: 750rpx;
 		position: fixed;
 		bottom: 0rpx;
 		background-color: #FFFFFF;
-		/* iphonex 等安全区设置，底部安全区适配 */
-		/* #ifndef APP-NVUE */
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
-	
-		/* #endif */
+		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		.bottom-view{
 			padding: 24rpx;
 		}
 	}
-	.bottom-safe {
+	.safe-bottom {
 		/* iphonex 等安全区设置，底部安全区适配 */
 		/* #ifndef APP-NVUE */
 		padding-bottom: constant(safe-area-inset-bottom);

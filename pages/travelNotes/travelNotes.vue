@@ -51,7 +51,7 @@
 			</view>
 		</view>
 		<!-- 底部发布评论部分 -->
-		<view class="publishCommentBox" id="bottomHeight" @tap="goDownloadApp">
+		<view class="bottom" id="bottomHeight" @tap="goDownloadApp">
 			<view class="inpBox">
 				<input class="uni-input" disabled="true"/>
 			</view>
@@ -162,16 +162,17 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
-	.publishCommentBox {
+	.bottom {
 		background: #FFFFFF;
-		height: 116rpx;
 		width: 100%;
-		box-shadow: 0px -4rpx 6rpx rgba(174, 191, 211, 0.13);
+		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		position: fixed;
 		bottom: 0;
 		left: 0;
-		display: flex;
-	
+		.bottom-view{
+			padding: 24rpx;
+			display: flex;
+		}
 		.inpBox {
 			flex: 2;
 			display: flex;

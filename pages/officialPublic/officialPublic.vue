@@ -50,7 +50,8 @@
 				detail:{},
 				tagStyle: {
 					body: 'line-height: 1.8;',
-					img: 'background-size: contain|cover;width:100%;height:auto;'
+					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
+					p: 'text-indent: 2em',//首行缩进两个字符
 				},
 			};
 		},
