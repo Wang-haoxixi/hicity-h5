@@ -6,7 +6,9 @@ const gettime = time => {
 	var month = day * 30
 	var now = parseInt(new Date().getTime() / 1000 + 1) * 1000
 	//2020-11-24 00:00:02 如果time是这种格式，需要把“-”转换成 “/” str.replace(/-/g,"/"),兼容IOS安卓
-	var lastTime = new Date(time.replace(/-/g, "/")).getTime()
+	if(time){
+	var lastTime = new Date(time.replace(/-/g, "/")).getTime()	
+	}
 	var diffValue = now - lastTime
 	if (diffValue < 0) return
 	var monthC = diffValue / month
