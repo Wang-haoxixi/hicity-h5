@@ -365,6 +365,13 @@
 								title: res.data.data.msg,
 								duration: 1500,
 								icon: "none",
+								success: () => {
+									setTimeout(()=>{
+										uni.redirectTo({
+											url: '../404/404'
+										});
+									},1500)
+								}
 							});
 						} else {
 							this.details = res.data.data.data

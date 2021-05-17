@@ -119,22 +119,32 @@
 						// 	title: JSON.stringify(res.data.data.data.content),
 						// 	icon: 'none',
 						// });
-						if (res.data.code !== 0) {
-							uni.redirectTo({
-								url: '../404/404'
+						if (res.data.data.businessCode !== 1000) {
+							uni.showToast({
+								title: res.data.data.msg,
+								duration: 1500,
+								icon: "none",
+								success: () => {
+									setTimeout(()=>{
+										uni.redirectTo({
+											url: '../404/404'
+										});
+									},1500)
+								}
 							});
+						}else{
+							this.detail = res.data.data.data
+							this.$nextTick(function(){
+								uni.createSelectorQuery()
+									.in(this)
+									.select('#bottomHeight')
+									.boundingClientRect()
+									.exec(ret => {
+										this.bottomHeight =  ret[0].height
+										// console.log(this.bottomHeight)
+								});
+							})
 						}
-						this.detail = res.data.data.data
-						this.$nextTick(function(){
-							uni.createSelectorQuery()
-								.in(this)
-								.select('#bottomHeight')
-								.boundingClientRect()
-								.exec(ret => {
-									this.bottomHeight =  ret[0].height
-									// console.log(this.bottomHeight)
-							});
-						})
 					}
 				});
 			},
