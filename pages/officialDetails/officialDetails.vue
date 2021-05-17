@@ -7,8 +7,8 @@
 			<view class="publish-time u-f u-f-jsb">
 				<view class="u-f-ac">
 					<image v-if="detail.dataType=='2'" src="../../static/icon_detail_original_small.png" mode=""></image>
-					<text style="color: #415BFD;" v-if="detail.dataType=='1'">{{ detail.author }}</text> 
-					<text style="color: #415BFD;" v-else @tap="toHomepage">{{ detail.author }}</text> 
+					<text style="color: #2B579F;" v-if="detail.dataType=='1'">{{ detail.author }}</text> 
+					<text style="color: #2B579F;" v-else @tap="toHomepage">{{ detail.author }}</text> 
 				</view>
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
@@ -17,10 +17,10 @@
 			<!-- notice -->
 			<view class="notice">
 				<view v-if="detail.dataType=='1'">
-					原文由{{ detail.author }}发布于{{ detail.newsSource }}，由 <text style="color: #415BFD;">{{detail.createByName}}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+					原文由{{ detail.author }}发布于{{ detail.newsSource }}，由 <text style="color: #2B579F;">{{detail.createByName}}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
 				</view>
 				<view v-else-if="detail.dataType=='2'">
-					本文由 <text style="color: #415BFD;" @tap="toHomepage">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+					本文由 <text style="color: #2B579F;" @tap="toHomepage">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
 				</view>
 			</view>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
@@ -142,7 +142,7 @@
 					<text>{{commentData.total}}</text>
 				</view>
 			</view>
-			<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg" @tap.stop="sendbtn">
+			<view class="sendbox u-f-ajc" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg" @tap.stop="sendbtn">
 				发送
 			</view>
 		</view>
@@ -1066,13 +1066,18 @@
 
 	.publishCommentBox {
 		background: #FFFFFF;
-		height: 112rpx;
+		padding: 24rpx 0;
 		width: 100%;
 		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		display: flex;
+		/* iphonex 等安全区设置，底部安全区适配 */
+		/* #ifndef APP-NVUE */
+		padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+		/* #endif */
 
 		.inpBox {
 			flex: 2;
@@ -1098,8 +1103,6 @@
 
 		.sendbox {
 			width: 120rpx;
-			line-height: 112rpx;
-			text-align: center;
 			font-size: 32rpx;
 		}
 
