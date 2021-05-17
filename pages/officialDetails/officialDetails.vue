@@ -899,7 +899,7 @@
 
 	.comment-box {
 		padding: 32rpx 32rpx 122rpx 32rpx;
-		// @extend %safe-bottom-box;
+		@extend %safe-bottom-box;
 
 		.commentBar {
 			height: 70rpx;

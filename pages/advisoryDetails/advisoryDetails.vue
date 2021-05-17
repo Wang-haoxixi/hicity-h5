@@ -205,7 +205,6 @@
 			this.handleToken('getList')
 		},
 		onReachBottom() {
-			console.log('触底...')
 			if (this.commentData.current < this.commentData.pages) {
 				this.pinglunPageStatus = 'loading'
 				uni.request({
