@@ -105,7 +105,7 @@
 					.boundingClientRect()
 					.exec(ret => {
 						this.bottomHeight =  ret[0].height
-						console.log(this.bottomHeight)
+						// console.log(this.bottomHeight)
 				});
 			})
 		},
@@ -186,6 +186,7 @@
 	}
 	.bottom {
 		width: 100%;
+		background-color: #FFFFFF;
 		box-shadow: 0px 6rpx 12rpx rgba(0, 0, 0, 0.24);
 		position: fixed;
 		bottom: 0;

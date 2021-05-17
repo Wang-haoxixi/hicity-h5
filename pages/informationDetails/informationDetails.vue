@@ -2,7 +2,7 @@
 	<!-- 热门咨询详情 -->
 	<view class="comment">
 		<!-- 详情内容 -->
-		<view class="detail-box" v-if="detail">
+		<view class="detail-box" v-if="detail" :style="{marginBottom:bottomHeight + 'px'}">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
 			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
@@ -15,7 +15,7 @@
 		<view class="bottom safe-bottom" id="bottomHeight" @tap="goDownloadApp">
 			<view class="bottom-view">
 				<view class="inpBox">
-					<input class="uni-input" disabled="true"  placeholder="说点什么吧~" placeholder-style="color:#999999;font-size:24rpx;line-height:56rpx"/>
+					<input class="uni-input" disabled="true" placeholder="说点什么吧~" placeholder-style="color:#999999;font-size:24rpx;line-height:56rpx"/>
 				</view>
 				<view class="zan-pinglun" v-show="!isShowBg">
 					<view>
@@ -449,7 +449,6 @@
 		.bottom-view{
 			padding: 24rpx;
 			display: flex;
-			width: 100%;
 		}
 		.inpBox {
 			flex: 2;
