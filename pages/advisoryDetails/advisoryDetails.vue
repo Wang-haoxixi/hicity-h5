@@ -127,7 +127,7 @@
 		<!-- 背景蒙层 -->
 		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
 		<!-- 底部发布评论部分 -->
-		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
+		<view class="publishCommentBox" :class="{safebox: !isShowBg}">
 			<view class="inpBox">
 				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
 				 placeholder-class='placeholderStyle' :placeholder="placeholder" />
@@ -199,8 +199,8 @@
 			window.getIosToken = this.getIosToken
 			this.id = option.id
 			// this.handleToken('')//此处进详情便获取一次token值
-			this.getConsultDetail()
-			this.getCommentList()
+			// this.getConsultDetail()
+			// this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
 		},
@@ -338,6 +338,7 @@
 							this.isShowBg = false
 							setTimeout(() => {
 								if(!this.tk) {
+									this.placeholder = '说点儿什么吧~'
 									if(isAndroid){
 										return window.android.invoke_native("goLogin", null, "androidRst")
 									}else if(isIOS){
@@ -402,6 +403,7 @@
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							if(!this.tk) {
+								this.placeholder = '说点儿什么吧~'
 								if(isAndroid){
 									return window.android.invoke_native("goLogin", null, "androidRst")
 								}else if(isIOS){
@@ -464,6 +466,7 @@
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							if(!this.tk) {
+								this.placeholder = '说点儿什么吧~'
 								if(isAndroid){
 									return window.android.invoke_native("goLogin", null, "androidRst")
 								}else if(isIOS){
@@ -522,6 +525,7 @@
 							})
 						} else if (res.statusCode == 401) {
 							if(!this.tk) {
+								
 								if(isAndroid){
 									return window.android.invoke_native("goLogin", null, "androidRst")
 								}else if(isIOS){
@@ -1043,7 +1047,6 @@
 					}
 				}
 			}
-			// ===========
 		}
 	}
 
@@ -1056,10 +1059,6 @@
 		top: 0;
 	}
 
-	.safebox {
-		// @extend %safe-bottom;
-	}
-
 	.publishCommentBox {
 		background: #FFFFFF;
 		padding: 24rpx 0;
@@ -1069,11 +1068,14 @@
 		bottom: 0;
 		left: 0;
 		display: flex;
-		/* iphonex 等安全区设置，底部安全区适配 */
-		/* #ifndef APP-NVUE */
-		padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
-		padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
-		/* #endif */
+		
+		&.safebox {
+			// @extend %safe-bottom-box;/* iphonex 等安全区设置，底部安全区适配 */
+			/* #ifndef APP-NVUE */
+			padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
+			padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+			/* #endif */
+		}
 		
 		.inpBox {
 			flex: 2;
