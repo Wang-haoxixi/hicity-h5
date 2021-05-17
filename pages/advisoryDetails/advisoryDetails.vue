@@ -1062,7 +1062,7 @@
 	}
 
 	.safebox {
-		// @extend %safe-bottom;
+		@extend %safe-bottom;
 	}
 
 	.publishCommentBox {

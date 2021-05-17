@@ -23,17 +23,18 @@
 			<view class="" style="margin-bottom: 32rpx;color: #333333;font-weight: bold;font-size: 32rpx;line-height: 44rpx;">
 				简介
 			</view>
-			<view class="" style="color:#333333;font-size: 28rpx;line-height: 48rpx;" :style="{marginBottom:bottomHeight + 'px'}">
+			<view class="" style="color:#333333;font-size: 28rpx;line-height: 48rpx;">
 				<text class="">
 					{{details.introduction}}
 				</text>
 			</view>
 		</view>
-		<view class="publishCommentBox" id="bottomHeight" style="width: 100%;padding: 16rpx 32rpx;">
+		<!-- <view class="publishCommentBox" id="bottomHeight" style="width: 100%;padding: 16rpx 32rpx;">
 			<view class=""  @tap="goDownloadApp" style="color: #FFFFFF;background-color: #1676FF;border-radius: 50rpx;width: 100%;display: flex;align-items: center;justify-content: center;font-size: 28rpx;line-height: 40rpx;font-weight: bold;">
 				下载
 			</view>
-		</view>
+		</view> -->
+		<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
 	</view>
 </template>
 
@@ -54,15 +55,15 @@
 		onLoad(options) {
 			this.id=options.id
 			this.getDetails(this.id)
-			this.$nextTick(function(){
-				uni.createSelectorQuery()
-					.in(this)
-					.select('#bottomHeight')
-					.boundingClientRect()
-					.exec(ret => {
-						this.bottomHeight =  ret[0].height
-				});
-			})
+			// this.$nextTick(function(){
+			// 	uni.createSelectorQuery()
+			// 		.in(this)
+			// 		.select('#bottomHeight')
+			// 		.boundingClientRect()
+			// 		.exec(ret => {
+			// 			this.bottomHeight =  ret[0].height
+			// 	});
+			// })
 		},
 		methods:{
 			previewImage,
@@ -108,5 +109,12 @@
 	bottom: 0;
 	left: 0;
 	display: flex;
+	}
+	.openImg{
+		width: 148rpx;
+		height: 148rpx;
+		position: fixed;
+		right: 14rpx;
+		bottom: 128rpx;
 	}
 </style>

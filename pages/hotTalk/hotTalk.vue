@@ -76,7 +76,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="swiper-item" v-show="item_id==0" :style="{marginBottom:bottomHeight+'px'}">
+			<view class="swiper-item" v-show="item_id==0">
 				<view class="" v-if="newList.records.length>0">
 					<view class="" v-for="(item,index) of newList.records" :key="index"
 						style="padding: 32rpx 0rpx; border-bottom: 2rpx solid #EDEDED;">
@@ -97,6 +97,7 @@
 									</view>
 								</view>
 								<view class=""
+									@tap="goDownloadApp"
 									style="width: 100rpx;height: 48rpx;border:2rpx solid #EDEDED;border-radius: 40rpx;display: flex;align-items: center;justify-content: center;">
 									<image src="../../static/icon-big-praise.png" mode=""
 										style="width: 28rpx;height: 28rpx;"></image>
@@ -154,7 +155,7 @@
 					 </uni-load-more>
 				</view>
 			</view>
-			<view class="swiper-item" v-show="item_id==1" :style="{marginBottom:bottomHeight+'px'}">
+			<view class="swiper-item" v-show="item_id==1">
 				<view class=""  v-if="hotList.records.length>0">
 					<view class="" v-for="(item,index) of hotList.records" :key="index"
 						style="padding: 32rpx 0rpx; border-bottom: 2rpx solid #EDEDED;">
@@ -234,11 +235,12 @@
 				</view>
 			</view>
 		</view>
-		<view class="publishCommentBox" id="bottomHeight" style="width: 100%;padding: 16rpx 32rpx;">
+		<!-- <view class="publishCommentBox" id="bottomHeight" style="width: 100%;padding: 16rpx 32rpx;">
 			<view class=""  @tap="goDownloadApp" style="color: #FFFFFF;background-color: #1676FF;border-radius: 50rpx;width: 100%;display: flex;align-items: center;justify-content: center;font-size: 28rpx;line-height: 40rpx;font-weight: bold;">
 				打开APP
 			</view>
-		</view>
+		</view> -->
+		<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
 	</view>
 </template>
 
@@ -274,15 +276,15 @@
 			this.id = options.id
 			this.getDetails(this.id)
 			this.getNewList()
-			this.$nextTick(function(){
-				uni.createSelectorQuery()
-					.in(this)
-					.select('#bottomHeight')
-					.boundingClientRect()
-					.exec(ret => {
-						this.bottomHeight =  ret[0].height
-				});
-			})
+			// this.$nextTick(function(){
+			// 	uni.createSelectorQuery()
+			// 		.in(this)
+			// 		.select('#bottomHeight')
+			// 		.boundingClientRect()
+			// 		.exec(ret => {
+			// 			this.bottomHeight =  ret[0].height
+			// 	});
+			// })
 		},
 		onReachBottom() {
 			if(this.item_id==0){
@@ -443,6 +445,13 @@
 </script>
 
 <style lang="scss">
+	.openImg{
+		width: 148rpx;
+		height: 148rpx;
+		position: fixed;
+		right: 14rpx;
+		bottom: 128rpx;
+	}
 	::v-deep .uni-swiper-dot-active {
 		width: 36rpx !important;
 		border-radius: 10rpx;
