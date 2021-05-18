@@ -25,9 +25,9 @@
 		</view>
 		<view class="" style="padding:20rpx 32rpx;">
 			<view class="" style="display: flex;align-items: center;justify-content: space-between;">
-				<view class="" style="display: flex;align-items: center;">
+				<view class="" style="display: flex;align-items: center;flex: 1;">
 					<image :src="details.avatar" mode="" style="width: 72rpx;height: 72rpx;border-radius: 50%;margin-right: 16rpx;"></image>
-					<view class="">
+					<view class="" style="flex: 1;">
 						<view class="" style="font-size: 28rpx;line-height: 48rpx;font-weight: bold;color: #272727;">
 							{{details.realName}}
 						</view>

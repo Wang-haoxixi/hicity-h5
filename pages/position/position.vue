@@ -37,8 +37,8 @@
 			<view class="" style="position: absolute;top: 62rpx;left: 62rpx;right: 50rpx;" @tap="goDownloadApp">
 				<view class="" style="display: flex;align-items: center;justify-content: space-between;">
 					<view class="" style="display: flex;align-items: center;">
-						<image :src="details.createByAvatar" mode="aspectFit" style="width: 76rpx;height: 76rpx;border-radius: 50%;margin-right: 16rpx;"></image>
-						<view class="">
+						<image :src="details.createByAvatar" mode="aspectFill" style="width: 76rpx;height: 76rpx;border-radius: 50%;margin-right: 16rpx;"></image>
+						<view class="" style="flex: 1;">
 							<view class="" style="color: #333333;font-size: 24rpx;line-height: 34rpx;margin-bottom: 8rpx;">
 								{{details.createByName}}
 							</view>
