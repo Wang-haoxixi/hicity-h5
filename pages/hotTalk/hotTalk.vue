@@ -34,7 +34,7 @@
 					</text>
 				</view>
 				<swiper circular indicator-dots="true" indicator-color="rgba(0,0,0,.3)" indicator-active-color="#FFFFFF"
-					interval="3000" class="swiper" style="height: 410rpx;margin-bottom: 32rpx;">
+					interval="3000" class="swiper" style="height: 410rpx;margin-bottom: 32rpx;" v-if="details.images && details.images.length>0">
 					<swiper-item v-for="(item,index) of details.images" :key="index">
 						<image lazy-load="true" :src="item.imageUrl" mode="aspectFill" style="width: 100%;"
 							@tap="previewImage(images,index)"></image>
@@ -76,17 +76,17 @@
 					</view>
 				</view>
 			</view>
-			<view class="swiper-item" v-show="item_id==0">
+			<view class="swiper-item" v-show="item_id==0" style="background-color: #FFFFFF;">
 				<view class="" v-if="newList.records.length>0">
 					<view class="" v-for="(item,index) of newList.records" :key="index"
 						style="padding: 32rpx 0rpx; border-bottom: 2rpx solid #EDEDED;">
 						<view class="">
 							<view class=""
 								style="display: flex;align-items: center;justify-content: space-between;padding:0rpx 32rpx;">
-								<view class="" style="display: flex;align-items: center;">
+								<view class="" style="display: flex;align-items: center;flex: 1;">
 									<image :src="item.createByAvatar" mode=""
 										style="width: 76rpx;height: 76rpx;border-radius: 50%;margin-right: 20rpx;"></image>
-									<view class="">
+									<view class="" style="flex: 1;">
 										<view class=""
 											style="color: #333333;font-size: 28rpx;line-height: 40rpx;font-weight: bold;margin-bottom: 2rpx;">
 											{{item.createByName}}
@@ -155,17 +155,17 @@
 					 </uni-load-more>
 				</view>
 			</view>
-			<view class="swiper-item" v-show="item_id==1">
+			<view class="swiper-item" v-show="item_id==1" style="background-color: #FFFFFF;">
 				<view class=""  v-if="hotList.records.length>0">
 					<view class="" v-for="(item,index) of hotList.records" :key="index"
 						style="padding: 32rpx 0rpx; border-bottom: 2rpx solid #EDEDED;">
 						<view class="">
 							<view class=""
 								style="display: flex;align-items: center;justify-content: space-between;padding:0rpx 32rpx;">
-								<view class="" style="display: flex;align-items: center;">
+								<view class="" style="display: flex;align-items: center;flex: 1;">
 									<image :src="item.createByAvatar" mode=""
 										style="width: 76rpx;height: 76rpx;border-radius: 50%;margin-right: 20rpx;"></image>
-									<view class="">
+									<view class="" style="flex: 1;">
 										<view class=""
 											style="color: #333333;font-size: 28rpx;line-height: 40rpx;font-weight: bold;margin-bottom: 2rpx;">
 											{{item.createByName}}

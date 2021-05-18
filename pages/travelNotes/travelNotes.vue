@@ -23,11 +23,11 @@
 				</view>
 			</view>
 		</view>
-		<view class="" style="padding:20rpx 32rpx;" :style="{marginBottom:bottomHeight + 'px'}">
+		<view class="" style="padding:20rpx 32rpx;">
 			<view class="" style="display: flex;align-items: center;justify-content: space-between;">
-				<view class="" style="display: flex;align-items: center;">
+				<view class="" style="display: flex;align-items: center;flex: 1;">
 					<image :src="details.avatar" mode="" style="width: 72rpx;height: 72rpx;border-radius: 50%;margin-right: 16rpx;"></image>
-					<view class="">
+					<view class="" style="flex: 1;">
 						<view class="" style="font-size: 28rpx;line-height: 48rpx;font-weight: bold;color: #272727;">
 							{{details.realName}}
 						</view>
@@ -53,6 +53,9 @@
 				<text style="color: #5F5F5F;font-size: 28rpx;line-height: 48rpx;">
 					{{details.content}}
 				</text>
+			</view>
+			<view class="" :style="{height:bottomHeight + 'px'}">
+				
 			</view>
 		</view>
 		<!-- 底部发布评论部分 -->
@@ -98,16 +101,6 @@
 		onLoad(options) {
 			this.id=options.id
 			this.getDetails(this.id)
-			this.$nextTick(function(){
-				uni.createSelectorQuery()
-					.in(this)
-					.select('#bottomHeight')
-					.boundingClientRect()
-					.exec(ret => {
-						this.bottomHeight =  ret[0].height
-						// console.log(this.bottomHeight)
-				});
-			})
 		},
 		methods:{
 			isEmpty,
@@ -155,6 +148,16 @@
 							this.swiperHeight = this.details.images[0].height
 							this.images = this.details.images.map(item=>{
 								return item.imageUrl
+							})
+							this.$nextTick(function(){
+								uni.createSelectorQuery()
+									.in(this)
+									.select('#bottomHeight')
+									.boundingClientRect()
+									.exec(ret => {
+										this.bottomHeight =  ret[0].height
+										// console.log(this.bottomHeight)
+								});
 							})
 						}
 					}
@@ -246,6 +249,7 @@
 	
 				>text {
 					font-size: 20rpx;
+					line-height: 28rpx;
 					font-weight: 400;
 					color: #999999;
 				}

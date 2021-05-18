@@ -2,11 +2,14 @@
 	<!-- 热门咨询详情 -->
 	<view class="comment">
 		<!-- 详情内容 -->
-		<view class="detail-box" v-if="detail" :style="{marginBottom:bottomHeight + 'px'}">
+		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
 			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
+		</view>
+		<view class="" :style="{height:bottomHeight + 'px'}">
+			
 		</view>
 		<view class="noData" v-if="!detail">
 			暂无数据
@@ -24,7 +27,7 @@
 					</view>
 					<view>
 						<image src="../../static/pinglun.png" class="img"></image>
-						<text>{{isEmpty(commentData.total)? '0' : detail.likesNum}}</text>
+						<text>{{isEmpty(commentData.total)? '0' : commentData.total}}</text>
 					</view>
 				</view>
 				<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg">
@@ -87,12 +90,46 @@
 		onLoad(option) {
 			this.id = option.id
 			this.getConsultDetail()
+			this.getCommentList()
 		},
 		methods: {
 			isEmpty,
 			goDownloadApp(){
 				uni.navigateTo({
 					url:'../downloadApp/downloadApp?id=' + this.id + '&type=informationDetails'
+				})
+			},
+			// 获取评论列表
+			getCommentList() {
+				// uni.showToast({
+				// 	title: 'token:' + this.token,
+				// 	icon: 'none',
+				// 	duration: 3000
+				// });
+				uni.request({
+					header: {
+						// "Authorization": 'Bearer ' + '8c20e131-1d0c-402c-8d36-45291cdea909'
+						"Authorization": 'Bearer ' + this.tk
+					},
+					// url: '/api/cms/open/news_comment_page',
+					url: '/api/cms/common_comment/page',
+					data: {
+						dataId: this.id, //数据ID
+						type: 2, // // 1-官方发布 2-热门新闻 3-游记  4-热议
+						current: 1, //当前页
+						maxId: ''
+					},
+					success: (res) => {
+						if (res.data.data.businessCode !== 1000) {
+							return uni.showToast({
+								title: res.data.data.msg,
+								duration: 1500,
+								icon: "none",
+							});
+						}
+						this.commentData = res.data.data.data
+						this.maxId = res.data.data.data.maxId
+					}
 				})
 			},
 			getContent(content){
@@ -501,6 +538,7 @@
 
 				>text {
 					font-size: 20rpx;
+					line-height: 28rpx;
 					font-weight: 400;
 					color: #999999;
 				}
