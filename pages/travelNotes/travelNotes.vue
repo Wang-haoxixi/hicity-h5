@@ -62,11 +62,11 @@
 					<input class="uni-input" disabled="true" placeholder="说点什么吧~" placeholder-style="color:#999999;font-size:24rpx;line-height:56rpx"/>
 				</view>
 				<view class="zan-pinglun">
-					<view>
+					<view style="display: flex;align-items: center;flex-direction: column;justify-content: space-between;height: 84rpx;">
 						<image src='../../static/icon-big-praise.png' class="img"></image>
 						<text>{{isEmpty(details.likeNumInt)? '0' : details.likeNumInt}}</text>
 					</view>
-					<view>
+					<view style="display: flex;align-items: center;flex-direction: column;justify-content: space-between;height: 84rpx;">
 						<image src="../../static/pinglun.png" class="img"></image>
 						<text>{{isEmpty(details.numberComments)? '0' : details.numberComments}}</text>
 					</view>
@@ -246,6 +246,7 @@
 	
 				>text {
 					font-size: 20rpx;
+					line-height: 28rpx;
 					font-weight: 400;
 					color: #999999;
 				}
