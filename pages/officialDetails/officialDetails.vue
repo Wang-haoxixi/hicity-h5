@@ -724,7 +724,7 @@
 			// 失去焦点时触发
 			inpBlur() {
 				this.contentD = this.input1
-				this.input1 = ''
+				// this.input1 = ''
 				this.$refs.inputFocus.focus = false
 			},
 			// 发送
