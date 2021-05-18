@@ -339,6 +339,7 @@
 							this.isShowBg = false
 							setTimeout(() => {
 								if(!this.tk){
+									this.placeholder = '说点儿什么吧~'
 									if(isAndroid){
 										return window.android.invoke_native("goLogin", null, "androidRst")
 									}else if(isIOS){
@@ -403,6 +404,7 @@
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							if(!this.tk){
+								this.placeholder = '说点儿什么吧~'
 								if(isAndroid){
 									return window.android.invoke_native("goLogin", null, "androidRst")
 								}else if(isIOS){
@@ -465,6 +467,7 @@
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
 							if(!this.tk){
+								this.placeholder = '说点儿什么吧~'
 								if(isAndroid){
 									return window.android.invoke_native("goLogin", null, "androidRst")
 								}else if(isIOS){
@@ -896,7 +899,7 @@
 
 	.comment-box {
 		padding: 32rpx 32rpx 122rpx 32rpx;
-		// @extend %safe-bottom-box;
+		@extend %safe-bottom-box;
 
 		.commentBar {
 			height: 70rpx;
@@ -1060,10 +1063,6 @@
 		top: 0;
 	}
 
-	.safebox {
-		// @extend %safe-bottom;
-	}
-
 	.publishCommentBox {
 		background: #FFFFFF;
 		padding: 24rpx 0;
@@ -1073,11 +1072,14 @@
 		bottom: 0;
 		left: 0;
 		display: flex;
-		/* iphonex 等安全区设置，底部安全区适配 */
-		/* #ifndef APP-NVUE */
-		padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
-		padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
-		/* #endif */
+		
+		&.safebox {
+			// @extend %safe-bottom-box;/* iphonex 等安全区设置，底部安全区适配 */
+			/* #ifndef APP-NVUE */
+			padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
+			padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+			/* #endif */
+		}
 
 		.inpBox {
 			flex: 2;
