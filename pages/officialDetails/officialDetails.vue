@@ -828,7 +828,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	page {
 		background-color: #FFFFFF;
 		height: 100%;
@@ -838,7 +838,7 @@
 	}
 
 	.comment {
-		height: 100%;
+		height: 100vh;
 	}
 
 	.noData {
