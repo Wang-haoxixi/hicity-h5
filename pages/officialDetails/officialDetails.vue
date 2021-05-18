@@ -717,6 +717,7 @@
 			},
 			// 关闭背景
 			closeBg() {
+				this.input1 = ''
 				this.placeholder = '说点儿什么吧~'
 				this.isShowBg = false
 				this.$refs.inputFocus.focus = false

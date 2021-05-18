@@ -165,6 +165,13 @@
 			jyfParser,
 			uniLoadMore
 		},
+		// watch:{
+		// 	isShowBg(newVal){
+		// 		if(newVal){
+					
+		// 		}
+		// 	}
+		// },
 		data() {
 			return {
 				isShowBg: false, //输入框背景
@@ -716,6 +723,7 @@
 			},
 			// 关闭背景
 			closeBg() {
+				this.input1 = ''
 				this.placeholder = '说点儿什么吧~'
 				this.isShowBg = false
 				this.$refs.inputFocus.focus = false
