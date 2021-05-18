@@ -23,7 +23,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="" style="padding:20rpx 32rpx;" :style="{marginBottom:bottomHeight + 'px'}">
+		<view class="" style="padding:20rpx 32rpx;">
 			<view class="" style="display: flex;align-items: center;justify-content: space-between;">
 				<view class="" style="display: flex;align-items: center;">
 					<image :src="details.avatar" mode="" style="width: 72rpx;height: 72rpx;border-radius: 50%;margin-right: 16rpx;"></image>
@@ -54,6 +54,9 @@
 					{{details.content}}
 				</text>
 			</view>
+			<view class="" :style="{height:bottomHeight + 'px'}">
+				
+			</view>
 		</view>
 		<!-- 底部发布评论部分 -->
 		<view class="bottom safe-bottom" id="bottomHeight" @tap="goDownloadApp">
@@ -62,11 +65,11 @@
 					<input class="uni-input" disabled="true" placeholder="说点什么吧~" placeholder-style="color:#999999;font-size:24rpx;line-height:56rpx"/>
 				</view>
 				<view class="zan-pinglun">
-					<view style="display: flex;align-items: center;flex-direction: column;justify-content: space-between;height: 84rpx;">
+					<view>
 						<image src='../../static/icon-big-praise.png' class="img"></image>
 						<text>{{isEmpty(details.likeNumInt)? '0' : details.likeNumInt}}</text>
 					</view>
-					<view style="display: flex;align-items: center;flex-direction: column;justify-content: space-between;height: 84rpx;">
+					<view>
 						<image src="../../static/pinglun.png" class="img"></image>
 						<text>{{isEmpty(details.numberComments)? '0' : details.numberComments}}</text>
 					</view>
@@ -98,16 +101,6 @@
 		onLoad(options) {
 			this.id=options.id
 			this.getDetails(this.id)
-			this.$nextTick(function(){
-				uni.createSelectorQuery()
-					.in(this)
-					.select('#bottomHeight')
-					.boundingClientRect()
-					.exec(ret => {
-						this.bottomHeight =  ret[0].height
-						// console.log(this.bottomHeight)
-				});
-			})
 		},
 		methods:{
 			isEmpty,
@@ -155,6 +148,16 @@
 							this.swiperHeight = this.details.images[0].height
 							this.images = this.details.images.map(item=>{
 								return item.imageUrl
+							})
+							this.$nextTick(function(){
+								uni.createSelectorQuery()
+									.in(this)
+									.select('#bottomHeight')
+									.boundingClientRect()
+									.exec(ret => {
+										this.bottomHeight =  ret[0].height
+										// console.log(this.bottomHeight)
+								});
 							})
 						}
 					}

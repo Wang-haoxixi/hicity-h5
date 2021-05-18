@@ -2,11 +2,14 @@
 	<!-- 热门咨询详情 -->
 	<view class="comment">
 		<!-- 详情内容 -->
-		<view class="detail-box" v-if="detail" :style="{marginBottom:bottomHeight + 'px'}">
+		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
 			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
+		</view>
+		<view class="" :style="{height:bottomHeight + 'px'}">
+			
 		</view>
 		<view class="noData" v-if="!detail">
 			暂无数据
@@ -18,13 +21,13 @@
 					<input class="uni-input" disabled="true" placeholder="说点什么吧~" placeholder-style="color:#999999;font-size:24rpx;line-height:56rpx"/>
 				</view>
 				<view class="zan-pinglun" v-show="!isShowBg">
-					<view style="display: flex;align-items: center;flex-direction: column;justify-content: space-between;height: 84rpx;">
+					<view>
 						<image src='../../static/icon-big-praise.png' class="img"></image>
 						<text>{{isEmpty(detail.likesNum)? '0' : detail.likesNum}}</text>
 					</view>
-					<view style="display: flex;align-items: center;flex-direction: column;justify-content: space-between;height: 84rpx;">
+					<view>
 						<image src="../../static/pinglun.png" class="img"></image>
-						<text>{{isEmpty(commentData.total)? '0' : detail.likesNum}}</text>
+						<text>{{isEmpty(commentData.total)? '0' : commentData.total}}</text>
 					</view>
 				</view>
 				<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg">
