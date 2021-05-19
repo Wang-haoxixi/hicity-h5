@@ -144,15 +144,16 @@
 					if (that.isIOS) {
 						// IOS下的scheme协议跳转
 						var loadDateTime = new Date();
-						window.location = "hicity://wecan/" +that.type+ "?id=" + that.id; //schema链接或者universal link
-						window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
-							var timeOutDateTime = new Date();
-							if (timeOutDateTime - loadDateTime < 5000) {
-								window.location = "https://apps.apple.com/cn/app/1557181605"; //ios下载地址  
-							} else {
-								window.close();
-							}
-						}, 2000)
+						// window.location = "hicity://wecan/" +that.type+ "?id=" + that.id; //schema链接或者universal link
+						window.location = "https://www.wecan.vip/hicity/?type="+that.type +"&id="+ that.id
+						// window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
+						// 	var timeOutDateTime = new Date();
+						// 	if (timeOutDateTime - loadDateTime < 5000) {
+						// 		window.location = "https://apps.apple.com/cn/app/1557181605"; //ios下载地址  
+						// 	} else {
+						// 		window.close();
+						// 	}
+						// }, 2000)
 					}
 				}
 			}
