@@ -165,6 +165,13 @@
 			jyfParser,
 			uniLoadMore
 		},
+		// watch:{
+		// 	isShowBg(newVal){
+		// 		if(newVal){
+					
+		// 		}
+		// 	}
+		// },
 		data() {
 			return {
 				isShowBg: false, //输入框背景
@@ -716,6 +723,7 @@
 			},
 			// 关闭背景
 			closeBg() {
+				this.input1 = ''
 				this.placeholder = '说点儿什么吧~'
 				this.isShowBg = false
 				this.$refs.inputFocus.focus = false
@@ -723,7 +731,7 @@
 			// 失去焦点时触发
 			inpBlur() {
 				this.contentD = this.input1
-				this.input1 = ''
+				// this.input1 = ''
 				this.$refs.inputFocus.focus = false
 			},
 			// 发送
@@ -836,7 +844,7 @@
 	}
 
 	.comment {
-		// height: 100vh;
+		height: 100vh;
 	}
 
 	.noData {
