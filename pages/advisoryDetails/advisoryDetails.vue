@@ -4,12 +4,15 @@
 		<!-- 详情内容 -->
 		<view class="detail-box" v-if="detail">
 			<view class="title">{{detail.title}}</view>
-			<view class="publish-time u-f u-f-jsb"> 
+			<view class="publish-time u-f u-f-jsb" v-if="detail.author"> 
 				<view class="u-f-ac">
 					<image v-if="detail.dataType=='2'" src="../../static/icon_detail_original_small.png" mode=""></image>
 					<text style="color: #2B579F;" v-if="detail.dataType=='1'">{{ detail.author }}</text> 
 					<text style="color: #2B579F;" v-else @tap="toHomepage">{{ detail.author }}</text> 
 				</view>
+				<text>{{ gettime(detail.createTime) }}</text>
+			</view>
+			<view class="publish-time" v-else>
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
 			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
@@ -199,8 +202,8 @@
 			window.getIosToken = this.getIosToken
 			this.id = option.id
 			// this.handleToken('')//此处进详情便获取一次token值
-			// this.getConsultDetail()
-			// this.getCommentList()
+			this.getConsultDetail()
+			this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
 		},
