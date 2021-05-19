@@ -6,12 +6,12 @@
 			<view class="" style="color: #272727;font-size: 40rpx;line-height: 56rpx;font-weight: bold;margin-top: 40rpx;margin-bottom: 120rpx;">
 				超能城市
 			</view>
-			<view class="" style="width: 100%;height: 92rpx; background-color: #415BFD;font-weight: bold;color: #FFFFFF;font-size: 28rpx;line-height: 40rpx;text-align: center;line-height: 92rpx;border-radius: 50rpx;">
+			<view class="" @tap="modalshow" style="width: 100%;height: 92rpx; background-color: #415BFD;font-weight: bold;color: #FFFFFF;font-size: 28rpx;line-height: 40rpx;text-align: center;line-height: 92rpx;border-radius: 50rpx;">
 				立即下载
 			</view>
 			<view class="" style="font-size: 24rpx;line-height: 34rpx;margin-top: 40rpx;">
 				<text style="color: #666666;">已经安装？</text>
-				<text style="color: #415BFD;">戳这里</text>
+				<text style="color: #415BFD;" @tap="modalshow">戳这里</text>
 			</view>
 		</view>
 		<!-- 外部浏览器页面 -->
@@ -94,12 +94,15 @@
 		onLoad(options) {
 			this.id = options.id
 			this.type = options.type
-			console.log(this.type)
+			// console.log(this.type)
 			this.goApp()
 		},
 		methods:{
 			modalhidden() {
 				this.modal = '';
+			},
+			modalshow(){
+				this.modal = 'show';
 			},
 			goApp() {
 				let that = this;
