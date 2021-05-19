@@ -125,11 +125,11 @@
 		</view>
 		
 		<!-- 背景蒙层 -->
-		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
+		<view :class="{inpBg:isShowBg}" @tap="closeBg" @touchmove.prevent @touchend='closeBg'></view>
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox" :class="{safebox: !isShowBg}">
 			<view class="inpBox">
-				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
+				<input @focus='onFocus' @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
 				 placeholder-class='placeholderStyle' :placeholder="placeholder" />
 			</view>
 			<view class="zan-pinglun" v-show="!isShowBg">
@@ -165,13 +165,6 @@
 			jyfParser,
 			uniLoadMore
 		},
-		// watch:{
-		// 	isShowBg(newVal){
-		// 		if(newVal){
-					
-		// 		}
-		// 	}
-		// },
 		data() {
 			return {
 				isShowBg: false, //输入框背景
@@ -815,17 +808,7 @@
 				this.parId = queryItem.commentId
 				this.handleToken('showMore')
 				// this.showMore()
-			}
-		},
-		onPageScroll(e) {
-			// uni.showToast({
-			// 	title: JSON.stringify(e.scrollTop),
-			// 	icon: 'none',
-			// 	duration: 3000
-			// });
-			// 	this.input1 = ''
-			// 	this.isShowBg = false
-			// 	this.$refs.inputFocus.focus = false
+			},
 		},
 		onHide() {
 			this.input1 = ''
