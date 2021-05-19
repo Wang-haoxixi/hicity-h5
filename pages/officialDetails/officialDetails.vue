@@ -125,7 +125,7 @@
 		</view>
 
 		<!-- 背景蒙层 -->
-		<view :class="{inpBg:isShowBg}" @tap="closeBg"></view>
+		<view :class="{inpBg:isShowBg}" @tap="closeBg"  @touchmove.prevent @touchend='closeBg'></view>
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
 			<view class="inpBox">
@@ -810,16 +810,6 @@
 				this.handleToken('showMore')
 				// this.showMore()
 			}
-		},
-		onPageScroll(e) {
-			// uni.showToast({
-			// 	title: JSON.stringify(e.scrollTop),
-			// 	icon: 'none',
-			// 	duration: 3000
-			// });
-			// 	this.input1 = ''
-			// 	this.isShowBg = false
-			// 	this.$refs.inputFocus.focus = false
 		},
 		onHide() {
 			this.input1 = ''
