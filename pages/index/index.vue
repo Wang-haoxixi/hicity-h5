@@ -101,9 +101,15 @@
 					url: '../hotTalk/hotTalk?id='+ that.getQueryVariable('id')
 				});
 			}
-			else if (that.getQueryVariable('type') == 'officialPublic') { //话题详情分享H5
+			else if (that.getQueryVariable('type') == 'officialPublic') { //官方发布分享H5
 				uni.redirectTo({
 					url: '../officialPublic/officialPublic?id='+ that.getQueryVariable('id')
+				});
+			}
+			else if (that.getQueryVariable('type') == 'statistics') { //统计内嵌H5
+				uni.redirectTo({
+					url: '../statistics/statistics?token=' + that.getQueryVariable('token') + '&id=' + that.getQueryVariable(
+						'userId')
 				});
 			}
 		}
