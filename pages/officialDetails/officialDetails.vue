@@ -32,13 +32,13 @@
 			暂无数据
 		</view>
 
-		<view class="hr"></view>
+		<!-- <view class="hr"></view> -->
 
 		<!-- 评论部分 -->
 		<view class="comment-box">
 			<view class="commentBar">
 				<view class="commentBar-item">
-					<text class="commentTitle">全部评论</text><text>({{commentData.total}})</text>
+					<text class="commentTitle">评论</text><text>({{commentData.total}})</text>
 				</view>
 			</view>
 
@@ -892,31 +892,35 @@
 	}
 
 	.comment-box {
-		padding: 32rpx 32rpx 122rpx 32rpx;
+		padding: 0rpx 32rpx 122rpx 32rpx;
 		@extend %safe-bottom-box;
 
 		.commentBar {
-			height: 70rpx;
+			// height: 70rpx;
+			height: 108rpx;
+			line-height: 108rpx;
 			display: flex;
 
 			.commentBar-item {
+				color: #272727;
+				font-weight: 600;
 				.commentTitle {
-					color: #1676FF !important;
-					font-weight: 500;
-					color: #333333;
-					font-size: 32rpx;
+					// color: #1676FF !important;
+					// font-weight: 500;
+					// color: #333333;
+					// font-size: 32rpx;
 					margin-right: 15rpx;
-					position: relative;
+					// position: relative;
 
-					::after {
-						content: '';
-						width: 20rpx;
-						height: 6rpx;
-						position: absolute;
-						bottom: -26rpx;
-						left: 41%;
-						background-color: #1676FF;
-					}
+					// ::after {
+					// 	content: '';
+					// 	width: 20rpx;
+					// 	height: 6rpx;
+					// 	position: absolute;
+					// 	bottom: -26rpx;
+					// 	left: 41%;
+					// 	background-color: #1676FF;
+					// }
 				}
 			}
 		}
