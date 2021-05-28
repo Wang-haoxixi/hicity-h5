@@ -157,6 +157,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/statistics/statistics",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+				"navigationBarTitleText": "统计",
+                "enablePullDownRefresh": true
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

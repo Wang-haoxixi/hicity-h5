@@ -110,7 +110,9 @@
 				// console.log(token)
 				var ua = navigator.userAgent.toLowerCase();
 				var isWeixin = ua.indexOf('micromessenger') != -1;
-				if (isWeixin) {
+				//苹果QQ内置浏览器
+				var isQQ =ua.indexOf('qq')!=-1 && ua.indexOf('iphone') !=-1 && ua.indexOf('mqqbrowser')==-1
+				if (isWeixin || isQQ) {
 					that.modal = 'show';
 					// console.log(that.modal)
 					// alert(that.modal)
@@ -123,7 +125,8 @@
 						//  苹果手机
 						that.user="0";
 					}
-				} else {
+				}
+				else {
 					let u = navigator.userAgent;
 					// // const lib = new CallApp(option);
 					that.isAndroid = u.indexOf('Android') > -1; //安卓终端

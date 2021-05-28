@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class=""
-			style="height:556rpx; background-image: url(../../static/pic_hotBgimg.png);background-size:100% 556rpx;">
+			style="background-image: url(../../static/pic_hotBgimg.png);background-size:100% 556rpx;">
 			<view class="" style="padding:0rpx 32rpx; ">
 				<view class=""
 					style="color: #FFFFFF;font-size: 28rpx;line-height: 40rpx;font-weight: bold;letter-spacing: 2px;padding-top: 44rpx;margin-bottom: 12rpx;">

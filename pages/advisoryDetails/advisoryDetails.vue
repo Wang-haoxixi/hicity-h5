@@ -527,7 +527,6 @@
 							})
 						} else if (res.statusCode == 401) {
 							if(!this.tk) {
-								
 								if(isAndroid){
 									return window.android.invoke_native("goLogin", null, "androidRst")
 								}else if(isIOS){
