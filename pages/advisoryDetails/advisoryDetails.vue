@@ -7,8 +7,7 @@
 			<view class="publish-time u-f u-f-jsb" v-if="detail.author"> 
 				<view class="u-f-ac">
 					<image v-if="detail.dataType=='2'" src="../../static/icon_detail_original_small.png" mode=""></image>
-					<text style="color: #2B579F;" v-if="detail.dataType=='1'">{{ detail.author }}</text> 
-					<text style="color: #2B579F;" v-else @tap="toHomepage">{{ detail.author }}</text> 
+					<text style="color: #5F5F5F;">{{ detail.author }}</text> 
 				</view>
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
@@ -20,13 +19,43 @@
 			<!-- notice -->
 			<view class="notice">
 				<view v-if="detail.dataType=='1'">
-					原文由{{ detail.author }}发布于{{ detail.newsSource }}，由 <text style="color: #2B579F;">{{detail.createByName}}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+					原文由{{ detail.author }}发布于{{ detail.newsSource }}，由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
 				</view>
 				<view v-else-if="detail.dataType=='2'">
-					本文由 <text style="color: #2B579F;" @tap="toHomepage">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+					本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+				</view>
+			</view>
+			<view class="tag-box">
+				<view class="tag-item u-f-ajc" v-for="(item,index) in 3" :key='index'>
+					娱乐淘金
 				</view>
 			</view>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
+			<view class="recommend-box">
+				<view class="recommend-box-title">
+					相关推荐
+				</view>
+				<view class="recommend-list-box">
+					<view class="recommend-item u-f-ac">
+						<view class="recommend-content u-f1">
+							推荐相关新闻标题，最长两行文字限制
+						</view>
+						<image src="../../static/circleBg.png" mode=""></image>
+					</view>
+					<view class="recommend-item u-f-ac">
+						<view class="recommend-content u-f1">
+							推荐相关新闻标题，最长两行文字限制
+						</view>
+						<image src="../../static/circleBg.png" mode=""></image>
+					</view>
+					<view class="recommend-item u-f-ac">
+						<view class="recommend-content u-f1">
+							推荐相关新闻标题，最长两行文字限制
+						</view>
+						<image src="../../static/circleBg.png" mode=""></image>
+					</view>
+				</view>
+			</view>
 		</view>
 		<view class="noData" v-if="!detail">
 			暂无数据
@@ -202,8 +231,8 @@
 			window.getIosToken = this.getIosToken
 			this.id = option.id
 			// this.handleToken('')//此处进详情便获取一次token值
-			// this.getConsultDetail()
-			// this.getCommentList()
+			this.getConsultDetail()
+			this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
 		},
@@ -240,18 +269,6 @@
 			}
 		},
 		methods: {
-			toHomepage(){
-				// uni.showToast({
-				// 	title: this.detail.author,
-				// 	icon: 'none',
-				// 	duration: 5000
-				// });
-				if(isAndroid){
-					return window.android.invoke_native("user", JSON.stringify({userId : this.detail.createBy}), "androidRst")
-				}else if(isIOS){
-					return window.webkit.messageHandlers.user.postMessage(this.detail.createBy)
-				}
-			},
 			getContent(content){
 				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
 			},
@@ -841,7 +858,7 @@
 	}
 
 	.detail-box {
-		padding: 36rpx 32rpx 32rpx;
+		padding: 36rpx 32rpx 0rpx;
 
 		.title {
 			line-height: 52rpx;
@@ -874,6 +891,21 @@
 			font-size: 24rpx;
 			line-height: 40rpx;
 		}
+		
+		.tag-box{
+			padding-top: 32rpx;
+			display: flex;
+			justify-content: space-between;
+			.tag-item{
+				font-size: 26rpx;
+				color: #272727;
+				width: 212rpx;
+				height: 72rpx;
+				background-color: #F5F7F8;
+				border: 2rpx solid #EDEDED;
+				border-radius: 8rpx;
+			}
+		}
 
 		.browse-num {
 			margin-top: 64rpx;
@@ -881,6 +913,31 @@
 			line-height: 34rpx;
 			font-size: 24rpx;
 			color: #999999;
+		}
+		.recommend-box{
+			padding-top: 64rpx;
+			.recommend-box-title{
+				color: #272727;
+				font-size: 32rpx;
+				font-weight: 500;
+				padding-bottom: 32rpx;
+			}
+			.recommend-list-box{
+				.recommend-item{
+					padding-bottom: 48rpx;
+					.recommend-content{
+						color: #272727;
+						font-size: 32rpx;
+						line-height: 48rpx;
+						margin-right: 32rpx;
+					}
+					>image{
+						width: 224rpx;
+						height: 152rpx;
+						border-radius: 8rpx;
+					}
+				}
+			}
 		}
 	}
 
