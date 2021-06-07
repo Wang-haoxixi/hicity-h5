@@ -77,7 +77,8 @@
 					p: 'text-indent: 2em',//首行缩进两个字符
 				},
 				bottomHeight: '',
-				source:''
+				source:'',
+				url:''
 			};
 		},
 		onLoad(options) {
@@ -85,7 +86,7 @@
 			// alert(options.source)
 			this.source = options.source
 			this.getDetails(this.id)
-			// this.getConfig()
+			this.getConfig()
 			// this.$nextTick(function() {
 			// 	uni.createSelectorQuery()
 			// 		.in(this)
@@ -99,11 +100,12 @@
 		methods: {
 			// wx api 注册
 			getConfig() {
-				let url =escape(window.location.href.split('#')[0])
+				let that =this
+				that.url =escape(window.location.href.split('#')[0])
+				// let url =escape('https://h5.wecan.vip/?type=activityDetails&id=85')
 				uni.request({
-					url: '/admin/open/get_ticket?url=' + url,
+					url: '/api/admin/open/get_ticket?url=' + that.url,
 					success: (res) => {
-						console.log(res)
 						// if (res.data.data.businessCode !== 1000) {
 						// 	return uni.showToast({
 						// 		title: res.data.data.msg,
@@ -112,12 +114,12 @@
 						// 	});
 						// } else {
 							wx.config({
-								debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-								appId: 'wx621b97776ce310ed', // 必填，公众号的唯一标识，填自己的！
-								timestamp: 1620983932936, // 必填，生成签名的时间戳，刚才接口拿到的数据
-								nonceStr: "716xhyt9yg0fx5an", // 必填，生成签名的随机串
-								signature: "d644c1626f7ea6d34ea473e1a255cf82557b11ae", // 必填，签名，见附录1
-								jsApiList: ['wx-open-launch-weapp'],
+								debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+								appId: 'wx872fa385e99e857f', // 必填，公众号的唯一标识，填自己的！
+								timestamp: res.data.data.data.timestamp, // 必填，生成签名的时间戳，刚才接口拿到的数据
+								nonceStr:res.data.data.data.noncestr, // 必填，生成签名的随机串
+								signature: res.data.data.data.signature, // 必填，签名，见附录1
+								jsApiList: ['wx-open-launch-weapp','updateAppMessageShareData','updateTimelineShareData'],
 								openTagList: ['wx-open-launch-weapp'] // 跳转小程序时必填
 							});
 						// }
@@ -125,17 +127,34 @@
 				})
 
 				wx.ready(res => {
-					console.log(res);
-					this.$nextTick(() => {
-						let btn = document.getElementById('launch-btn');
-						btn.addEventListener('launch', e => {
-							console.log('success');
-						});
-						btn.addEventListener('error', e => {
-							alert('小程序打开失败');
-							console.log('fail', e.detail);
-						});
-					});
+					// console.log(res);
+					// this.$nextTick(() => {
+					// 	let btn = document.getElementById('launch-btn');
+					// 	btn.addEventListener('launch', e => {
+					// 		console.log('success');
+					// 	});
+					// 	btn.addEventListener('error', e => {
+					// 		alert('小程序打开失败');
+					// 		console.log('fail', e.detail);
+					// 	});
+					// });
+					wx.updateAppMessageShareData({
+					    title: that.details.name, // 分享标题
+					    desc: that.details.spot, // 分享描述
+					    link: unescape(that.url), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+					    imgUrl: that.details.poster, // 分享图标
+					    success: function () {
+					      // 设置成功
+					    }
+					  })
+					  wx.updateTimelineShareData({ 
+					      title: that.details.name, // 分享标题
+					      link: unescape(that.url), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+					      imgUrl: that.details.poster, // 分享图标
+					      success: function () {
+					        // 设置成功
+					      }
+					    })
 				});
 
 				// wx.error(res => {
