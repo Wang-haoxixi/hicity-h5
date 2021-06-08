@@ -6,8 +6,9 @@
 			<view class="title">{{detail.title}}</view>
 			<view class="publish-time u-f u-f-jsb" v-if="detail.author"> 
 				<view class="u-f-ac">
-					<image v-if="detail.dataType=='2'" src="../../static/icon_detail_original_small.png" mode=""></image>
-					<text style="color: #5F5F5F;">{{ detail.author }}</text> 
+					<image v-if="detail.dataType=='1'" src="../../static/icon_detail_original_small.png" mode=""></image>
+					<text style="color: #5F5F5F;" v-if="detail.dataType=='2'">{{ detail.author }}</text> 
+					<text style="color: #5F5F5F;" v-else-if="detail.dataType=='1'">{{ detail.createByName }}</text> 
 				</view>
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
@@ -18,44 +19,36 @@
 			
 			<!-- notice -->
 			<view class="notice">
-				<view v-if="detail.dataType=='1'">
-					原文由{{ detail.author }}发布于{{ detail.newsSource }}，由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+				<!-- 转载 -->
+				<view v-if="detail.dataType=='2'">
+					<!-- detail.author有无作者 -->
+					原文{{ detail.author && `由${ detail.author }` }}发布于{{ detail.newsSource }}，由{{ detail.createByName }}转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
 				</view>
-				<view v-else-if="detail.dataType=='2'">
+				<!-- 原创 -->
+				<view v-else-if="detail.dataType=='1'">
 					本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
 				</view>
 			</view>
-			<view class="tag-box">
-				<view class="tag-item u-f-ajc" v-for="(item,index) in 3" :key='index'>
-					娱乐淘金
+			
+			<!-- <view class="tag-box" v-if="detail.labelList && detail.labelList.length>0">
+				<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index' @tap="toTagPage(item.id)">
+					{{item.name}}
 				</view>
-			</view>
+			</view> -->
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
-			<view class="recommend-box">
+			<!-- <view class="recommend-box">
 				<view class="recommend-box-title">
 					相关推荐
 				</view>
 				<view class="recommend-list-box">
-					<view class="recommend-item u-f-ac">
-						<view class="recommend-content u-f1">
-							推荐相关新闻标题，最长两行文字限制
+					<view class="recommend-item u-f-ac" v-for="(item,index) in recommendationList" :key='index' @tap="changeDetailsContent(item.officialNewsId)">
+						<view class="recommend-content multiLineEllipsis u-f1">
+							{{item.officialNewsName}}
 						</view>
-						<image src="../../static/circleBg.png" mode=""></image>
-					</view>
-					<view class="recommend-item u-f-ac">
-						<view class="recommend-content u-f1">
-							推荐相关新闻标题，最长两行文字限制
-						</view>
-						<image src="../../static/circleBg.png" mode=""></image>
-					</view>
-					<view class="recommend-item u-f-ac">
-						<view class="recommend-content u-f1">
-							推荐相关新闻标题，最长两行文字限制
-						</view>
-						<image src="../../static/circleBg.png" mode=""></image>
+						<image :src="item.urlList ? item.urlList[0] : ''" mode=""></image>
 					</view>
 				</view>
-			</view>
+			</view> -->
 		</view>
 		<view class="noData" v-if="!detail">
 			暂无数据
@@ -204,9 +197,9 @@
 				msgType: null, //传给移动端的type值
 				safebox: {},
 				tagStyle: {
-					body: 'line-height: 1.8;',
+					body: 'line-height: 1.8;color: #272727;font-size: 34rpx',
 					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
-					p: 'text-indent: 2em',//首行缩进两个字符
+					// p: 'text-indent: 2em',//首行缩进两个字符
 				},
 				id: null, //资讯id
 				detail: {},
@@ -222,7 +215,8 @@
 				contentD: null, //评论内容
 				replyVOCurrent: 1, //回复数据的当前页
 				parId: null, //被回复的评论
-				placeholder: '说点儿什么吧~'
+				placeholder: '说点儿什么吧~',
+				recommendationList: []
 			};
 		},
 		onLoad(option) {
@@ -230,11 +224,13 @@
 			window.androidRst = this.androidRst
 			window.getIosToken = this.getIosToken
 			this.id = option.id
+			this.getRecommendationList()
 			// this.handleToken('')//此处进详情便获取一次token值
-			this.getConsultDetail()
-			this.getCommentList()
+			// this.getConsultDetail()
+			// this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
+			
 		},
 		onReachBottom() {
 			if (this.commentData.current < this.commentData.pages) {
@@ -269,6 +265,37 @@
 			}
 		},
 		methods: {
+			// 相关推荐
+			getRecommendationList(){
+				uni.request({
+					url: '/api/cms/open/official_detail_rec',
+					data: {
+						dataId: this.id,
+					},
+					success: (res) => {
+						console.log('推荐...',res)
+						this.recommendationList = res.data.data.data
+					},
+				})
+			} ,
+			// 去标签页
+			toTagPage(id){
+				let query = {
+					id,
+				}
+				console.log(JSON.stringify(query))
+				if(isAndroid){
+					return window.android.invoke_native("goNewsTagsPage", JSON.stringify(query), "androidRst")
+				}else if(isIOS){
+					// return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+				}
+			},
+			// 相关推荐
+			changeDetailsContent(id){
+				console.log('切换详情...',id)
+				this.id = id
+				this.getConsultDetail()
+			},
 			getContent(content){
 				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
 			},
@@ -285,7 +312,9 @@
 						"Authorization": 'Bearer ' + this.tk
 					},
 					url: '/api/cms/open/news_details',
+					// url: '/api/cms/open/official_details',
 					data: {
+						// officialNewsId: this.id
 						newsId: this.id
 					},
 					success: (res) => {
@@ -862,8 +891,8 @@
 
 		.title {
 			line-height: 52rpx;
-			font-size: 36rpx;
-			color: #333333;
+			font-size: 40rpx;
+			color: #272727;
 			font-weight: bold;
 		}
 
@@ -895,7 +924,7 @@
 		.tag-box{
 			padding-top: 32rpx;
 			display: flex;
-			justify-content: space-between;
+			// justify-content: space-between;
 			.tag-item{
 				font-size: 26rpx;
 				color: #272727;
@@ -904,11 +933,15 @@
 				background-color: #F5F7F8;
 				border: 2rpx solid #EDEDED;
 				border-radius: 8rpx;
+				margin-right: 24rpx;
+			}
+			.tag-item:last-child{
+				margin-right: 0rpx;
 			}
 		}
 
 		.browse-num {
-			margin-top: 64rpx;
+			margin-top: 32rpx;
 			height: 34rpx;
 			line-height: 34rpx;
 			font-size: 24rpx;
