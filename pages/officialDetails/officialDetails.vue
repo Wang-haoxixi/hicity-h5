@@ -150,7 +150,7 @@
 		</view>
 
 		<!-- 背景蒙层 -->
-		<view :class="{inpBg:isShowBg}" @tap="closeBg"  @touchmove.prevent @touchend='closeBg'></view>
+		<view :class="{inpBg:isShowBg}" @tap.stop="closeBg"  @touchmove.prevent @touchend.stop='closeBg'></view>
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
 			<view class="inpBox">
@@ -216,7 +216,8 @@
 				replyVOCurrent: 1, //回复数据的当前页
 				parId: null, //被回复的评论
 				placeholder: '说点儿什么吧~',
-				recommendationList: []
+				recommendationList: [],
+				scrollTop: 0, // 页面移动距离
 			};
 		},
 		onLoad(option) {
@@ -754,6 +755,14 @@
 				this.$nextTick(function() {
 					this.$refs.inputFocus.focus = true
 				})
+				const query = uni.createSelectorQuery().in(this);
+				query.select('.commentBar').boundingClientRect(data => {
+					// 此处滑动到评论区域
+					uni.pageScrollTo({
+							scrollTop: data.top + this.scrollTop,
+							duration: 100
+					});
+				}).exec();
 			},
 			// 点击一级评论
 			tapCommentFirst(opt) {
@@ -868,6 +877,9 @@
 				this.handleToken('showMore')
 				// this.showMore()
 			}
+		},
+		onPageScroll(e){
+			this.scrollTop = e.scrollTop
 		},
 		onHide() {
 			this.input1 = ''
@@ -1225,7 +1237,7 @@
 				>text {
 					font-size: 20rpx;
 					font-weight: 400;
-					color: #999999;
+					color: #272727;
 				}
 			}
 
