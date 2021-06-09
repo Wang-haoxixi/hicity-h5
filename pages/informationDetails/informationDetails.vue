@@ -3,9 +3,26 @@
 	<view class="comment">
 		<!-- 详情内容 -->
 		<view class="detail-box" v-if="detail">
-			<view class="title">{{detail.title}}</view>
+			<view class="title">{{detail.officialNewsName}}</view>
 			<view class="publish-time">发布时间：{{ gettime(detail.createTime) }}</view>
-			<jyf-parser class="parser" :html="detail.content" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
+			<!-- notice -->
+			<view class="notice">
+				<!-- 转载 -->
+				<view v-if="detail.dataType=='2'">
+					<!-- detail.author有无作者 -->
+					原文{{ detail.author && `由${ detail.author }` }}发布于{{ detail.newsSource }}，由<text style="color: #5F5F5F;">{{ detail.createByName }}</text>转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+				</view>
+				<!-- 原创 -->
+				<view v-else-if="detail.dataType=='1'">
+					本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+				</view>
+			</view>
+			<view class="tag-box" v-if="detail.labelList && detail.labelList.length>0">
+				<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index'>
+					{{item.name}}
+				</view>
+			</view>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 		</view>
 		<view class="" :style="{height:bottomHeight + 'px'}">
@@ -149,9 +166,9 @@
 						// "Authorization": 'Bearer ' + '006f1779-19f6-417d-82bc-677972beaa92'
 						"Authorization": 'Bearer ' + this.tk
 					},
-					url: '/api/cms/open/news_details',
+					url: '/api/cms/open/official_details',
 					data: {
-						newsId: this.id
+						officialNewsId: this.id
 					},
 					success: (res) => {
 						// uni.showToast({
@@ -227,18 +244,18 @@
 					// 	});
 					// });
 					wx.updateAppMessageShareData({ 
-					    title: that.detail.title, // 分享标题
+					    title: that.detail.officialNewsName, // 分享标题
 					    desc: '我分享了一篇新闻', // 分享描述
 					    link: unescape(that.url), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-					    imgUrl: 'https://woneng-oss.oss-cn-hangzhou.aliyuncs.com/wxapp/hicity/logo_square.png', // 分享图标
+					    imgUrl:that.detail.officialNewsUrlList.length>0 && !that.isEmpty(that.detail.officialNewsUrlList[0].newsUrl)?that.detail.officialNewsUrlList[0].newsUrl:'https://woneng-oss.oss-cn-hangzhou.aliyuncs.com/wxapp/hicity/logo_square.png', // 分享图标
 					    success: function () {
 					      // 设置成功
 					    }
 					  })
 					  wx.updateTimelineShareData({ 
-					      title: that.detail.title, // 分享标题
+					      title: that.detail.officialNewsName, // 分享标题
 					      link: unescape(that.url), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-					      imgUrl: 'https://woneng-oss.oss-cn-hangzhou.aliyuncs.com/wxapp/hicity/logo_square.png', // 分享图标
+					      imgUrl:that.detail.officialNewsUrlList.length>0 && !that.isEmpty(that.detail.officialNewsUrlList[0].newsUrl)?that.detail.officialNewsUrlList[0].newsUrl:'https://woneng-oss.oss-cn-hangzhou.aliyuncs.com/wxapp/hicity/logo_square.png', // 分享图标
 					      success: function () {
 					        // 设置成功
 					      }
@@ -259,6 +276,39 @@
 </script>
 
 <style lang="scss">
+	.notice{
+		padding-top: 20rpx;
+		color: #999999;
+		font-size: 24rpx;
+		line-height: 40rpx;
+	}
+	
+	.tag-box{
+		padding-top: 32rpx;
+		display: flex;
+		// justify-content: space-between;
+		.tag-item{
+			font-size: 26rpx;
+			color: #272727;
+			width: 212rpx;
+			height: 72rpx;
+			background-color: #F5F7F8;
+			border: 2rpx solid #EDEDED;
+			border-radius: 8rpx;
+			margin-right: 24rpx;
+		}
+		.tag-item:last-child{
+			margin-right: 0rpx;
+		}
+	}
+	
+	.browse-num {
+		margin-top: 32rpx;
+		height: 34rpx;
+		line-height: 34rpx;
+		font-size: 24rpx;
+		color: #999999;
+	}
 	.safe-bottom {
 		/* iphonex 等安全区设置，底部安全区适配 */
 		/* #ifndef APP-NVUE */
@@ -304,14 +354,6 @@
 
 		.parser {
 			margin-top: 48rpx;
-		}
-
-		.browse-num {
-			margin-top: 64rpx;
-			height: 34rpx;
-			line-height: 34rpx;
-			font-size: 24rpx;
-			color: #999999;
 		}
 	}
 
