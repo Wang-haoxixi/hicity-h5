@@ -7,10 +7,10 @@
 				<view class="" style="padding: 24rpx; font-size: 24rpx;line-height: 34rpx;color: #5F5F5F;">
 					累计收款(元)
 				</view>
-				<view class="" style="padding:0 24rpx; display: flex;align-items: flex-end;" @tap="goDetails">
+				<view class="" style="padding:0 24rpx; display: flex;align-items: flex-end;">
 					<view class=""
 						style="color: #415BFD;font-size: 72rpx;line-height: 84rpx;font-family: DIN Alternate;font-weight: bold;">
-						{{accountInfo.cumulativeCollection}}
+						{{isEmpty(accountInfo.cumulativeCollection)?'0.0':accountInfo.cumulativeCollection}}
 					</view>
 					<view class="" style="margin-left: 16rpx;margin-bottom: 10rpx;">
 						<view class="" style="display: flex;align-items: center;font-size: 24rpx;line-height: 34rpx;">
@@ -19,35 +19,35 @@
 									共
 								</view>
 								<view style="color:#415BFD ;font-family: PingFangSC-Medium;font-weight: bold">
-									{{accountInfo.collectionNum}}
+									{{isEmpty(accountInfo.withdrawalNumber)?'0':accountInfo.withdrawalNumber}}
 								</view>
 								<view class="">
 									笔
 								</view>
 							</view>
-							<image src="../../static/icon-statisticsRight.png" mode=""
-								style="width: 14rpx;height: 34rpx;"></image>
 						</view>
 					</view>
 				</view>
 				<view class="" style="margin: 24rpx;height: 1px;background-color: #EDEDED;opacity: 0.5;">
 
 				</view>
-				<view class="" style="padding: 0rpx 24rpx; display: flex;align-items: center;color: #5F5F5F;">
-					<view class="" style="margin-right: 24rpx;display: flex;align-items: center;">
-						<view style="font-size: 24rpx;line-height: 42rpx;margin-right: 8rpx;">账户余额(元)</view>
+				<view class="" @tap="goDetails" style="padding: 0rpx 24rpx; display: flex;align-items: center;color: #5F5F5F;">
+					<view class="" style="margin-right: 16rpx;display: flex;align-items: center;">
+						<view style="font-size: 24rpx;line-height: 42rpx;margin-right: 8rpx;">累计收益(元)</view>
 						<view
 							style="color: #415BFD;font-size: 30rpx;line-height: 42rpx;font-family: PingFangSC-Medium;font-weight: bold;">
-							{{accountInfo.amount}}
+							{{isEmpty(accountInfo.cumulativeRevenue)?'0':accountInfo.cumulativeRevenue}}
 						</view>
 					</view>
-					<view class="" style="margin-right: 24rpx;display: flex;align-items: center;">
+					<image src="../../static/icon-statisticsRight.png" mode=""
+						style="width: 14rpx;height: 34rpx;"></image>
+					<!-- <view class="" style="margin-right: 24rpx;display: flex;align-items: center;">
 						<view style="font-size: 24rpx;line-height: 42rpx;margin-right: 8rpx;">累计提现(元)</view>
 						<view
 							style="color: #415BFD;font-size: 30rpx;line-height: 42rpx;font-family: PingFangSC-Medium;font-weight: bold;">
-							{{accountInfo.cumulativeCashOut}}
+							{{isEmpty(accountInfo.cumulativeCashOut)?'0':accountInfo.cumulativeCashOut}}
 						</view>
-					</view>
+					</view> -->
 				</view>
 			</view>
 			<view class=""
@@ -248,6 +248,9 @@
 
 <script>
 	// import uCharts from '@/uni_modules/qiun-data-charts/js_sdk/u-charts/config-ucharts.js';
+	import {
+		isEmpty
+	} from '@/common/utils.js'
 	import wPicker from "@/components/w-picker/w-picker.vue"
 	let u = navigator.userAgent;
 	let isAndroid = u.indexOf('Android') > -1; //安卓终端
@@ -262,8 +265,8 @@
 				accountDayDateVisible:false,
 				timeDateVisible:false,
 				timeDayDateVisible:false,
-				userId: '',
-				token:'',
+				userId: '89',
+				token:'0f6c8ed5-97ad-4df5-9a0f-91a522f81e32',
 				accountInfo: {},
 				//赋值两个，一个储存一个展示，否则回显失效
 				accountDate: '',
@@ -309,8 +312,8 @@
 			};
 		},
 		onLoad(options) {
-			this.userId = options.id
-			this.token =options.token
+			// this.userId = options.id
+			// this.token =options.token
 			const date = new Date();
 			let year = date.getFullYear();
 			let month = date.getMonth() + 1;
@@ -380,6 +383,7 @@
 			}
 		},
 		methods: {
+			isEmpty,
 			goDetails(){
 				if(isAndroid){
 					window.android.goAccountList()
@@ -492,7 +496,7 @@
 			},
 			getInfo() {
 				uni.request({
-					url: '/api/fms/account/info',
+					url: '/api/mms/store_order/mobile/personal_bill',
 					data: {
 						userId: this.userId
 					},
