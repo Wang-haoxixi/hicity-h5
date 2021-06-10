@@ -6,6 +6,25 @@
 				<view class="title">{{detail.officialNewsName}}</view>
 				<view class="publish-time">发布时间：{{detail.createTime}}</view>
 				<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
+				<!-- notice -->
+				<view class="notice">
+					<!-- 转载 -->
+					<view v-if="detail.dataType=='2'">
+						<!-- detail.author有无作者 -->
+						原文{{ detail.author && `由${ detail.author }` }}发布于{{ detail.newsSource }}，由<text style="color: #5f5f5f;">{{ detail.createByName }}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+					</view>
+					<!-- 原创 -->
+					<view v-else-if="detail.dataType=='1'">
+						本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+					</view>
+				</view>
+				
+				<view class="tag-box" v-if="detail.labelList && detail.labelList.length>0">
+					<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index'>
+						{{item.name}}
+					</view>
+				</view>
+				<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 			</view>
 			<view class="noData" v-if="!detail">
 				暂无数据
@@ -169,6 +188,36 @@
 </script>
 
 <style lang="scss">
+	.notice{
+		padding-top: 20rpx;
+		color: #999999;
+		font-size: 24rpx;
+		line-height: 40rpx;
+	}
+	
+	.tag-box{
+		padding-top: 32rpx;
+		display: flex;
+		// justify-content: space-between;
+		.tag-item{
+			font-size: 26rpx;
+			color: #272727;
+			width: 212rpx;
+			height: 72rpx;
+			background-color: #F5F7F8;
+			border: 2rpx solid #EDEDED;
+			border-radius: 8rpx;
+			margin-right: 24rpx;
+		}
+	}
+	
+	.browse-num {
+		margin-top: 32rpx;
+		height: 34rpx;
+		line-height: 34rpx;
+		font-size: 24rpx;
+		color: #999999;
+	}
 page {
 		background-color: #FFFFFF;
 		height: 100%;
@@ -206,14 +255,6 @@ page {
 
 		.parser {
 			margin-top: 48rpx;
-		}
-
-		.browse-num {
-			margin-top: 64rpx;
-			height: 34rpx;
-			line-height: 34rpx;
-			font-size: 24rpx;
-			color: #999999;
 		}
 	}
 
