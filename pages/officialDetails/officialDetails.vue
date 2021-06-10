@@ -151,7 +151,7 @@
 		</view>
 
 		<!-- 背景蒙层 -->
-		<view :class="{inpBg:isShowBg}" @tap.stop="closeBg"  @touchmove.prevent @touchend.stop='closeBg'></view>
+		<view :class="{inpBg:isShowBg}" @tap.stop="closeBg" @touchmove.prevent></view>
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
 			<view class="inpBox">
@@ -756,6 +756,7 @@
 				this.$nextTick(function() {
 					this.$refs.inputFocus.focus = true
 				})
+				if(isIOS) return false
 				const query = uni.createSelectorQuery().in(this);
 				query.select('.commentBar').boundingClientRect(data => {
 					// 此处滑动到评论区域
