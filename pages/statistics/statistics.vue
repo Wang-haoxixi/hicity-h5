@@ -265,8 +265,8 @@
 				accountDayDateVisible:false,
 				timeDateVisible:false,
 				timeDayDateVisible:false,
-				userId: '89',
-				token:'0f6c8ed5-97ad-4df5-9a0f-91a522f81e32',
+				userId: '',
+				token:'',
 				accountInfo: {},
 				//赋值两个，一个储存一个展示，否则回显失效
 				accountDate: '',
@@ -312,8 +312,8 @@
 			};
 		},
 		onLoad(options) {
-			// this.userId = options.id
-			// this.token =options.token
+			this.userId = options.id
+			this.token =options.token
 			const date = new Date();
 			let year = date.getFullYear();
 			let month = date.getMonth() + 1;
