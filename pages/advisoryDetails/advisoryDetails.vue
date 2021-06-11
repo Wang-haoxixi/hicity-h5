@@ -22,7 +22,13 @@
 				<!-- 转载 -->
 				<view v-if="detail.dataType=='2'">
 					<!-- detail.author有无作者 -->
-					原文{{ detail.author && `由${ detail.author }` }}发布于{{ detail.newsSource }}，由{{ detail.createByName }}转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+					<text v-if="detail.author && detail.newsSource">原文{{ `由${ detail.author }` }}发布于{{ detail.newsSource }}，</text>
+					<text v-else-if="detail.author">原文{{ `由${ detail.author }` }}发布，</text> 
+					<text v-else-if="detail.newsSource">原文发布于{{ detail.newsSource }}，</text> 
+					<text v-else>本文</text>
+					
+					
+					由{{ detail.createByName }}转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
 				</view>
 				<!-- 原创 -->
 				<view v-else-if="detail.dataType=='1'">
