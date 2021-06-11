@@ -119,7 +119,7 @@
 								timestamp: res.data.data.data.timestamp, // 必填，生成签名的时间戳，刚才接口拿到的数据
 								nonceStr:res.data.data.data.noncestr, // 必填，生成签名的随机串
 								signature: res.data.data.data.signature, // 必填，签名，见附录1
-								jsApiList: ['wx-open-launch-weapp','updateAppMessageShareData','updateTimelineShareData'],
+								jsApiList: ['wx-open-launch-weapp', 'chooseImage','previewImage','updateAppMessageShareData','updateTimelineShareData'],
 								openTagList: ['wx-open-launch-weapp'] // 跳转小程序时必填
 							});
 						// }
