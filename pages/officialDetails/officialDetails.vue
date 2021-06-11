@@ -282,7 +282,6 @@
 						cityId: '2477',//原生传过来
 					},
 					success: (res) => {
-						console.log('推荐...',res)
 						this.recommendationList = res.data.data.data
 					},
 				})
@@ -293,7 +292,6 @@
 					id,
 					name
 				}
-				console.log(JSON.stringify(query))
 				if(isAndroid){
 					return window.android.invoke_native("goNewsTagsPage", JSON.stringify(query), "androidRst")
 				}else if(isIOS){
@@ -302,7 +300,6 @@
 			},
 			// 相关推荐
 			changeDetailsContent(id){
-				console.log('切换详情...',id)
 				this.id = id
 				this.getConsultDetail()
 				// setTimeout(()=>{
