@@ -281,7 +281,6 @@
 						dataId: this.id,
 					},
 					success: (res) => {
-						console.log('推荐...',res)
 						this.recommendationList = res.data.data.data
 					},
 				})
@@ -291,7 +290,6 @@
 				let query = {
 					id,
 				}
-				console.log(JSON.stringify(query))
 				if(isAndroid){
 					return window.android.invoke_native("goNewsTagsPage", JSON.stringify(query), "androidRst")
 				}else if(isIOS){
@@ -300,7 +298,6 @@
 			},
 			// 相关推荐
 			changeDetailsContent(id){
-				console.log('切换详情...',id)
 				this.id = id
 				this.getConsultDetail()
 			},
