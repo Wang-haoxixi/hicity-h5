@@ -265,8 +265,8 @@
 				accountDayDateVisible:false,
 				timeDateVisible:false,
 				timeDayDateVisible:false,
-				userId: '89',
-				token:'0f6c8ed5-97ad-4df5-9a0f-91a522f81e32',
+				userId: '',
+				token:'',
 				accountInfo: {},
 				//赋值两个，一个储存一个展示，否则回显失效
 				accountDate: '',
@@ -281,11 +281,11 @@
 				timeValue: 0,
 				accountCompanyList: [{
 					storeId: undefined,
-					storeName: '选择店铺'
+					storeName: '全部店铺'
 				}],
 				timeCompanyList: [{
 					storeId: undefined,
-					storeName: '选择店铺'
+					storeName: '全部店铺'
 				}],
 				accountColumn:{},
 				accountDayColumn:{},
@@ -312,8 +312,8 @@
 			};
 		},
 		onLoad(options) {
-			// this.userId = options.id
-			// this.token =options.token
+			this.userId = options.id
+			this.token =options.token
 			const date = new Date();
 			let year = date.getFullYear();
 			let month = date.getMonth() + 1;
@@ -353,35 +353,35 @@
 				return this.timeCompanyList[this.timeValue].storeId
 			}
 		},
-		onPullDownRefresh() {
-			const date = new Date();
-			let year = date.getFullYear();
-			let month = date.getMonth() + 1;
-			let day = date.getDate()
-			month = month > 9 ? month : '0' + month;
-			this.changYear =year
-			this.changeMonth = month
-			this.changeTimeYear= year
-			this.changeTimeMonth = month
-			this.nowDate = day
-			this.getInfo()
-			this.getCompanyList()
-			this.accountDate = `${year}-${month}`
-			this.accountDateShow = `${year}年${month}月`
-			this.accountDayDate = `${year}-${month}`
-			this.accountDayDateShow = `${year}年${month}月`
-			this.timeDate = `${year}-${month}`
-			this.timeDateShow = `${year}年${month}月`
-			this.timeDayDate = `${year}-${month}`
-			this.timeDayDateShow = `${year}年${month}月`
-			this.getAccount()
-			this.getAccountDay()
-			this.getTime()
-			this.getTimeDay()
-			if(this.accountStatus &&this.accountDayStatus && this.timeStatus&&this.timeDayStatus){
-				uni.stopPullDownRefresh()
-			}
-		},
+		// onPullDownRefresh() {
+		// 	const date = new Date();
+		// 	let year = date.getFullYear();
+		// 	let month = date.getMonth() + 1;
+		// 	let day = date.getDate()
+		// 	month = month > 9 ? month : '0' + month;
+		// 	this.changYear =year
+		// 	this.changeMonth = month
+		// 	this.changeTimeYear= year
+		// 	this.changeTimeMonth = month
+		// 	this.nowDate = day
+		// 	this.getInfo()
+		// 	this.getCompanyList()
+		// 	this.accountDate = `${year}-${month}`
+		// 	this.accountDateShow = `${year}年${month}月`
+		// 	this.accountDayDate = `${year}-${month}`
+		// 	this.accountDayDateShow = `${year}年${month}月`
+		// 	this.timeDate = `${year}-${month}`
+		// 	this.timeDateShow = `${year}年${month}月`
+		// 	this.timeDayDate = `${year}-${month}`
+		// 	this.timeDayDateShow = `${year}年${month}月`
+		// 	this.getAccount()
+		// 	this.getAccountDay()
+		// 	this.getTime()
+		// 	this.getTimeDay()
+		// 	if(this.accountStatus &&this.accountDayStatus && this.timeStatus&&this.timeDayStatus){
+		// 		uni.stopPullDownRefresh()
+		// 	}
+		// },
 		methods: {
 			isEmpty,
 			goDetails(){

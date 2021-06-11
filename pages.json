@@ -163,7 +163,7 @@
             {
 				"titleNView": false,
 				"navigationBarTitleText": "统计",
-                "enablePullDownRefresh": true
+                "enablePullDownRefresh": false
             }
             
         }
