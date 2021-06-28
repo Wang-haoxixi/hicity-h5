@@ -88,12 +88,14 @@
 				isAndroid:'',
 				isIOS:'',
 				id:'',
-				type:''
+				type:'',
+				inviteId:''
 			};
 		},
 		onLoad(options) {
 			this.id = options.id
 			this.type = options.type
+			this.inviteId=options.inviteId
 			// console.log(this.type)
 			this.goApp()
 		},
@@ -135,7 +137,7 @@
 						// 安卓的scheme协议跳转
 						// window.location.href = 'personalstyle://?id=' + that.data.userId;
 						// window.location.href = `govmadeyoucan://`;
-						window.location.href = "hicity://wecan/" + that.type + "?id=" + that.id;
+						window.location.href = "hicity://wecan/" + that.type + "?id=" + that.id + '&inviteId=' + that.inviteId;
 						setTimeout(function() {
 							let hidden = window.document.hidden || window.document.mozHidden || window.document
 								.msHidden || window.document
@@ -151,7 +153,7 @@
 						// IOS下的scheme协议跳转
 						var loadDateTime = new Date();
 						// window.location = "hicity://wecan/" +that.type+ "?id=" + that.id; //schema链接或者universal link
-						window.location = "https://www.wecan.vip/hicity/?type="+that.type +"&id="+ that.id
+						window.location = "https://www.wecan.vip/hicity/?type="+that.type +"&id="+ that.id + '&inviteId=' + that.inviteId
 						// window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
 						// 	var timeOutDateTime = new Date();
 						// 	if (timeOutDateTime - loadDateTime < 5000) {

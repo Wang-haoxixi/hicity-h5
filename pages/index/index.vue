@@ -93,7 +93,7 @@
 			else if (that.getQueryVariable('type') == 'activityDetails') { //活动详情分享H5
 				uni.redirectTo({
 					// url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id') + '&source='+that.getQueryVariable('source') 
-					url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id')
+					url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id')+ '&inviteId='+that.getQueryVariable('inviteId') 
 				});
 			}
 			else if (that.getQueryVariable('type') == 'hotTalk') { //话题详情分享H5
