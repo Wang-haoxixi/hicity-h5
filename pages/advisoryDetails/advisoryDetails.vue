@@ -204,7 +204,7 @@
 				msgType: null, //传给移动端的type值
 				safebox: {},
 				tagStyle: {
-					body: 'line-height: 1.8;color: #272727;font-size: 34rpx',
+					body: 'line-height: 56rpx;color: #272727;font-size: 34rpx',
 					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
 					// p: 'text-indent: 2em',//首行缩进两个字符
 				},

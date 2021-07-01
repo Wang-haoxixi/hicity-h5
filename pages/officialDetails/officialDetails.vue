@@ -6,9 +6,10 @@
 			<view class="title">{{detail.officialNewsName}}</view>
 			<view class="publish-time u-f u-f-jsb" v-if="detail.author">
 				<view class="u-f-ac">
-					<image v-if="detail.dataType=='1'" src="../../static/icon_detail_original_small.png" mode=""></image>
+					<image v-if="detail.dataType=='1'" src="../../static/icon_detail_original_small.png" mode="">
+					</image>
 					<text style="color: #5F5F5F;" v-if="detail.dataType=='2'">{{ detail.author }}</text>
-					<text style="color: #5F5F5F;" v-else-if="detail.dataType=='1'">{{ detail.createByName }}</text> 
+					<text style="color: #5F5F5F;" v-else-if="detail.dataType=='1'">{{ detail.createByName }}</text>
 				</view>
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
@@ -16,18 +17,19 @@
 				<text>{{ gettime(detail.createTime) }}</text>
 			</view>
 			<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
-			
+
 			<!-- notice -->
 			<view class="notice">
 				<!-- 转载 -->
 				<view v-if="detail.dataType=='2'">
 					<!-- detail.author有无作者 -->
-					<text v-if="detail.author && detail.newsSource">原文{{ `由${ detail.author }` }}发布于{{ detail.newsSource }}，</text>
-					<text v-else-if="detail.author">原文{{ `由${ detail.author }` }}发布，</text> 
-					<text v-else-if="detail.newsSource">原文发布于{{ detail.newsSource }}，</text> 
+					<text
+						v-if="detail.author && detail.newsSource">原文{{ `由${ detail.author }` }}发布于{{ detail.newsSource }}，</text>
+					<text v-else-if="detail.author">原文{{ `由${ detail.author }` }}发布，</text>
+					<text v-else-if="detail.newsSource">原文发布于{{ detail.newsSource }}，</text>
 					<text v-else>本文</text>
-					
-					
+
+
 					由{{ detail.createByName }}转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
 				</view>
 				<!-- 原创 -->
@@ -35,19 +37,60 @@
 					本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
 				</view>
 			</view>
-			
+
 			<view class="tag-box" v-if="detail.labelList && detail.labelList.length>0">
-				<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index' @tap="toTagPage(item)">
+				<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index'
+					@tap="toTagPage(item)">
 					{{item.name}}
 				</view>
 			</view>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 			<view class="recommend-box">
 				<view class="recommend-box-title">
+					相关活动
+				</view>
+				<view class="activity-list-box">
+					<view class="activity-item u-f-ac" v-for="(item,index) in activityList" :key='index'
+						@tap="toActivity(item)">
+						<image :src="item.poster"></image>
+						<view class="activity-content u-f1">
+							<view class="activity-title multiLineEllipsis">
+								{{item.name}}
+							</view>
+							<view class="price-box">
+								<!-- 免费票情况 -->
+								<view v-if="item.ticketingType == '1'">
+									<view class="pay" v-if="item.rangePriceOrNot">
+										<text>￥</text><text>0</text><text>起</text>
+									</view>
+									<view class="gratis" v-else>
+										免费
+									</view>
+								</view>
+								<!-- 付费票情况 -->
+								<view v-else>
+									<view class="pay" v-if="item.rangePriceOrNot">
+										<text>￥</text><text>{{ item.rmb }}</text><text>起</text>
+									</view>
+									<view class="pay" v-else>
+										<text>￥</text><text>{{item.rmb}}</text>
+									</view>
+								</view>
+							</view>
+							<view class="date-address u-f-ac">
+								<view>{{item.startTime.substring(0,10).replace(/-/g,".")}}</view>
+								<view class="line"></view>
+								<view class="hiddenEllipsisNowrap" style="width: 220rpx;">{{item.city}}</view>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="recommend-box-title">
 					相关推荐
 				</view>
 				<view class="recommend-list-box">
-					<view class="recommend-item u-f-ac" v-for="(item,index) in recommendationList" :key='index' @tap="changeDetailsContent(item.officialNewsId)">
+					<view class="recommend-item u-f-ac" v-for="(item,index) in recommendationList" :key='index'
+						@tap="changeDetailsContent(item.officialNewsId)">
 						<view class="recommend-content multiLineEllipsis u-f1">
 							{{item.officialNewsName}}
 						</view>
@@ -84,22 +127,26 @@
 									{{ $isEmpty(item.createByName) ? '' : item.createByName }}
 								</view>
 							</view>
-							<view class="praise u-f u-f-ajc" @tap.stop='handlePraise(item)' v-if="item.ifThumbsUp==0" style="flex-direction: column;">
+							<view class="praise u-f u-f-ajc" @tap.stop='handlePraise(item)' v-if="item.ifThumbsUp==0"
+								style="flex-direction: column;">
 								<image :src="$ossUrl('icon_debate_praise_gray.png')"></image>
 								<text>{{ $isEmpty(item.thumbNum) ? 0 : item.thumbNum }}</text>
 							</view>
-							<view class="praise u-f u-f-ajc" @tap.stop='handlePraise(item)' v-else style="flex-direction: column;">
+							<view class="praise u-f u-f-ajc" @tap.stop='handlePraise(item)' v-else
+								style="flex-direction: column;">
 								<image :src="$ossUrl('icon_debate_praise_orange.png')"></image>
 								<text>{{ $isEmpty(item.thumbNum) ? 0 : item.thumbNum }}</text>
 							</view>
 						</view>
-						<view class="comment-content" @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">
+						<view class="comment-content"
+							@tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">
 							{{ $isEmpty(item.content) ? 0 : item.content }}
 						</view>
-						
+
 						<view class="date-box">
 							{{ gettime($isEmpty(item.createTime) ? '' : item.createTime) }}
-							<text @tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">回复</text>
+							<text
+								@tap="tapCommentFirst({id:item.commentId,name:item.createByName,type:'commentFirst'})">回复</text>
 						</view>
 						<!-- 回复内容 -->
 						<view class="reply-box u-f" v-for="(item2,i2) in item.replyVO.records" :key='i2'>
@@ -114,11 +161,14 @@
 										</view>
 									</view>
 								</view>
-								<view class="reply-comment" v-if="item2.rankingCommentId === item.commentId" @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">
+								<view class="reply-comment" v-if="item2.rankingCommentId === item.commentId"
+									@tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">
 									{{ $isEmpty(item2.content) ? '' : item2.content }}
 								</view>
 								<view class="" v-else>
-									<text @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">回复 </text>
+									<text
+										@tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">回复
+									</text>
 									<text style="color: #999999;">
 										{{ $isEmpty(item2.replyName) ? '' : item2.replyName }} </text>
 									<text>：</text>
@@ -126,12 +176,14 @@
 								</view>
 								<view class="reply-date-box">
 									{{ gettime($isEmpty(item2.createTime) ? '' : item2.createTime) }}
-									<text @tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">回复</text>
+									<text
+										@tap="tapCommentSecond({id:item2.commentId,name:item2.createByName,type:'commentSecond'})">回复</text>
 								</view>
 							</view>
 						</view>
 						<!-- 展开更多 -->
-						<view @tap='handleShowMore(item)' class="show-more-box u-f-ac" v-if="item.replyVO.total >5 && item.replyVO.current<item.replyVO.pages">
+						<view @tap='handleShowMore(item)' class="show-more-box u-f-ac"
+							v-if="item.replyVO.total >5 && item.replyVO.current<item.replyVO.pages">
 							<view class="more-box u-f-ajc">
 								<image :src="$ossUrl('icon_debate_more.png')" class="img-more"></image>
 							</view>
@@ -151,8 +203,9 @@
 
 			<!-- 加载更多 -->
 			<view class="load-more">
-				 <uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}" :iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
-				 </uni-load-more>
+				<uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}"
+					:iconSize='18' v-if="commentData.records.length>0" :status="pinglunPageStatus">
+				</uni-load-more>
 			</view>
 		</view>
 
@@ -161,12 +214,14 @@
 		<!-- 底部发布评论部分 -->
 		<view class="publishCommentBox" :class="{safebox:!isShowBg}">
 			<view class="inpBox">
-				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1" class="uni-input"
-				 placeholder-class='placeholderStyle' :placeholder="placeholder" />
+				<input @tap="tapInput({type:'commentDetails'})" @blur="inpBlur" ref='inputFocus' v-model="input1"
+					class="uni-input" placeholder-class='placeholderStyle' :placeholder="placeholder" />
 			</view>
 			<view class="zan-pinglun" v-show="!isShowBg">
 				<view @tap='bottomGood()'>
-					<image :src="detail.isLike?'../../static/icon_debate_praise_orange_active.png':'../../static/icon_debate_praise_orange_big.png'" class="img"></image>
+					<image
+						:src="detail.isLike?'../../static/icon_debate_praise_orange_active.png':'../../static/icon_debate_praise_orange_big.png'"
+						class="img"></image>
 					<text>{{detail.likesNum}}</text>
 				</view>
 				<view @tap="tapInput({type:'commentDetails'})">
@@ -174,7 +229,8 @@
 					<text>{{commentData.total}}</text>
 				</view>
 			</view>
-			<view class="sendbox u-f-ajc" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg" @tap.stop="sendbtn">
+			<view class="sendbox u-f-ajc" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg"
+				@tap.stop="sendbtn">
 				发送
 			</view>
 		</view>
@@ -204,7 +260,7 @@
 				msgType: null, //传给移动端的type值
 				safebox: {},
 				tagStyle: {
-					body: 'line-height: 1.8;color: #272727;font-size: 34rpx',
+					body: 'line-height: 56rpx;color: #272727;font-size: 34rpx',
 					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
 					// p: 'text-indent: 2em',//首行缩进两个字符
 				},
@@ -225,6 +281,8 @@
 				placeholder: '说点儿什么吧~',
 				recommendationList: [],
 				scrollTop: 0, // 页面移动距离
+
+				activityList: [], // 活动数组
 			};
 		},
 		onLoad(option) {
@@ -233,8 +291,9 @@
 			window.getIosToken = this.getIosToken
 			this.id = option.id
 			this.getRecommendationList()
+			this.getActivityList()
 			// this.handleToken('')//此处进详情便获取一次token值
-			// this.getConsultDetail()
+			this.getConsultDetail()
 			// this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
@@ -258,7 +317,7 @@
 								icon: "none",
 							});
 						}
-						
+
 						this.commentData.current = res.data.data.data.current
 						if (this.commentData.current < this.commentData.pages) {
 							this.pinglunPageStatus = 'more'
@@ -268,38 +327,66 @@
 						this.commentData.records = this.commentData.records.concat(res.data.data.data.records)
 					}
 				})
-			}else{
+			} else {
 				this.pinglunPageStatus = 'noMore'
 			}
 		},
 		methods: {
+			// 相关活动
+			getActivityList() {
+				uni.request({
+					url: '/api/cms/open/news_activity/detail_list',
+					data: {
+						officialNewsId: this.id
+					},
+					success: (res) => {
+						console.log('res...', res)
+						this.activityList = res.data.data.data
+					},
+				})
+			},
 			// 相关推荐
-			getRecommendationList(){
+			getRecommendationList() {
 				uni.request({
 					url: '/api/cms/open/official_detail_rec',
 					data: {
 						dataId: this.id,
-						cityId: '2477',//原生传过来
+						cityId: '2477', //原生传过来
 					},
 					success: (res) => {
 						this.recommendationList = res.data.data.data
 					},
 				})
-			} ,
+			},
 			// 去标签页
-			toTagPage({id, name}){
+			toTagPage({
+				id,
+				name
+			}) {
 				let query = {
 					id,
 					name
 				}
-				if(isAndroid){
+				if (isAndroid) {
 					return window.android.invoke_native("goNewsTagsPage", JSON.stringify(query), "androidRst")
-				}else if(isIOS){
+				} else if (isIOS) {
 					return window.webkit.messageHandlers.NewsTagsPage.postMessage(query)
 				}
 			},
+			// 相关活动
+			toActivity({ id }) {
+				let query = {
+					id: id
+				}
+				console.log(query)
+				if (isAndroid) {
+					return window.android.invoke_native("toActivityPage", JSON.stringify(query), "androidRst")
+				} else if (isIOS) {
+					return window.webkit.messageHandlers.toActivityPage.postMessage(query)
+				}
+			},
 			// 相关推荐
-			changeDetailsContent(id){
+			changeDetailsContent(id) {
 				this.id = id
 				this.getConsultDetail()
 				// setTimeout(()=>{
@@ -309,12 +396,12 @@
 				// 	});
 				// },300)
 				uni.navigateTo({
-				    url: '/pages/officialDetails/officialDetails?id=' + id,
-						animationType: 'slide-in-right',
-						animationDuration: 200
+					url: '/pages/officialDetails/officialDetails?id=' + id,
+					animationType: 'slide-in-right',
+					animationDuration: 200
 				});
 			},
-			getContent(content){
+			getContent(content) {
 				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
 			},
 			getConsultDetail() {
@@ -401,12 +488,14 @@
 							this.input1 = ''
 							this.isShowBg = false
 							setTimeout(() => {
-								if(!this.tk){
+								if (!this.tk) {
 									this.placeholder = '说点儿什么吧~'
-									if(isAndroid){
-										return window.android.invoke_native("goLogin", null, "androidRst")
-									}else if(isIOS){
-										return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
+									if (isAndroid) {
+										return window.android.invoke_native("goLogin", null,
+											"androidRst")
+									} else if (isIOS) {
+										return window.webkit.messageHandlers.IOSTokenUseless
+											.postMessage(null)
 									}
 								}
 							}, 1500)
@@ -466,11 +555,11 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							if(!this.tk){
+							if (!this.tk) {
 								this.placeholder = '说点儿什么吧~'
-								if(isAndroid){
+								if (isAndroid) {
 									return window.android.invoke_native("goLogin", null, "androidRst")
-								}else if(isIOS){
+								} else if (isIOS) {
 									return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 								}
 							}
@@ -529,11 +618,11 @@
 							// 刷新评论
 							that.getCommentList()
 						} else if (res.statusCode == 401) {
-							if(!this.tk){
+							if (!this.tk) {
 								this.placeholder = '说点儿什么吧~'
-								if(isAndroid){
+								if (isAndroid) {
 									return window.android.invoke_native("goLogin", null, "androidRst")
-								}else if(isIOS){
+								} else if (isIOS) {
 									return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 								}
 							}
@@ -584,14 +673,15 @@
 							that.commentData.records.forEach((item, i) => {
 								if (item.commentId == that.parId) {
 									item.replyVO.current = res.data.data.data.current
-									item.replyVO.records = item.replyVO.records.concat(res.data.data.data.records)
+									item.replyVO.records = item.replyVO.records.concat(res.data.data
+										.data.records)
 								}
 							})
 						} else if (res.statusCode == 401) {
-							if(!this.tk){
-								if(isAndroid){
+							if (!this.tk) {
+								if (isAndroid) {
 									return window.android.invoke_native("goLogin", null, "androidRst")
-								}else if(isIOS){
+								} else if (isIOS) {
 									return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 								}
 							}
@@ -632,8 +722,7 @@
 					this.comSecond()
 				} else if (res.resultType == "showMore") {
 					this.showMore()
-				}
-				else if (res.resultType == "getList") {
+				} else if (res.resultType == "getList") {
 					this.getCommentList()
 				} else if (res.resultType == 'getDetail') {
 					this.getConsultDetail()
@@ -697,7 +786,7 @@
 						}
 						this.commentData = res.data.data.data
 						this.maxId = res.data.data.data.maxId
-						if(this.commentData.pages == 1){
+						if (this.commentData.pages == 1) {
 							this.pinglunPageStatus = 'noMore'
 						}
 					}
@@ -706,10 +795,10 @@
 			// 评论点赞
 			handlePraise(item) {
 				// 此处为为登录状态
-				if(!this.tk){
-					if(isAndroid){
+				if (!this.tk) {
+					if (isAndroid) {
 						return window.android.invoke_native("goLogin", null, "androidRst")
-					}else if(isIOS){
+					} else if (isIOS) {
 						return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 					}
 				}
@@ -759,13 +848,13 @@
 				this.$nextTick(function() {
 					this.$refs.inputFocus.focus = true
 				})
-				if(isIOS) return false
+				if (isIOS) return false
 				const query = uni.createSelectorQuery().in(this);
 				query.select('.commentBar').boundingClientRect(data => {
 					// 此处滑动到评论区域
 					uni.pageScrollTo({
-							scrollTop: data.top + this.scrollTop,
-							duration: 0
+						scrollTop: data.top + this.scrollTop,
+						duration: 0
 					});
 				}).exec();
 			},
@@ -813,10 +902,10 @@
 				// 	duration: 10000
 				// });
 				// 未登录状态下
-				if(!this.tk){
-					if(isAndroid){
+				if (!this.tk) {
+					if (isAndroid) {
 						return window.android.invoke_native("goLogin", null, "androidRst")
-					}else if(isIOS){
+					} else if (isIOS) {
 						return window.webkit.messageHandlers.IOSTokenUseless.postMessage(null)
 					}
 				}
@@ -883,7 +972,7 @@
 				// this.showMore()
 			}
 		},
-		onPageScroll(e){
+		onPageScroll(e) {
 			this.scrollTop = e.scrollTop
 		},
 		onHide() {
@@ -894,5 +983,5 @@
 </script>
 
 <style lang="scss" scoped>
-@import "./officialDetails.scss";
+	@import "./officialDetails.scss";
 </style>

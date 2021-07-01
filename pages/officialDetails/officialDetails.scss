@@ -30,7 +30,7 @@
 
 		.title {
 			line-height: 52rpx;
-			font-size: 36rpx;
+			font-size: 40rpx;
 			color: #333333;
 			font-weight: bold;
 		}
@@ -104,6 +104,54 @@
 						width: 224rpx;
 						height: 152rpx;
 						border-radius: 8rpx;
+					}
+				}
+			}
+			.activity-list-box{
+				.activity-item{
+					padding-bottom: 48rpx;
+					.activity-content{
+						.activity-title{
+							font-size: 28rpx;
+							font-weight: 500;
+							line-height: 40rpx;
+							color: #272727;
+						}
+						.price-box{
+							margin: 16rpx 0 6rpx 0;
+							.gratis{
+								font-size: 32rpx;
+								line-height: 40rpx;
+								color: #15CBA1;
+							}
+							.pay{
+								color: #FD672A;
+								>text:nth-of-type(1),text:nth-of-type(3){
+									font-size: 24rpx;
+								}
+								>text:nth-of-type(2){
+									font-size: 32rpx;
+									margin: 0 6rpx;
+								}
+							}
+						}
+						.date-address{
+							color: #999999;
+							line-height: 40rpx;
+							font-size: 24rpx;
+							.line{
+								background-color: #CECECE;
+								width: 2rpx;
+								height: 20rpx;
+								margin: 0 12rpx;
+							}
+						}
+					}
+					>image{
+						width: 300rpx;
+						height: 180rpx;
+						border-radius: 8rpx;
+						margin-right: 24rpx;
 					}
 				}
 			}
