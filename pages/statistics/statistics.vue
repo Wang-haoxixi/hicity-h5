@@ -19,7 +19,7 @@
 									共
 								</view>
 								<view style="color:#415BFD ;font-family: PingFangSC-Medium;font-weight: bold">
-									{{isEmpty(accountInfo.withdrawalNumber)?'0':accountInfo.withdrawalNumber}}
+									{{isEmpty(accountInfo.cumulativeNumber )?'0':accountInfo.cumulativeNumber }}
 								</view>
 								<view class="">
 									笔

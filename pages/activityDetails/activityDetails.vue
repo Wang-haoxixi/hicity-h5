@@ -78,13 +78,15 @@
 				},
 				bottomHeight: '',
 				source:'',
-				url:''
+				url:'',
+				inviteId:''
 			};
 		},
 		onLoad(options) {
 			this.id = options.id
+			this.inviteId =options.inviteId
 			// alert(options.source)
-			this.source = options.source
+			// this.source = options.source
 			this.getDetails(this.id)
 			this.getConfig()
 			// this.$nextTick(function() {
@@ -200,7 +202,7 @@
 			},
 			goDownloadApp() {
 				uni.navigateTo({
-					url: '../downloadApp/downloadApp?id=' + this.id + '&type=activityDetails'
+					url: '../downloadApp/downloadApp?id=' + this.id + '&inviteId='+ this.inviteId+ '&type=activityDetails'
 				})
 				// location.href = 'weixin://dl/business/?t=uLzUKiAEgDh'
 			},
