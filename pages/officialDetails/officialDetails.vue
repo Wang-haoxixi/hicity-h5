@@ -293,7 +293,7 @@
 			this.getRecommendationList()
 			this.getActivityList()
 			// this.handleToken('')//此处进详情便获取一次token值
-			this.getConsultDetail()
+			// this.getConsultDetail()
 			// this.getCommentList()
 			this.handleToken('getDetail')
 			this.handleToken('getList')
@@ -340,7 +340,6 @@
 						officialNewsId: this.id
 					},
 					success: (res) => {
-						console.log('res...', res)
 						this.activityList = res.data.data.data
 					},
 				})
@@ -374,11 +373,12 @@
 				}
 			},
 			// 相关活动
-			toActivity({ id }) {
+			toActivity({
+				id
+			}) {
 				let query = {
 					id: id
 				}
-				console.log(query)
 				if (isAndroid) {
 					return window.android.invoke_native("toActivityPage", JSON.stringify(query), "androidRst")
 				} else if (isIOS) {
