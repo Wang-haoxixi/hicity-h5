@@ -1,57 +1,123 @@
 <template>
-	<!-- 热门咨询详情 -->
-		<view class="comment">
-			<!-- 详情内容 -->
-			<view class="detail-box" v-if="detail">
-				<view class="title">{{detail.officialNewsName}}</view>
-				<view class="publish-time">发布时间：{{detail.createTime}}</view>
-				<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
-				<!-- notice -->
-				<view class="notice">
-					<!-- 转载 -->
-					<view v-if="detail.dataType=='2'">
-						<!-- detail.author有无作者 -->
-						原文{{ detail.author && `由${ detail.author }` }}发布于{{ detail.newsSource }}，由<text style="color: #5f5f5f;">{{ detail.createByName }}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+	<view class="">
+		<!-- 热门咨询详情 -->
+			<view class="comment">
+				<!-- 详情内容 -->
+				<view class="detail-box" v-if="detail">
+					<view class="title">{{detail.officialNewsName}}</view>
+					<view class="publish-time">发布时间：{{detail.createTime}}</view>
+					<jyf-parser class="parser" :html="detail.officialNewsContent" :tag-style="tagStyle" lazy-load></jyf-parser>
+					<!-- notice -->
+					<view class="notice">
+						<!-- 转载 -->
+						<view v-if="detail.dataType=='2'">
+							<!-- detail.author有无作者 -->
+							原文{{ detail.author && `由${ detail.author }` }}发布于{{ detail.newsSource }}，由<text style="color: #5f5f5f;">{{ detail.createByName }}</text> 转载至超能平台，未经许可，禁止转载。内容、版权和其它问题，请在30日内与本平台联系，我们将在第一时间处理。
+						</view>
+						<!-- 原创 -->
+						<view v-else-if="detail.dataType=='1'">
+							本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+						</view>
 					</view>
-					<!-- 原创 -->
-					<view v-else-if="detail.dataType=='1'">
-						本文由 <text style="color: #5F5F5F;">{{detail.createByName}}</text> 发布于超能平台，未经许可，禁止转载。
+					
+					<view class="tag-box" v-if="detail.labelList && detail.labelList.length>0">
+						<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index'>
+							{{item.name}}
+						</view>
+					</view>
+					<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
+				</view>
+				<view class="noData" v-if="!detail">
+					暂无数据
+				</view>
+				<view class="recommend-box" v-if="activityList.length>0">
+					<view class="recommend-box-title">
+						相关活动
+					</view>
+					<view class="activity-list-box">
+						<view class="activity-item u-f-ac" v-for="(item,index) in activityList" :key='index'
+							@tap="toActivity(item)">
+							<image :src="item.poster"></image>
+							<view class="activity-content u-f1">
+								<view class="activity-title multiLineEllipsis">
+									{{item.name}}
+								</view>
+								<view class="price-box">
+									<!-- 免费票情况 -->
+									<view v-if="item.ticketingType == '1'">
+										<view class="pay" v-if="item.rangePriceOrNot">
+											<text>￥</text><text>0</text><text>起</text>
+										</view>
+										<view class="gratis" v-else>
+											免费
+										</view>
+									</view>
+									<!-- 付费票情况 -->
+									<view v-else>
+										<view class="pay" v-if="item.rangePriceOrNot">
+											<text>￥</text><text>{{ item.rmb }}</text><text>起</text>
+										</view>
+										<view class="pay" v-else>
+											<text>￥</text><text>{{item.rmb}}</text>
+										</view>
+									</view>
+								</view>
+								<view class="date-address u-f-ac">
+									<view>{{item.startTime.substring(0,10).replace(/-/g,".")}}</view>
+									<view class="line"></view>
+									<view class="hiddenEllipsisNowrap" style="width: 220rpx;">{{item.city}}</view>
+								</view>
+							</view>
+						</view>
 					</view>
 				</view>
-				
-				<view class="tag-box" v-if="detail.labelList && detail.labelList.length>0">
-					<view class="tag-item u-f-ajc" v-for="(item,index) in detail.labelList" :key='index'>
-						{{item.name}}
-					</view>
-				</view>
-				<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
+				<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
 			</view>
-			<view class="noData" v-if="!detail">
-				暂无数据
+			<view class="cu-modal" :class="modal" @tap="modalhidden">
+				<view class="cu-dialog"
+					style="float: right;background-color: transparent;height:256rpx;width: 400rpx;margin-right: 22rpx;margin-top: 10rpx;">
+					<view class="bg-img"
+						style="background-image: url(../../static/tc-open.png);height:256rpx;width: 400rpx;margin-right: 22rpx;position: relative;">
+						<view class="" v-if="user==0" style="position: absolute;left: 34rpx;bottom: 32rpx;color: #FFFFFF;font-size: 28rpx;line-height: 52rpx;display: flex;flex-direction: column; align-items: center;">
+							<view style="display: flex;align-items: center;">
+								<view class="">
+									如已安装
+								</view>
+								<image src="../../static/littleLogo.png" mode="" style="width: 44rpx;height: 44rpx;"></image>
+								<view class="">
+									超能城市APP
+								</view>
+							</view>
+							<view>请点击右上角</view>
+							<view style="display: flex;align-items: center;">
+								<view class="">
+									选择
+								</view>
+								<image src="../../static/logo-safari.png" mode="" style="width: 40rpx;height: 40rpx;"></image>
+								<view class="">
+								 	Safari打开
+								</view>
+							</view>
+						</view>
+						<view class="" v-if="user==1" style="position: absolute;left: 34rpx;bottom: 32rpx;color: #FFFFFF;font-size: 28rpx;line-height: 52rpx;display: flex;flex-direction: column; align-items: center;">
+							<view style="display: flex;align-items: center;">
+								<view class="">
+									如已安装
+								</view>
+								<image src="../../static/littleLogo.png" mode="" style="width: 44rpx;height: 44rpx;"></image>
+								<view class="">
+									超能城市APP
+								</view>
+							</view>
+							<view>请点击右上角</view>
+							<view>
+								请选择浏览器打开
+							</view>
+						</view>
+					</view>
+				</view>
 			</view>
-			<!-- 背景蒙层 -->
-			<!-- <view :class="{inpBg:isShowBg}" @tap="closeBg"></view> -->
-			<!-- 底部发布评论部分 -->
-			<!-- <view class="publishCommentBox" :class="{safebox:!isShowBg}" @tap="goDownloadApp">
-				<view class="inpBox">
-					<input class="uni-input" disabled="true"/>
-				</view>
-				<view class="zan-pinglun" v-show="!isShowBg">
-					<view>
-						<image src='../../static/icon-big-praise.png' class="img"></image>
-						<text>{{isEmpty(detail.likesNum)? '0' : detail.likesNum}}</text>
-					</view>
-					<view>
-						<image src="../../static/pinglun.png" class="img"></image>
-						<text>{{isEmpty(commentData.total)? '0' : detail.likesNum}}</text>
-					</view>
-				</view>
-				<view class="sendbox" :class="{'activesend':input1.trim().length==0?false:true}" v-show="isShowBg">
-					发送
-				</view>
-			</view> -->
-			<image src="../../static/openApp.png" mode="" class="openImg" @tap="goDownloadApp"></image>
-		</view>
+	</view>
 </template>
 
 <script>
@@ -76,17 +142,40 @@
 					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
 					p: 'text-indent: 2em',//首行缩进两个字符
 				},
-				url:''
+				url:'',
+				activityList: [], // 活动数组
+				modal:'',
+				user:'',
+				isAndroid:'',
+				isIOS:'',
 			};
 		},
 		onLoad(options) {
 			this.id = options.id,
 			this.getDetails(this.id)
 			this.getConfig()
+			this.getActivityList()
 		},
 		methods:{
 			isEmpty,
 			gettime,
+			toActivity(item){
+				// console.log(item)
+				this.goApp(item)
+			},
+			// 相关活动
+			getActivityList() {
+				uni.request({
+					url: '/api/cms/open/news_activity/detail_list',
+					data: {
+						officialNewsId: this.id
+					},
+					success: (res) => {
+						// console.log('res...', res)
+						this.activityList = res.data.data.data
+					},
+				})
+			},
 			getContent(content){
 				return content.replace(new RegExp(/\t/g), "&nbsp;&nbsp;&nbsp;").replace(new RegExp(/ /g), "&nbsp;")
 			},
@@ -183,11 +272,150 @@
 				// 	console.log(res);
 				// });
 			},
+			goApp(item) {
+				let that = this;
+				// let token = uni.getStorageSync('token')
+				// console.log(token)
+				var ua = navigator.userAgent.toLowerCase();
+				var isWeixin = ua.indexOf('micromessenger') != -1;
+				//苹果QQ内置浏览器
+				var isQQ =ua.indexOf('qq')!=-1 && ua.indexOf('iphone') !=-1 && ua.indexOf('mqqbrowser')==-1
+				if (isWeixin || isQQ) {
+					that.modal = 'show';
+					// console.log(that.modal)
+					// alert(that.modal)
+					//微信内置浏览器判断机型
+					if (/android/i.test(navigator.userAgent)){
+			　　      // 安卓手机
+						that.user="1";
+					}
+					if (/ipad|iphone|mac/i.test(navigator.userAgent)){
+						//  苹果手机
+						that.user="0";
+					}
+				}
+				else {
+					let u = navigator.userAgent;
+					// // const lib = new CallApp(option);
+					that.isAndroid = u.indexOf('Android') > -1; //安卓终端
+					that.isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+					if (that.isAndroid) {
+						// 安卓的scheme协议跳转
+						// window.location.href = 'personalstyle://?id=' + that.data.userId;
+						// window.location.href = `govmadeyoucan://`;
+						window.location.href = "hicity://wecan/activityDetails?id=" + item.id
+						setTimeout(function() {
+							let hidden = window.document.hidden || window.document.mozHidden || window.document
+								.msHidden || window.document
+								.webkitHidden;
+							if (typeof hidden == 'undefined' || hidden == false) {
+								window.location.href = 'http://wn.woneng.net/hicity';
+							} else {
+								window.close()
+							}
+						}, 2000);
+					}
+					if (that.isIOS) {
+						// IOS下的scheme协议跳转
+						var loadDateTime = new Date();
+						// window.location = "hicity://wecan/" +that.type+ "?id=" + that.id; //schema链接或者universal link
+						window.location = "https://www.wecan.vip/hicity/?type=activityDetails&id="+ item.id
+						// window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
+						// 	var timeOutDateTime = new Date();
+						// 	if (timeOutDateTime - loadDateTime < 5000) {
+						// 		window.location = "https://apps.apple.com/cn/app/1557181605"; //ios下载地址  
+						// 	} else {
+						// 		window.close();
+						// 	}
+						// }, 2000)
+					}
+				}
+			},
+			modalhidden() {
+				this.modal = '';
+			},
+			modalshow(){
+				this.modal = 'show';
+			},
 		}
 	}
 </script>
 
 <style lang="scss">
+	.recommend-box{
+		padding: 0rpx 32rpx;
+		padding-top: 64rpx;
+		.recommend-box-title{
+			color: #272727;
+			font-size: 32rpx;
+			font-weight: bold;
+			padding-bottom: 32rpx;
+		}
+		.recommend-list-box{
+			.recommend-item{
+				padding-bottom: 48rpx;
+				.recommend-content{
+					color: #272727;
+					font-size: 32rpx;
+					line-height: 48rpx;
+					margin-right: 32rpx;
+				}
+				>image{
+					width: 224rpx;
+					height: 152rpx;
+					border-radius: 8rpx;
+				}
+			}
+		}
+		.activity-list-box{
+			.activity-item{
+				padding-bottom: 48rpx;
+				.activity-content{
+					.activity-title{
+						font-size: 28rpx;
+						font-weight: 500;
+						line-height: 40rpx;
+						color: #272727;
+					}
+					.price-box{
+						margin: 16rpx 0 6rpx 0;
+						.gratis{
+							font-size: 32rpx;
+							line-height: 40rpx;
+							color: #15CBA1;
+						}
+						.pay{
+							color: #FD672A;
+							>text:nth-of-type(1),text:nth-of-type(3){
+								font-size: 24rpx;
+							}
+							>text:nth-of-type(2){
+								font-size: 32rpx;
+								margin: 0 6rpx;
+							}
+						}
+					}
+					.date-address{
+						color: #999999;
+						line-height: 40rpx;
+						font-size: 24rpx;
+						.line{
+							background-color: #CECECE;
+							width: 2rpx;
+							height: 20rpx;
+							margin: 0 12rpx;
+						}
+					}
+				}
+				>image{
+					width: 300rpx;
+					height: 180rpx;
+					border-radius: 8rpx;
+					margin-right: 24rpx;
+				}
+			}
+		}
+	}
 	.notice{
 		padding-top: 20rpx;
 		color: #999999;

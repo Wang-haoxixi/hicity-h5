@@ -49,7 +49,7 @@
 				uni.redirectTo({
 					url: '../officialDetails/officialDetails?id=' + that.getQueryVariable('id')
 				});
-			} else if (that.getQueryVariable('type') == 'circleCard') { //官方咨询
+			} else if (that.getQueryVariable('type') == 'circleCard') { //圈子名片
 				uni.redirectTo({
 					url: '../circleCard/circleCard?id=' + that.getQueryVariable('id')
 				});
@@ -110,6 +110,11 @@
 				uni.redirectTo({
 					url: '../statistics/statistics?token=' + that.getQueryVariable('token') + '&id=' + that.getQueryVariable(
 						'userId')
+				});
+			}
+			else if (that.getQueryVariable('type') == 'userCard') { //用户名片
+				uni.redirectTo({
+					url: '../userCard/userCard?id='+ that.getQueryVariable('userId')
 				});
 			}
 		}

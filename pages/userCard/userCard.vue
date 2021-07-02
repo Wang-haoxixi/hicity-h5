@@ -1,47 +1,66 @@
 <template>
-	<view class="" :style="{backgroundImage:`url(${detail.bgImg})`}" style="background: no-repeat;background-size:100%;overflow: hidden;">
+	<view class="container">
 		<view class="" style="position: relative; border-radius: 32rpx; width: 686rpx;background-color: #FFFFFF; display: flex;flex-direction: column;align-items: center;margin: 0 auto; margin-top: 128rpx;">
 			<view class="" style="position: absolute;top: -66rpx;">
 				<image :src="detail.avatar" mode="aspectFill" style="width: 160rpx;height: 160rpx;border-radius: 50%;"></image>
 			</view>
-			<view class="" style="margin-top: 118rpx;">
-				{{detail.name}}
+			<view class="name" v-if="!$isEmpty(detail.friendAlias)" style="margin-top: 118rpx;">
+				{{$isEmpty(detail.friendAlias)?'':detail.friendAlias}}
 			</view>
-			<view class="" style="margin-top: 8rpx;">
-				圈子ID：{{detail.circleId}}
+			<view class="name" v-else style="margin-top: 118rpx;">
+				{{$isEmpty(detail.realName)?'':detail.realName}}
 			</view>
-			<view class="" style="display: flex;align-items: center;font-size: 20rpx;line-height: 28rpx;margin-top: 8rpx;">
-				<view class="" v-if="!$isEmpty(detail.city)" style="padding: 0rpx 8rpx;background-color: #5D8FE0;color: #FFFFFF;border-radius: 4rpx;margin-right: 8rpx;">
-					{{detail.city}}
+			<view class="" v-if="!$isEmpty(detail.friendAlias)" style="padding-top: 8rpx;color: #999999;font-size: 28rpx;line-height: 40rpx;">
+				用户名：{{$isEmpty(detail.realName)?'':detail.realName}}
+			</view>
+			<view class="info">
+				<image :src="$ossUrl('icon_gender_man.png')" class="icon-gender" v-if="detail.gender==='1'">
+				</image>
+				<image :src="$ossUrl('icon_gender_woman.png')" class="icon-gender"
+					v-if="detail.gender==='2'">
+				<view class="age">
+					{{$isEmpty(detail.age)?'0岁':detail.age+'岁'}}
 				</view>
-				<view class="" v-if="!$isEmpty(detail.circleTypeLabel)" style="padding: 0rpx 8rpx;background-color: #868BFC;color: #FFFFFF;border-radius: 4rpx;margin-right: 8rpx;">
-					{{detail.circleTypeLabel}}
-				</view>
-				<view class="info" v-if="!$isEmpty(detail.memberNum)">
-					{{detail.memberNum+'人'}}
-				</view>
 			</view>
-			<view class="introduce">
-				{{$isEmpty(detail.introduction)?'他还没有写下任何圈子介绍～':detail.introduction}}
+			<view class="introduce singleEllipsis" v-if="!$isEmpty(detail.introduction)">
+				{{detail.introduction}}
 			</view>
-			<view class="time">
-				{{$isEmpty(detail.createTime)?'':'创建时间 '+detail.createTime.substring(0, 10)}}
+			<view class="introduce" style="color: #CECECE;" v-else>
+				他还没有写下任何个人介绍～
+			</view>
+			<image src="../../static/pic_xuxian.png" mode="aspectFit" style="width:620rpx;height: 1px;margin-top: 32rpx;"></image>
+			<view class="more">
+				<view class="more-item">
+					<view class="more-item-title">
+						工作地
+					</view>
+					<view class="more-item-content">
+						{{$isEmpty(detail.location)?'未设置':detail.location}}
+					</view>
+				</view>
+				<view class="more-item">
+					<view class="more-item-title">
+						故乡
+					</view>
+					<view class="more-item-content">
+						{{$isEmpty(detail.hometown)?'未设置':detail.hometown}}
+					</view>
+				</view>
+				<view class="more-item">
+					<view class="more-item-title">
+						手机号
+					</view>
+					<view class="more-item-content" v-if="detail.isFriends==true">
+						{{$isEmpty(detail.phone)?'未设置':detail.phone}}
+					</view>
+					<view class="more-item-content" v-else>
+						{{$isEmpty(detail.phone)?'未设置':detail.phone.substring(0,3)+"****"+detail.phone.substring(7)}}
+					</view>
+				</view>
 			</view>
 		</view>
-		<view class="" style="padding: 0rpx 32rpx;">
+		<!-- <view class="" style="padding: 0rpx 32rpx;">
 			<view class="" style="background-color: #FFFFFF;margin-top: 24rpx;border-radius: 16rpx;padding: 0rpx 32rpx;">
-				<view class="group">
-					<view class="group-title">
-						群成员
-					</view>
-					<view class="group-member">
-						<!-- <image :src="$ossUrl('icon_arrowright_gray.png')" class="arrowright"></image> -->
-						<image v-for="(item,index) in detail.userList" :key="index" :src="item.avatar" class="avatar"></image>
-					</view>
-				</view>
-				<!-- <view class="" style="width: 100%;height: 1px;background: #EDEDED;opacity: 0.5;">
-					
-				</view>
 				<view class="group">
 					<button type="default" open-type="share" class="share">
 						<view class="share-view">
@@ -54,12 +73,12 @@
 							</view>
 						</view>
 					</button>
-				</view> -->
+				</view>
 			</view>
-		</view>
+		</view> -->
 		<view class="bottom">
 			<view class="bottom-view">
-				<button type="primary" class="join" @tap="goApp">加入圈子</button>
+				<button type="primary" class="join" @tap="goApp">加好友</button>
 			</view>
 		</view>
 		<view class="cu-modal" :class="modal" @tap="modalhidden">
@@ -131,9 +150,9 @@
 		methods:{
 			getDetails(){
 				uni.request({
-					url: '/api/admin/open/mp/circle/detail',
+					url: '/api/admin/open/style_page',
 					data:{
-						circleId:this.id
+						userId: this.id
 					},
 					success: (res) => {
 						if (res.data.data.businessCode !== 1000) {
@@ -186,7 +205,7 @@
 						// 安卓的scheme协议跳转
 						// window.location.href = 'personalstyle://?id=' + that.data.userId;
 						// window.location.href = `govmadeyoucan://`;
-						window.location.href = "hicity://wecan/circleCard?id=" + that.id
+						window.location.href = "hicity://wecan/userCard?id=" + that.id
 						setTimeout(function() {
 							let hidden = window.document.hidden || window.document.mozHidden || window.document
 								.msHidden || window.document
@@ -202,7 +221,7 @@
 						// IOS下的scheme协议跳转
 						var loadDateTime = new Date();
 						// window.location = "hicity://wecan/" +that.type+ "?id=" + that.id; //schema链接或者universal link
-						window.location = "https://www.wecan.vip/hicity/?type=circleCard&id="+ that.id
+						window.location = "https://www.wecan.vip/hicity/?type=userCard&id="+ that.id
 						// window.setTimeout(function() { //如果没有安装app,便会执行setTimeout跳转下载页
 						// 	var timeOutDateTime = new Date();
 						// 	if (timeOutDateTime - loadDateTime < 5000) {
@@ -261,18 +280,18 @@
 					// 	});
 					// });
 					wx.updateAppMessageShareData({
-					    title: `${that.detail.name}的名片，快加入我们圈子`, // 分享标题
-					    desc: '圈子名片', // 分享描述
+					    title:`向您推荐${that.detail.realName}的名片`, // 分享标题
+					    desc: '好友名片', // 分享描述
 					    link: unescape(that.url), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-					    imgUrl:that.$ossUrl('bg_share_circle_card.png'), // 分享图标
+					    imgUrl: that.$ossUrl('bg_share_card.png'), // 分享图标
 					    success: function () {
 					      // 设置成功
 					    }
 					  })
 					  wx.updateTimelineShareData({ 
-					      title: `${that.detail.name}的名片，快加入我们圈子`, // 分享标题
+					      title: `向您推荐${that.detail.realName}的名片`, // 分享标题
 					      link: unescape(that.url), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-					      imgUrl: that.$ossUrl('bg_share_circle_card.png'), // 分享图标
+					      imgUrl: that.$ossUrl('bg_share_card.png'), // 分享图标
 					      success: function () {
 					        // 设置成功
 					      }
@@ -289,6 +308,69 @@
 </script>
 
 <style lang="scss">
+	.container {
+		width: 750rpx;
+		background-image: url('https://woneng-oss.oss-cn-hangzhou.aliyuncs.com/wxapp/hicity/bg_card.png');
+		background-size: 100%;
+		background-repeat: no-repeat;
+		overflow: hidden;
+	}
+	.info {
+		margin-top: 8rpx;
+		color: #999999;
+		font-size: 26rpx;
+		line-height: 36rpx;
+		display: flex;
+		align-items: center;
+		.icon-gender{
+			width: 28rpx;
+			height: 28rpx;
+		}
+		.age{
+			padding-left: 16rpx;
+		}
+	}
+	
+	.introduce {
+		width: 590rpx;
+		text-align: center;
+		margin-top: 32rpx;
+		color: #5F5F5F;
+		font-size: 26rpx;
+		line-height: 56rpx;
+	}
+	
+	.more {
+		margin: 32rpx 0rpx;
+		margin-top: 14rpx;
+		// height: 132rpx;
+		display: flex;
+		// align-items: center;
+	
+		.more-item {
+			width: 228rpx;
+			height: 100%;
+			padding: 16rpx 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			
+	
+			.more-item-title {
+				margin-bottom: 24rpx;
+				color: #999999;
+				font-size: 26rpx;
+				line-height: 36rpx;
+			}
+	
+			.more-item-content {
+				text-align: center;
+				color: #272727;
+				font-size: 30rpx;
+				line-height: 42rpx;
+			}
+		}
+	}	
 	button::after{
 		border: none;
 	}

@@ -167,6 +167,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/userCard/userCard",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+				"navigationBarTitleText": "好友名片",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
