@@ -85,19 +85,8 @@
 		onLoad(options) {
 			this.id = options.id
 			this.inviteId =options.inviteId
-			// alert(options.source)
-			// this.source = options.source
 			this.getDetails(this.id)
 			this.getConfig()
-			// this.$nextTick(function() {
-			// 	uni.createSelectorQuery()
-			// 		.in(this)
-			// 		.select('#bottomHeight')
-			// 		.boundingClientRect()
-			// 		.exec(ret => {
-			// 			this.bottomHeight = ret[0].height
-			// 		});
-			// })
 		},
 		methods: {
 			// wx api 注册

@@ -76,7 +76,6 @@
 			"proxy": {
 				"/api": {
 					// "target": "https://admin.wecan.vip",
-
 					"target": "http://183.131.134.242:10167",
 					// "target" : "http://192.168.0.107:9999",
 					// "target" : "http://192.168.0.134:9999",
