@@ -114,7 +114,7 @@
 			}
 			else if (that.getQueryVariable('type') == 'userCard') { //用户名片
 				uni.redirectTo({
-					url: '../userCard/userCard?id='+ that.getQueryVariable('userId')
+					url: '../userCard/userCard?id='+ that.getQueryVariable('id')
 				});
 			}
 		}
