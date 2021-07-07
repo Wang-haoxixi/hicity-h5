@@ -177,6 +177,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/authorization/authorization",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "授权",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
