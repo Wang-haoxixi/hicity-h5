@@ -46,10 +46,10 @@
 			</view>
 			<view class="browse-num">帖子浏览数：{{detail.browseNum}}</view>
 			<view class="recommend-box">
-				<view class="recommend-box-title">
+				<view class="recommend-box-title" v-if="activityList && activityList.length>0">
 					相关活动
 				</view>
-				<view class="activity-list-box">
+				<view class="activity-list-box" v-if="activityList && activityList.length>0">
 					<view class="activity-item u-f-ac" v-for="(item,index) in activityList" :key='index'
 						@tap="toActivity(item)">
 						<image :src="item.poster"></image>
@@ -85,10 +85,10 @@
 						</view>
 					</view>
 				</view>
-				<view class="recommend-box-title">
+				<view class="recommend-box-title" v-if="recommendationList && recommendationList.length>0">
 					相关推荐
 				</view>
-				<view class="recommend-list-box">
+				<view class="recommend-list-box" v-if="recommendationList && recommendationList.length>0">
 					<view class="recommend-item u-f-ac" v-for="(item,index) in recommendationList" :key='index'
 						@tap="changeDetailsContent(item.officialNewsId)">
 						<view class="recommend-content multiLineEllipsis u-f1">
@@ -350,7 +350,6 @@
 					url: '/api/cms/open/official_detail_rec',
 					data: {
 						dataId: this.id,
-						cityId: '2477', //原生传过来
 					},
 					success: (res) => {
 						this.recommendationList = res.data.data.data
@@ -388,7 +387,7 @@
 			// 相关推荐
 			changeDetailsContent(id) {
 				this.id = id
-				this.getConsultDetail()
+				// this.getConsultDetail()
 				// setTimeout(()=>{
 				// 	uni.pageScrollTo({
 				// 			scrollTop: 0,
