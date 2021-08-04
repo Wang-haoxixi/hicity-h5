@@ -86,10 +86,6 @@
 				}
 			},
 			getIosToken(res) {
-				uni.showToast({
-					title: JSON.stringify(res),
-					icon: 'none',
-				});
 				if (res.type == "getUser") {
 					this.getUser(res.token)
 				}

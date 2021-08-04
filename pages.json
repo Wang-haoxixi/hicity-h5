@@ -3,7 +3,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "加载...",
+				"navigationBarTitleText": "超能城市",
 				"titleNView": false
 			}
 		}, {
