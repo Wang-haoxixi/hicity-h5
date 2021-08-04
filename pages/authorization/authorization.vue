@@ -45,7 +45,7 @@
 		},
 		methods: {
 			auth() {
-				window.open('https://platform.cltg365.com/govdemo/gmlogin?govmadeTag=' + this.userData.userKey, '_blank');
+				window.open(this.data.routeUrl + '?govmadeTag=' + this.userData.userKey, '_blank');
 			},
 			close() {
 				if (isAndroid) {
