@@ -40,18 +40,22 @@
 		onLoad() {
 			let that = this;
 			// that.type = that.getQueryVariable('type');
-			
+
 			if (that.getQueryVariable('type') == 'advisoryDetails') { //热门咨询详情
 				uni.redirectTo({
 					url: '../advisoryDetails/advisoryDetails?id=' + that.getQueryVariable('id')
 					// url: '../advisoryDetails/advisoryDetails?id=96'
 				});
-			} else if (that.getQueryVariable('type') == 'authorization') { //三方授权
+			} else if (that.getQueryVariable('type') == 'jobInformationReleaseRules') { //三方授权
 				uni.redirectTo({
-					url: '../authorization/authorization?routeUrl=' + that.getQueryVariable('routeUrl') + '&logo='+that.getQueryVariable('logo') + '&name='+that.getQueryVariable('name') 
+					url: '../jobInformationReleaseRules/jobInformationReleaseRules'
 				});
-			}			
-			else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
+			}else if (that.getQueryVariable('type') == 'authorization') { //三方授权
+				uni.redirectTo({
+					url: '../authorization/authorization?routeUrl=' + that.getQueryVariable('routeUrl') +
+						'&logo=' + that.getQueryVariable('logo') + '&name=' + that.getQueryVariable('name')
+				});
+			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
 					url: '../officialDetails/officialDetails?id=' + that.getQueryVariable('id')
 				});
@@ -75,52 +79,45 @@
 				uni.redirectTo({
 					url: '../privacyClause/privacyClause'
 				});
-			}
-			else if (that.getQueryVariable('type') == 'informationDetails') { //资讯详情分享H5
+			} else if (that.getQueryVariable('type') == 'informationDetails') { //资讯详情分享H5
 				uni.redirectTo({
-					url: '../informationDetails/informationDetails?id='+ that.getQueryVariable('id')
+					url: '../informationDetails/informationDetails?id=' + that.getQueryVariable('id')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'travelNotes') { //游记详情分享H5
+			} else if (that.getQueryVariable('type') == 'travelNotes') { //游记详情分享H5
 				uni.redirectTo({
-					url: '../travelNotes/travelNotes?id='+ that.getQueryVariable('id')
+					url: '../travelNotes/travelNotes?id=' + that.getQueryVariable('id')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'productDetails') { //商品详情分享H5
+			} else if (that.getQueryVariable('type') == 'productDetails') { //商品详情分享H5
 				uni.redirectTo({
-					url: '../productDetails/productDetails?id='+ that.getQueryVariable('id')
+					url: '../productDetails/productDetails?id=' + that.getQueryVariable('id')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'position') { //岗位详情分享H5
+			} else if (that.getQueryVariable('type') == 'position') { //岗位详情分享H5
 				uni.redirectTo({
-					url: '../position/position?id='+ that.getQueryVariable('id')
+					url: '../position/position?id=' + that.getQueryVariable('id')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'activityDetails') { //活动详情分享H5
+			} else if (that.getQueryVariable('type') == 'activityDetails') { //活动详情分享H5
 				uni.redirectTo({
 					// url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id') + '&source='+that.getQueryVariable('source') 
-					url: '../activityDetails/activityDetails?id='+ that.getQueryVariable('id')+ '&inviteId='+that.getQueryVariable('inviteId') 
+					url: '../activityDetails/activityDetails?id=' + that.getQueryVariable('id') + '&inviteId=' +
+						that.getQueryVariable('inviteId')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'hotTalk') { //话题详情分享H5
+			} else if (that.getQueryVariable('type') == 'hotTalk') { //话题详情分享H5
 				uni.redirectTo({
-					url: '../hotTalk/hotTalk?id='+ that.getQueryVariable('id')
+					url: '../hotTalk/hotTalk?id=' + that.getQueryVariable('id')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'officialPublic') { //官方发布分享H5
+			} else if (that.getQueryVariable('type') == 'officialPublic') { //官方发布分享H5
 				uni.redirectTo({
-					url: '../officialPublic/officialPublic?id='+ that.getQueryVariable('id')
+					url: '../officialPublic/officialPublic?id=' + that.getQueryVariable('id')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'statistics') { //统计内嵌H5
+			} else if (that.getQueryVariable('type') == 'statistics') { //统计内嵌H5
 				uni.redirectTo({
-					url: '../statistics/statistics?token=' + that.getQueryVariable('token') + '&id=' + that.getQueryVariable(
-						'userId')
+					url: '../statistics/statistics?token=' + that.getQueryVariable('token') + '&id=' + that
+						.getQueryVariable(
+							'userId')
 				});
-			}
-			else if (that.getQueryVariable('type') == 'userCard') { //用户名片
+			} else if (that.getQueryVariable('type') == 'userCard') { //用户名片
 				uni.redirectTo({
-					url: '../userCard/userCard?id='+ that.getQueryVariable('id')
+					url: '../userCard/userCard?id=' + that.getQueryVariable('id')
 				});
 			}
 		}

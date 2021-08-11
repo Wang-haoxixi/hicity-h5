@@ -187,6 +187,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/jobInformationReleaseRules/jobInformationReleaseRules",
+            "style" :                                                                                    
+            {
+				"titleNView": false,
+                "navigationBarTitleText": "职位信息发布规则",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
