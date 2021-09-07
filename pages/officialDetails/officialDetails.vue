@@ -234,7 +234,9 @@
 				发送
 			</view>
 		</view>
-
+		
+		<!--isFullScreen 可以使其全屏显示-->
+		<ourLoading isFullScreen active text="loading..." background-color="#FFFFFF" v-if="isLoading" />
 	</view>
 </template>
 
@@ -243,6 +245,7 @@
 	let isAndroid = u.indexOf('Android') > -1; //安卓终端
 	let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
 
+	import ourLoading from '@/components/our-loading/our-loading.vue'
 	import jyfParser from "@/components/jyf-Parser/jyf-parser";
 	import uniLoadMore from "@/components/uni-load-more/uni-load-more.vue"
 	import {
@@ -251,7 +254,8 @@
 	export default {
 		components: {
 			jyfParser,
-			uniLoadMore
+			uniLoadMore,
+			ourLoading
 		},
 		data() {
 			return {
@@ -281,8 +285,8 @@
 				placeholder: '说点儿什么吧~',
 				recommendationList: [],
 				scrollTop: 0, // 页面移动距离
-
 				activityList: [], // 活动数组
+				isLoading: false
 			};
 		},
 		onLoad(option) {
@@ -290,13 +294,15 @@
 			window.androidRst = this.androidRst
 			window.getIosToken = this.getIosToken
 			this.id = option.id
+			
 			this.getRecommendationList()
 			this.getActivityList()
-			// this.handleToken('')//此处进详情便获取一次token值
-			// this.getConsultDetail()
-			// this.getCommentList()
-			this.handleToken('getDetail')
-			this.handleToken('getList')
+			
+			this.getConsultDetail()
+			this.getCommentList()
+			
+			// this.handleToken('getDetail')
+			// this.handleToken('getList')
 		},
 		onReachBottom() {
 			if (this.commentData.current < this.commentData.pages) {
@@ -312,12 +318,11 @@
 					success: (res) => {
 						if (res.data.code !== 0) {
 							return uni.showToast({
-								title: '获取评论列表失败',
+								title: '获取信息失败',
 								duration: 1500,
 								icon: "none",
 							});
 						}
-
 						this.commentData.current = res.data.data.data.current
 						if (this.commentData.current < this.commentData.pages) {
 							this.pinglunPageStatus = 'more'
@@ -410,6 +415,7 @@
 				// 	duration: 3000
 				// });
 				// 获取咨询详情
+				this.isLoading = true
 				uni.request({
 					header: {
 						// "Authorization": 'Bearer ' + 'dee062e6-3bfe-40df-8225-7ffd784762d7'
@@ -430,6 +436,7 @@
 							});
 						}
 						this.detail = res.data.data.data
+						this.isLoading = false
 					}
 				});
 			},
@@ -663,7 +670,7 @@
 						if (res.statusCode == 200) {
 							if (res.data.code !== 0) {
 								return uni.showToast({
-									title: '获取更多回复失败',
+									title: '获取信息失败',
 									duration: 1500,
 									icon: "none",
 								});
@@ -778,7 +785,7 @@
 					success: (res) => {
 						if (res.data.code !== 0) {
 							return uni.showToast({
-								title: '获取评论列表失败',
+								title: '获取信息失败',
 								duration: 1500,
 								icon: "none",
 							});
