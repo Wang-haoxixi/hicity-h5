@@ -363,6 +363,7 @@ function fixPieSeries(series, opts, config){
     opts._pieSeries_ = series;
     let oldseries = series[0].data;
     for (var i = 0; i < oldseries.length; i++) {
+			// 添加formatter
       oldseries[i].formatter = series[0].formatter;
       oldseries[i].data = oldseries[i].value;
       pieSeriesArr.push(oldseries[i]);
@@ -899,7 +900,7 @@ function findRoseChartCurrentIndex(currentPoints, pieData, opts) {
   var series = getRoseDataPoints(opts._series_, opts.extra.rose.type, pieData.radius, pieData.radius);
   if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
     var angle = Math.atan2(pieData.center.y - currentPoints.y, currentPoints.x - pieData.center.x);
-    angle = -angle;
+    angle = -angle - opts.extra.rose.offsetAngle * Math.PI / 180;
     for (var i = 0, len = series.length; i < len; i++) {
       if (isInAngleRange(angle, series[i]._start_, series[i]._start_ + series[i]._rose_proportion_ * 2 * Math.PI)) {
         currentIndex = i;
@@ -910,12 +911,12 @@ function findRoseChartCurrentIndex(currentPoints, pieData, opts) {
   return currentIndex;
 }
 
-function findPieChartCurrentIndex(currentPoints, pieData) {
+function findPieChartCurrentIndex(currentPoints, pieData, ringWidth, offsetAngle = 0) {
   var currentIndex = -1;
   var series = getPieDataPoints(pieData.series);
-  if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius)) {
+  if (pieData && pieData.center && isInExactPieChartArea(currentPoints, pieData.center, pieData.radius, ringWidth)) {
     var angle = Math.atan2(pieData.center.y - currentPoints.y, currentPoints.x - pieData.center.x);
-    angle = -angle;
+    angle = -angle - offsetAngle * Math.PI / 180;
     for (var i = 0, len = series.length; i < len; i++) {
       if (isInAngleRange(angle, series[i]._start_, series[i]._start_ + series[i]._proportion_ * 2 * Math.PI)) {
         currentIndex = i;
@@ -926,8 +927,12 @@ function findPieChartCurrentIndex(currentPoints, pieData) {
   return currentIndex;
 }
 
-function isInExactPieChartArea(currentPoints, center, radius) {
-  return Math.pow(currentPoints.x - center.x, 2) + Math.pow(currentPoints.y - center.y, 2) <= Math.pow(radius, 2);
+function isInExactPieChartArea(currentPoints, center, radius, ringWidth = 0) {
+	let isIn = Math.pow(currentPoints.x - center.x, 2) + Math.pow(currentPoints.y - center.y, 2) <= Math.pow(radius, 2);
+	if (isIn && ringWidth) {
+		isIn = Math.pow(currentPoints.x - center.x, 2) + Math.pow(currentPoints.y - center.y, 2) >= Math.pow(radius - ringWidth, 2);
+	}
+	return isIn
 }
 
 function splitPoints(points,eachSeries) {
@@ -2297,8 +2302,8 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
   if(toolTipOption.showCategory==true && opts.categories){
     textList.unshift({text:opts.categories[opts.tooltip.index],color:null})
   }
-  var legendWidth = 4 * opts.pix;
-  var legendMarginRight = 5 * opts.pix;
+  var legendWidth = !toolTipOption.noLegend ? 4 * opts.pix : 0;
+  var legendMarginRight = !toolTipOption.noLegend ? 5 * opts.pix : 0;
   var arrowWidth = toolTipOption.showArrow ? 8 * opts.pix : 0;
   var isOverRightBorder = false;
   if (opts.type == 'line' || opts.type == 'area' || opts.type == 'candle' || opts.type == 'mix') {
@@ -2312,10 +2317,38 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
   }, offset);
   offset.y -= 8 * opts.pix;
   var textWidth = textList.map(function(item) {
-    return measureText(item.text, config.fontSize, context);
+    return measureText(item.text, item.fontSize || config.fontSize, context);
   });
-  var toolTipWidth = legendWidth + legendMarginRight + 4 * config.toolTipPadding + Math.max.apply(null, textWidth);
-  var toolTipHeight = 2 * config.toolTipPadding + textList.length * config.toolTipLineHeight;
+	
+	let toolTipPadding = config.toolTipPadding
+	if (toolTipOption.padding && typeof toolTipOption.padding == "number") {
+		toolTipPadding = toolTipOption.padding * opts.pix
+	} else if (toolTipOption.padding && toolTipOption.padding instanceof Array && toolTipOption.padding.length > 0) {
+		toolTipPadding = []
+		for (let i = 0; i < toolTipOption.padding.length; i++) {
+			toolTipPadding.push(toolTipOption.padding[i] * opts.pix)
+		}
+	}
+  
+	let toolTipPaddingT = 0,toolTipPaddingR = 0, toolTipPaddingB = 0, toolTipPaddingL = 0
+	if (typeof toolTipPadding == "number") {
+		toolTipPaddingT = toolTipPaddingR = toolTipPaddingB = toolTipPaddingL = toolTipPadding
+	} else if (toolTipPadding instanceof Array && toolTipPadding.length > 0) {
+		toolTipPaddingT = toolTipPadding[0]
+		toolTipPaddingR = toolTipPadding[1] || toolTipPadding[0]
+		toolTipPaddingB = toolTipPadding[2] || toolTipPadding[0]
+		toolTipPaddingL = toolTipPadding[3] || toolTipPadding[1] || toolTipPadding[0]
+	}
+  var toolTipWidth = legendWidth + legendMarginRight + 2 * (toolTipPaddingL + toolTipPaddingR) + Math.max.apply(null, textWidth);
+	let textHeight = 0
+	for (let i = 0; i < textList.length; i++) {
+		if (textList[i].lineHeight) {
+			textHeight += textList[i].lineHeight * opts.pix
+		} else {
+			textHeight += config.toolTipLineHeight
+		}
+	}
+  var toolTipHeight = (toolTipPaddingT + toolTipPaddingB) + textHeight;
   if (toolTipOption.showBox == false) {
     return
   }
@@ -2368,32 +2401,40 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
     context.stroke();
   }
   // draw legend
-  textList.forEach(function(item, index) {
-    if (item.color !== null) {
-      context.beginPath();
-      context.setFillStyle(item.color);
-      var startX = offset.x + arrowWidth + 2 * config.toolTipPadding;
-      var startY = offset.y + (config.toolTipLineHeight - config.fontSize) / 2 + config.toolTipLineHeight * index + config.toolTipPadding + 1;
-      if (isOverRightBorder) {
-        startX = offset.x - toolTipWidth - arrowWidth + 2 * config.toolTipPadding;
-      }
-      context.fillRect(startX, startY, legendWidth, config.fontSize);
-      context.closePath();
-    }
-  });
+	if (!toolTipOption.noLegend) {
+		textList.forEach(function(item, index) {
+		let toolTipLineHeight = item.lineHeight && item.lineHeight * opts.pix || config.toolTipLineHeight
+			if (item.color !== null) {
+				context.beginPath();
+				context.setFillStyle(item.color);
+				var startX = offset.x + arrowWidth + 2 * toolTipPaddingL;
+				var startY = offset.y + (toolTipLineHeight - config.fontSize) / 2 + toolTipLineHeight * index + toolTipPaddingT + 1;
+				if (isOverRightBorder) {
+					startX = offset.x - toolTipWidth - arrowWidth + 2 * toolTipPaddingL;
+				}
+				context.fillRect(startX, startY, legendWidth, config.fontSize);
+				context.closePath();
+			}
+		});
+	}
   // draw text list
+	// return
+	let startYBefore = 0
   textList.forEach(function(item, index) {
-    var startX = offset.x + arrowWidth + 2 * config.toolTipPadding + legendWidth + legendMarginRight;
+		let toolTipLineHeight = item.lineHeight && item.lineHeight * opts.pix || config.toolTipLineHeight
+		
+    var startX = offset.x + arrowWidth + 2 * toolTipPaddingL + legendWidth + legendMarginRight;
     if (isOverRightBorder) {
-      startX = offset.x - toolTipWidth - arrowWidth + 2 * config.toolTipPadding + +legendWidth + legendMarginRight;
+      startX = offset.x - toolTipWidth - arrowWidth + 2 * toolTipPaddingL + +legendWidth + legendMarginRight;
     }
-    var startY = offset.y + (config.toolTipLineHeight - config.fontSize) / 2 + config.toolTipLineHeight * index + config.toolTipPadding;
+    var startY = offset.y + (toolTipLineHeight - item.fontSize || config.fontSize) / 2 + startYBefore + toolTipPaddingT;
     context.beginPath();
-    context.setFontSize(config.fontSize);
-    context.setFillStyle(toolTipOption.fontColor);
-    context.fillText(item.text, startX, startY + config.fontSize);
+    context.setFontSize(item.fontSize || config.fontSize);
+    context.setFillStyle(item.color || toolTipOption.fontColor);
+    context.fillText(item.text, startX, startY + item.fontSize || config.fontSize);
     context.closePath();
     context.stroke();
+		startYBefore += toolTipLineHeight
   });
 }
 
@@ -4642,7 +4683,8 @@ function drawMapDataPoints(series, opts, config, context) {
     context.setLineWidth(mapOption.borderWidth * opts.pix);
     context.setStrokeStyle(mapOption.borderColor);
     context.setFillStyle(hexToRgb(series[i].color, mapOption.fillOpacity));
-    if (opts.tooltip) {
+		
+    if (opts.tooltip && !opts.extra.map.activeDisabled) {
       if (opts.tooltip.index == i) {
         context.setStrokeStyle(mapOption.activeBorderColor);
         context.setFillStyle(hexToRgb(mapOption.activeFillColor, mapOption.activeFillOpacity));
@@ -4674,6 +4716,7 @@ function drawMapDataPoints(series, opts, config, context) {
         context.stroke();
       }
     }
+		// continue
     if (opts.dataLabel == true) {
       var centerPoint = data[i].properties.centroid;
       if (centerPoint) {
@@ -4681,7 +4724,7 @@ function drawMapDataPoints(series, opts, config, context) {
           centerPoint = lonlat2mercator(data[i].properties.centroid[0], data[i].properties.centroid[1])
         }
         point = coordinateToPoint(centerPoint[1], centerPoint[0], bounds, scale, xoffset, yoffset);
-        let fontSize = data[i].textSize * opts.pix || config.fontSize;
+        let fontSize = data[i].textSize * opts.pix || opts.extra.label.fontSize || config.fontSize;
         let text = data[i].properties.name;
         context.beginPath();
         context.setFontSize(fontSize)
@@ -5966,7 +6009,7 @@ uCharts.prototype.getCurrentDataIndex = function(e) {
       return findPieChartCurrentIndex({
         x: _touches$.x,
         y: _touches$.y
-      }, this.opts.chartData.pieData);
+      }, this.opts.chartData.pieData, this.opts.extra.ring.ringWidth, this.opts.extra.ring.offsetAngle);
     } else if (this.opts.type === 'rose') {
       return findRoseChartCurrentIndex({
         x: _touches$.x,
@@ -6136,10 +6179,15 @@ uCharts.prototype.showToolTip = function(e) {
     if (index > -1) {
       var opts = assign({}, this.opts, {animation: false});
       var seriesData = assign({}, opts._series_[index]);
-      var textList = [{
-        text: option.formatter ? option.formatter(seriesData, undefined, index, opts) : seriesData.name + ': ' + seriesData.data,
-        color: seriesData.color
-      }];
+			var textList = []
+			if (opts.extra.tooltip.textListCustom && option.formatter) {
+        textList = option.formatter(seriesData, undefined, index, opts)
+			} else {
+				textList = [{
+					text: option.formatter ? option.formatter(seriesData, undefined, index, opts) : seriesData.name + ': ' + seriesData.data,
+					color: seriesData.color
+				}];
+			}
       var offset = {
         x: _touches$.x,
         y: _touches$.y
@@ -6159,10 +6207,15 @@ uCharts.prototype.showToolTip = function(e) {
       var opts = assign({}, this.opts, {animation: false});
       var seriesData = assign({}, this.opts.series[index]);
       seriesData.name = seriesData.properties.name
-      var textList = [{
-        text: option.formatter ? option.formatter(seriesData, undefined, index, this.opts) : seriesData.name,
-        color: seriesData.color
-      }];
+			var textList = []
+			if (opts.extra.tooltip.textListCustom && option.formatter) {
+			  textList = option.formatter(seriesData, undefined, index, opts)
+			} else {
+				textList = [{
+					text: option.formatter ? option.formatter(seriesData, undefined, index, this.opts) : seriesData.name,
+          color: seriesData.color
+				}];
+			}
       var offset = {
         x: _touches$.x,
         y: _touches$.y

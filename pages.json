@@ -197,6 +197,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/policyCharts/policyCharts",
+            "style" :                                                                                    
+            {
+								"titleNView": false,
+                "navigationBarTitleText": "政策热力图",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

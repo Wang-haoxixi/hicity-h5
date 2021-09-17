@@ -119,7 +119,11 @@
 				uni.redirectTo({
 					url: '../userCard/userCard?id=' + that.getQueryVariable('id')
 				});
-			}
+			} else if (that.getQueryVariable('type') == 'policyCharts') { //用户名片
+				uni.redirectTo({
+					url: '../policyCharts/policyCharts'
+				});
+			} 
 		}
 	};
 </script>
