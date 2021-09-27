@@ -30,7 +30,7 @@
 					var pair = arr[i].split('=');
 					// console.log('pair', pair) //["type", "advisoryDetails"]  ["id", "53"]
 					if (pair[0] == variable) { //若pair[0] == 'type',则返回页面参数
-						// console.log('pair[1]', pair[1]) //advisoryDetails
+						console.log('pair[1]', pair[1]) //advisoryDetails
 						return pair[1]; //返回数组第二个参数
 					}
 				}
@@ -58,6 +58,10 @@
 			} else if (that.getQueryVariable('type') == 'officialDetails') { //官方咨询
 				uni.redirectTo({
 					url: '../officialDetails/officialDetails?id=' + that.getQueryVariable('id')
+				});
+			} else if (that.getQueryVariable('type') == 'policyDetail') { //政策详情
+				uni.redirectTo({
+					url: '../policyDetail/policyDetail?id=' + that.getQueryVariable('id')
 				});
 			} else if (that.getQueryVariable('type') == 'circleCard') { //圈子名片
 				uni.redirectTo({

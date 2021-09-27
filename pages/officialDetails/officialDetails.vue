@@ -298,11 +298,11 @@
 			this.getRecommendationList()
 			this.getActivityList()
 			
-			this.getConsultDetail()
-			this.getCommentList()
+			// this.getConsultDetail()
+			// this.getCommentList()
 			
-			// this.handleToken('getDetail')
-			// this.handleToken('getList')
+			this.handleToken('getDetail')
+			this.handleToken('getList')
 		},
 		onReachBottom() {
 			if (this.commentData.current < this.commentData.pages) {

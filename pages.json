@@ -197,6 +197,24 @@
             }
             
         }
+        ,{
+            "path" : "pages/policyDetail/policyDetail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "政策详情",
+                "titleNView": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/allComment/allComment",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "全部评论",
+                "titleNView": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
