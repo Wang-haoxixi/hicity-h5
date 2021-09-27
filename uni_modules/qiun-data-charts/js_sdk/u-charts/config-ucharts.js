@@ -91,6 +91,9 @@ module.exports = {
 		"seriesDemo1": function(val) {
 			return val + '元'
 		},
+		"seriesName": function(data) {
+			return data.name
+		},
 		"tooltipDemo1": function(item, category, index, opts) {
 			// console.log(typeof(opts.series[0].data[index]))
 			if(typeof(opts.series[0].data[index])=="number"){
@@ -109,6 +112,40 @@ module.exports = {
 			}else{
 				return opts.series[0].data[index].value +"笔"
 			}
+		},
+		"tooltipMapCustom": function (item, category, index, opts) {
+			let textList = [
+				{
+					text: item.name,
+					color: "#272727",
+					fontSize: 14,
+					lineHeight: 20
+				},
+				{
+					text: "政策数量：" + (item.properties.data || 0),
+					color: "#5F5F5F",
+					fontSize: 13,
+					lineHeight: 26
+				}
+			]
+			return textList
+		},
+		"tooltipTextListCustom": function (item, category, index, opts) {
+			let textList = [
+				{
+					text: item.name,
+					color: "#272727",
+					fontSize: 14,
+					lineHeight: 20
+				},
+				{
+					text: "应用次数：" + item.data,
+					color: "#5F5F5F",
+					fontSize: 13,
+					lineHeight: 26
+				}
+			]
+			return textList
 		},
 		"pieDemo": function(val, index, series) {
 			if (index !== undefined) {
@@ -249,7 +286,7 @@ module.exports = {
 				"borderColor": "#666666",
 				"fillOpacity": 0.6,
 				"activeBorderColor": "#F04864",
-				"activeFillColor": "#FACC14",
+				// "activeFillColor": "#FACC14",
 				"activeFillOpacity": 1
 			},
 		}
