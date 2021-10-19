@@ -15,7 +15,7 @@
 								{{ $isEmpty(details.policyTypeName) ? '' : details.policyTypeName }}
 							</view>
 							<view class="policy-time">
-								{{ gettime(details.updateTime) }}
+								{{ details.updateTime.substring(0,10) }}
 							</view>
 						</view>
 						<view class="info-first-right">
@@ -41,7 +41,7 @@
 						<view><text>主</text><text>题</text></view>：<text>{{ details.dictionaryTopicNameDate.join("、") }}</text> 
 					</view>
 					<view>
-						<view>发文时间</view>：<text>{{ $isEmpty(details.issuingTime) ? '' : details.issuingTime }}</text>
+						<view>发文时间</view>：<text>{{ details.issuingTime.substring(0,10) }}</text>
 					</view>
 				</view>
 			</view>
@@ -58,19 +58,19 @@
 					</view>
 					<view class="policy-declaration-content" v-if="activeCurrent==0">
 						<view class="unscramble-item">
-							申报对象：{{ details.declarationObjectDate | objectFilter }}
+							申报对象：{{ POLICY_APPLICABLE_OBJECT }}
 						</view>
 						<view class="unscramble-item">
-							扶持形式：{{ details.supportFormDate | modalityFilter }}
+							扶持形式：{{ POLICY_SUPPORT_FORM }}
 						</view>
 						<view class="unscramble-item">
-							支持方式：{{ details.sustainModeDate | wayFilter }}
+							支持方式：{{ POLICY_SUSTAIN_MODE }}
 						</view>
 						<view class="unscramble-item">
-							申报时间：{{ details.declarationTime }}
+							申报时间：{{ details.declarationTime.substring(0,10) }} ～ {{ details.endTime.substring(0,10) }}
 						</view>
 						<!-- <view class="unscramble-item">
-							状态：{{ details.declarationStatus | declareStatusFilter }}
+							状态：{{ details.declarationStatus }}
 						</view> -->
 						<view class="unscramble-item">
 							申报条件：
@@ -334,12 +334,51 @@
 					img: 'background-size: contain|cover;width:100%;height:auto;display: block;',
 					// p: 'text-indent: 2em',//首行缩进两个字符
 				},
+				policyObject: [], // 申报对象
+				supportForm: [], // 扶持形式
+				sustainForm: [], //支持方式
 				
 				ClickGood_Status: false, // 详情点赞显隐
 				ClickLike_Status: false, // 详情收藏显隐
 			}
 		},
+		computed:{
+			POLICY_APPLICABLE_OBJECT(){
+				let arr = []
+				this.policyObject.forEach((item,index)=>{
+					this.details.declarationObjectDate.forEach(val=>{
+						if(val == item.value){
+							arr.push(item.label)
+						}
+					})
+				})
+				return arr.join('、')
+			},
+			POLICY_SUPPORT_FORM(){
+				let arr = []
+				this.supportForm.forEach((item,index)=>{
+					this.details.supportFormDate.forEach(val=>{
+						if(val == item.value){
+							arr.push(item.label)
+						}
+					})
+				})
+				return arr.join('、')
+			},
+			POLICY_SUSTAIN_MODE(){
+				let arr = []
+				this.sustainForm.forEach((item,index)=>{
+					this.details.sustainModeDate.forEach(val=>{
+						if(val == item.value){
+							arr.push(item.label)
+						}
+					})
+				})
+				return arr.join('、')
+			},
+		},
 		onLoad(opt) {
+			
 			window.androidRst = this.androidRst
 			window.getIosToken = this.getIosToken
 			
@@ -354,58 +393,6 @@
 			this.handleToken('getCommentList')
 		},
 		filters:{
-			declareStatusFilter(status){
-				if(status==0){
-					return "即将开始";
-				}else if(status==1){
-					return "申报中";
-				}else if(status==2){
-					return "主管部门推荐";
-				}
-			},
-			objectFilter(data){
-				return data.map(item=>{
-					if(item == 1){
-						return "个人";
-					}else if(item == 2){
-						return "企业";
-					}else if(item == 3){
-						return "政府";
-					}
-				}).join("、")
-			},
-			modalityFilter(data){
-				return data.map(item=>{
-					if(item == 1){
-						return "奖补";
-					}else if(item == 2){
-						return "股权";
-					}else if(item == 3){
-						return "投资";
-					}else if(item == 4){
-						return "减免";
-					}else if(item == 5){
-						return "其它";
-					}
-				}).join("、")
-			},
-			wayFilter(data){
-				return data.map(item=>{
-					if(item == 1){
-						return "资质认定";
-					}else if(item == 2){
-						return "资金扶持";
-					}else if(item == 3){
-						return "降低成本";
-					}else if(item == 4){
-						return "评选认定";
-					}else if(item == 5){
-						return "简化审批";
-					}else if(item == 6){
-						return "其它";
-					}
-				}).join("、")
-			}
 		},
 		onReachBottom(){
 			console.log('触底..')
@@ -528,6 +515,10 @@
 						}
 						this.policyStyle() // 政策类型tag颜色
 						this.getRecommendFn()
+						
+						this.getPOLICY_APPLICABLE_OBJECT(this.details.declarationObjectDate)
+						this.getPOLICY_SUPPORT_FORM(this.details.supportFormDate)
+						this.getPOLICY_SUSTAIN_MODE(this.details.sustainModeDate)
 					},
 				})
 			},
@@ -1145,8 +1136,36 @@
 				} else if (isIOS) {
 					return window.webkit.messageHandlers.navigateBack.postMessage(null)
 				}
+			},
+			
+			// 获取申报对象
+			getPOLICY_APPLICABLE_OBJECT(data){
+				uni.request({
+					url: 'api/admin/dict/item/' + 'POLICY_APPLICABLE_OBJECT',
+					success: (res) => {
+						this.policyObject = res.data.data.data
+					}
+				})
+			}, 
+			// 获取扶持形式
+			getPOLICY_SUPPORT_FORM(data){
+				uni.request({
+					url: 'api/admin/dict/item/' + 'POLICY_SUPPORT_FORM',
+					success: (res) => {
+						this.supportForm = res.data.data.data
+					}
+				})
+			},
+			// 获取支持方式
+			getPOLICY_SUSTAIN_MODE(data){
+				uni.request({
+					url: 'api/admin/dict/item/' + 'POLICY_SUSTAIN_MODE',
+					success: (res) => {
+						this.sustainForm = res.data.data.data
+					}
+				})
 			}
-		}
+		},
 	}
 </script>
 <style lang="scss" scoped>
