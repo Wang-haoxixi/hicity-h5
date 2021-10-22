@@ -147,6 +147,28 @@ module.exports = {
 			]
 			return textList
 		},
+		"tooltipTextListCustom1": function (seriesData, categories, index, opts) {
+			console.log(seriesData, categories, index, opts)
+			let itemsList = []
+			seriesData.forEach((item, index) => {
+				itemsList.push({
+					text: `${item.name}: ${item.data}`,
+					color: "#5F5F5F",
+					fontSize: 13,
+					lineHeight: 26
+				})
+			})
+			let textList = [
+				{
+					text: categories[index],
+					color: "#272727",
+					fontSize: 14,
+					lineHeight: 20
+				},
+				...itemsList
+			]
+			return textList
+		},
 		"pieDemo": function(val, index, series) {
 			if (index !== undefined) {
 				return series[index].name + '：' + series[index].data + '元'

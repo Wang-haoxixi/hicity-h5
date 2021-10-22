@@ -28,6 +28,11 @@
 			<view class="item-title">标签热度指数</view>
 			<label-heat :chart-data="labelChartsData"></label-heat>
 		</view>
+
+		<view class="item-box" style="margin-top: 16rpx">
+			<view class="item-title">行业热度指数</view>
+			<industry-heat :chart-data="industryChartsData"></industry-heat>
+		</view>
 	</view>
 </template>
 
@@ -96,6 +101,7 @@
 
 	import themeHeat from "./themeHeat.vue"
 	import labelHeat from "./labelHeat.vue"
+	import indestryHeat from "./indestryHeat.vue"
 	import quantityAll from "./quantityAll.vue"
 	import mapJsonData from './CHN.json'
 
@@ -105,6 +111,7 @@
 		components: {
 			'theme-heat': themeHeat,
 			'label-heat': labelHeat,
+			'industry-heat': indestryHeat,
 			'quantity-all': quantityAll
 		},
 		data() {
@@ -114,6 +121,7 @@
 				themeList: [],
 				themeChartsData: {},
 				labelChartsData: {},
+				industryChartsData: {},
 			}
 		},
 		methods: {
@@ -237,6 +245,29 @@
 							this.quantityAllChartData = {
 								textSize: 10,
 								series: jsonData
+							}
+						}
+					}
+				})
+				
+				uni.request({
+					header: {
+						"Authorization": 'Bearer ' + this.token
+					},
+					url: '/api/dms/policy_publish/mobile/get_industry_heat',
+					success: (res) => {
+						if (res.data.code === 0 && res.data.data.businessCode == 1000) {
+							let vos = res.data.data.data.vos
+							let series = []
+							for (let i = 0; i < vos.length; i++) {
+								series.push({
+									name: vos[i].name,
+									data: vos[i].dateCounts.reverse()
+								})
+							}
+							this.industryChartsData = {
+								categories: res.data.data.data.xdate.reverse(),
+								series
 							}
 						}
 					}

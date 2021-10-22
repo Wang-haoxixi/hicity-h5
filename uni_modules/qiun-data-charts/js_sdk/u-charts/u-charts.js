@@ -618,16 +618,21 @@ function getToolTipData(seriesData, opts, index, group, categories) {
   }else{
     points = calPoints[0][index];
   };
-  var textList = seriesData.map(function(item) {
-    let titleText = null;
-    if (opts.categories && opts.categories.length>0) {
-      titleText = categories[index];
-    };
-    return {
-      text: option.formatter ? option.formatter(item, titleText, index, opts) : item.name + ': ' + item.data,
-      color: item.color
-    };
-  });
+  var textList = []
+	if (opts.extra.tooltip.textListCustom && option.formatter) {
+	  textList = option.formatter(seriesData, categories, index, opts)
+	} else {
+		textList = seriesData.map(function(item) {
+			let titleText = null;
+			if (opts.categories && opts.categories.length>0) {
+			  titleText = categories[index];
+			};
+			return {
+			  text: option.formatter ? option.formatter(item, titleText, index, opts) : item.name + ': ' + item.data,
+			  color: item.color
+			};
+	    });
+	}
   var offset = {
     x: Math.round(points.x),
     y: Math.round(points.y)
@@ -2431,7 +2436,7 @@ function drawToolTip(textList, offset, opts, config, context, eachSpacing, xAxis
     context.beginPath();
     context.setFontSize(item.fontSize || config.fontSize);
     context.setFillStyle(item.color || toolTipOption.fontColor);
-    context.fillText(item.text, startX, startY + item.fontSize || config.fontSize);
+    context.fillText(item.text, startX, startY + (item.fontSize || config.fontSize));
     context.closePath();
     context.stroke();
 		startYBefore += toolTipLineHeight
