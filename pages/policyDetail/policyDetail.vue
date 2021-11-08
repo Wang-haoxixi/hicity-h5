@@ -69,9 +69,9 @@
 						<view class="unscramble-item">
 							申报时间：{{ details.declarationTime.substring(0,10) }} ～ {{ details.endTime.substring(0,10) }}
 						</view>
-						<!-- <view class="unscramble-item">
-							状态：{{ details.declarationStatus }}
-						</view> -->
+						<view class="unscramble-item">
+							状态：{{ policyStatus }}
+						</view>
 						<view class="unscramble-item">
 							申报条件：
 							<jyf-parser class="parser" :html="details.declarationConditions" :tag-style="tagStyle" lazy-load></jyf-parser>
@@ -123,12 +123,12 @@
 		</view>
 		<!-- 白底部分 -->
 		<view class="white-container">
-			<!-- && details.commentSwitch == 0 -->
-			<view class="msssage-title" v-if="commentData.total && commentData.total != 0 && details.commentSwitch == 0">
+			<!-- commentSwitch 0开起留言  1关闭留言 -->
+			<view class="msssage-title" v-if="commentData.total != 0 && details.commentSwitch == 0">
 				留言咨询 ({{ commentData.total }})
 			</view> 
 			<!-- 留言咨询 -->
-			<view class="comment-item u-f" v-for="(item,index) in commentData.records.slice(0,3)" :key='index' v-if="commentData.total && commentData.total != 0 && details.commentSwitch == 0">
+			<view class="comment-item u-f" v-for="(item,index) in commentData.records.slice(0,3)" :key='index' v-if="commentData.total != 0 && details.commentSwitch == 0">
 				<view class="avatar-box">
 					<image :src="item.createByAvatar" mode="aspectFill"></image>
 				</view>
@@ -200,16 +200,17 @@
 					</view>
 				</view>
 			</view>
-			<view class="all-comment" @click="handleAllComment" v-if="commentData.total && commentData.total != 0">
+			<view class="all-comment" @click="handleAllComment" v-if="commentData.total != 0 && details.commentSwitch == 0">
 				查看全部评价
 				<image src="../../static/icon-arrowright.png"></image>
 			</view>
 			<!-- 相关推荐 -->
-			<view class="recommend-box" v-if="recommendData.records && recommendData.records.length > 0">
-				<view class="title">
+			<!-- <view class="recommend-box" v-if="recommendData.records && recommendData.records.length > 0"> -->
+			<view class="recommend-box">
+				<view class="title" v-if="recommendData.records.length != 0">
 					相关推荐
 				</view>
-				<view class="recommend-list">
+				<view class="recommend-list" v-if="recommendData.records.length != 0">
 					<view class="recommend-item" v-for="(item,index) in recommendData.records" :key='index' @tap="handleRecommend(item.publishId)">
 						<view class="recommend-item-left">
 							<view class="recommend-title">
@@ -233,9 +234,11 @@
 						<image :src="item.listPreviewUrlsData[0]" v-if="item.listPreviewUrlsData.length > 0"></image>
 					</view>
 				</view>
-				<image class="no-vip" src="../../static/pic_policy_noVip.png" v-if="!vipState" @tap="handleVipPic"></image>
-				<!-- 相关推荐列表-加载更多 -->
-				<view class="load-more" v-if="vipState !== null">
+				<!-- <image class="no-vip" src="../../static/pic_policy_noVip.png" v-if="!vipState" @tap="handleVipPic"></image> -->
+				<image class="no-vip" src="../../static/pic_policy_noVip.png" @tap="handleVipPic" v-if="!vipState"></image>
+				<!-- 相关推荐-加载更多 -->
+				<!-- <view class="load-more" v-if="vipState !== null"> -->
+				<view class="load-more" v-if="vipState === true || vipState === false">
 					<uni-load-more :contentText="{contentdown: '上拉显示更多',contentrefresh: '正在加载...',contentnomore: '没有更多了'}" :iconSize='18' :status="recommendStatus">
 					</uni-load-more>
 				</view>
@@ -278,6 +281,9 @@
 		</uni-popup>
 		<uni-popup ref="downloadPopup" type="dialog">
 			<uni-popup-dialog type="info" mode="base" content="下载当前附件？" :isSingleBtn="true" :duration="2000" :before-close="true" @close="$refs.downloadPopup.close()" @confirm="downloadConfirm"></uni-popup-dialog>
+		</uni-popup>
+		<uni-popup ref="checkOriginalPopup" type="dialog">
+			<uni-popup-dialog type="info" mode="base" content="打开浏览器查看原文？" :isSingleBtn="true" :duration="2000" :before-close="true" @close="$refs.checkOriginalPopup.close()" @confirm="checkOriginalPopupConfirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -340,6 +346,8 @@
 				
 				ClickGood_Status: false, // 详情点赞显隐
 				ClickLike_Status: false, // 详情收藏显隐
+				
+				attachment: {}, // 附件信息
 			}
 		},
 		computed:{
@@ -376,6 +384,16 @@
 				})
 				return arr.join('、')
 			},
+			policyStatus(){
+				switch(this.details.declarationStatus){
+					case '1': 
+						return "即将开始";
+					case '2':
+						return "申报中";
+					case '3':
+						return "已截止"
+				}
+			}
 		},
 		onLoad(opt) {
 			
@@ -391,8 +409,6 @@
 			// 原生方法
 			this.handleToken('getDetail')
 			this.handleToken('getCommentList')
-		},
-		filters:{
 		},
 		onReachBottom(){
 			console.log('触底..')
@@ -509,7 +525,7 @@
 					success: (res) => {
 						this.details = res.data.data.data
 						if(this.tk){ // tk存在
-							this.vipState = this.details.memberPd // 是否会员  false:普通用户，true:会员用户
+							this.vipState = this.details.memberPd // 已登陆 - 是否会员 ： false:普通用户，true:会员用户
 						} else {
 							this.vipState = null // 游客 - 未登录状态
 						}
@@ -534,7 +550,9 @@
 						dataId: this.id, //数据ID
 						type: 7, // // 1-官方发布 2-热门新闻 3-游记  4-热议 7-政策通
 						current: 1, //当前页
-						maxId: ''
+						maxId: '',
+						
+						sortType: 4
 					},
 					success: (res) => {
 						this.commentData = res.data.data.data
@@ -708,7 +726,7 @@
 				uni.request({
 					url: 'api/dms/open/get_list_page_app',
 					header: {
-						// "Authorization": 'Bearer ' + '3180932b-aadf-4286-8a50-a069c167bb9e'
+						// "Authorization": 'Bearer ' + 'd0335b19-d131-4a6e-85fe-dc55fec1e49e'
 						"Authorization": 'Bearer ' + this.tk
 					},
 					data: {
@@ -732,15 +750,8 @@
 			handlecheck(){
 				if(this.vipState === null || this.vipState === false){ // 游客、普通
 					this.$refs.vipPopup.open()
-				} else if(this.vipState === true){ // 会员 - 到浏览器打开原文链接
-					let query = {
-						originalLink: this.details.originalLink
-					}
-					if (isAndroid) {
-						return window.android.invoke_native("goOriginalPage", JSON.stringify(query), "androidRst")
-					} else if (isIOS) {
-						return window.webkit.messageHandlers.goOriginalPage.postMessage(query)
-					}
+				} else if(this.vipState === true) { // 会员 - 到浏览器打开原文链接
+					this.$refs.checkOriginalPopup.open()
 				}
 			},
 			// 收藏
@@ -854,24 +865,37 @@
 				this.$refs.vipPopup.close()
 			},
 			downloadConfirm(){
+				let query = this.attachment
 				if (isAndroid) {
-					return window.android.invoke_native("goVipPage", null, "androidRst")
+					window.android.invoke_native("downLoadFile", JSON.stringify(query), "androidRst")
+					this.$refs.downloadPopup.close()
+					return false
 				} else if (isIOS) {
-					return window.webkit.messageHandlers.goVipPage.postMessage(null)
+					window.webkit.messageHandlers.downLoadFile.postMessage(query)
+					return false
 				}
-				this.$refs.vipPopup.close()
+			},
+			checkOriginalPopupConfirm(){
+				let query = {
+					originalLink: this.details.originalLink
+				}
+				if (isAndroid) {
+					window.android.invoke_native("goOriginalPage", JSON.stringify(query), "androidRst")
+					this.$refs.checkOriginalPopup.close()
+					return 
+				} else if (isIOS) {
+					window.webkit.messageHandlers.goOriginalPage.postMessage(query)
+					this.$refs.checkOriginalPopup.close()
+					return 
+				}
 			},
 			//  点击 附件按钮 事件
 			handleDownloadFile(data){
+				this.attachment = data
 				if(this.vipState === null || this.vipState === false){ // 游客、普通
 					this.$refs.vipPopup.open()
 				} else if(this.vipState === true) { // 会员 - 进行附件下载
-					let query = data
-					if (isAndroid) {
-						return window.android.invoke_native("downLoadFile", JSON.stringify(query), "androidRst")
-					} else if (isIOS) {
-						return window.webkit.messageHandlers.downLoadFile.postMessage(query)
-					}
+					this.$refs.downloadPopup.open()
 				}
 			},
 			// 点击 圈子咨询按钮

@@ -5,7 +5,7 @@
 		<!-- tabs -->
 		<view class="tabs-list">
 			<view @click="changeTab(index)" :class="['tab-item', activeCurrent==index ? 'active-tab' : '']" v-for="(item,index) in tabs" :key='index'>
-				{{ item.tab }} <text v-if="index == 0">(21)</text>
+				{{ item.tab }} <text v-if="index == 0">({{ commentData.total }})</text>
 			</view>
 		</view>
 		<!-- 占位盒子 -->
@@ -238,7 +238,6 @@
 						sortType: this.sortType, // 1- 按顶级评论回复量降序    2-按顶评分降序  3-时间+内容+评分  4-点赞数    默认时间倒序
 					},
 					success: (res) => {
-						console.log('咨询列表...', res)
 						this.commentData = res.data.data.data
 						this.maxId = res.data.data.data.maxId
 						if (this.commentData.pages == 1) {
